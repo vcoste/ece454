@@ -19,6 +19,13 @@ typedef struct arg {
  * array entries in the second argument. */
 typedef return_type (*fp_type)(const int, arg_type *);
 
+struct function_node {
+	struct function_node *next;
+	char *procedure_name;
+	int nparams;
+	fp_type fnpointer;
+};
+
 /******************************************************************/
 /* extern declarations -- you need to implement these 4 functions */
 /******************************************************************/
