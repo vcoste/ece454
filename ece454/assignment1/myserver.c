@@ -12,7 +12,7 @@
 int main(int argc, char* argv[]) {
     char buf[BUF_SIZE];
     struct sockaddr_in self, other;
-    int len = sizeof(struct sockaddr_in);
+    socklen_t len = sizeof(struct sockaddr_in);
     int n, s, port;
 
     if (argc < 2) {
