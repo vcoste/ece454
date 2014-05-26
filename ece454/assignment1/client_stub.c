@@ -54,21 +54,26 @@ return_type make_remote_call(	const char *servernameorip,
 
     //construct procedure call
     char *procedure_call;
-    char *open_paranthesis = '(';
-    char *close_paranthesis = ')';
-    strcpy (procedure_call, procedure_name);
-    strcat(procedure_call, open_paranthesis);
+	char *comma = ",";
+    strcpy(procedure_call, procedure_name);
+    strcat(procedure_call, comma);
+    char *num_params;
+    sprintf(num_params, "%d", nparams);
+    strcat(procedure_call,num_params);
+    strcat(procedure_call, comma);
     va_list arguments;
     va_start(arguments, nparams);
     for (int i = 0; i < nparams; ++i) {
-    	// strcat(procedure_call, va_arg(arguments, (void *)));
+    	// if (i == 0)
+    	strcat(procedure_call, va_arg(arguments, void *));
+    	if (i < nparams-1) {
+    		strcat(procedure_call, comma);
+    	}
     }
-    strcat(procedure_call, close_paranthesis);
 
     /* send message */
     if (sendto(s, procedure_call, sizeof(procedure_call), 0, (struct sockaddr *) &server, len) == -1) {
 	perror("sendto()");
-	// return 1;
     }
 
     /* receive echo.
@@ -76,29 +81,65 @@ return_type make_remote_call(	const char *servernameorip,
     ** to stay in listen mode and thus function as a "server" - allowing it to 
     ** receive message sent from any endpoint.
     */
-    if ((n = recvfrom(s, buf, BUF_SIZE, 0, (struct sockaddr *) &server, &len)) != -1) {
-    	//received something
-    	//return something from here
-    	printf(	"Received from %s:%d: ",	
-    			inet_ntoa(server.sin_addr), 
-				ntohs(server.sin_port)); 
-    	fflush(stdout);
-		write(1, buf, n);
-		write(1, "\n", 1);
+    bool more_to_come = 1;
+    int num_parts = 0;
+    int num_iterations = 0;
+   
+    char* response_string;
+	
+    while (more_to_come) {
+    	if ((n = recvfrom(s, buf, BUF_SIZE, 0, (struct sockaddr *) &server, &len)) != -1) {
+	    	//received something
+	    	//return from here
+	    	printf(	"Received from %s:%d: ",	
+	    			inet_ntoa(server.sin_addr), 
+					ntohs(server.sin_port)); 
+	    	fflush(stdout);
+			write(1, buf, n);
+			write(1, "\n", 1);
 
-    	if (len>BUF_SIZE) {
-    		// make recvfrom call again with bigger BU_SIZE ?? (not sure)
-    		printf("response is bigger than BUF_SIZE");
-    	} else {
-    		//make return_type from reponse buf
-    		return_type response;
-    		response.return_val = buf;
-    		response.return_size = sizeof(buf);
-    		return response;
-    	}
-    }
-    //might have to close the socket before this
-    //probabaly won't reach this point
-    close(s);
-    // return 0;
+	    	if (len>BUF_SIZE) {
+	    		// make recvfrom call again with bigger BU_SIZE ?? (not sure)
+	    		// showing error for now
+	    		printf("response is bigger than BUF_SIZE");
+	    		return_type return_error;
+	    		char* error_msg = "buf too small";
+	    		return_error.return_val = error_msg;
+	    		return_error.return_size = sizeof(error_msg);
+	    		close(s);
+	    		return return_error;
+	    	} else {
+	    		char * comparator = "$";
+	    		int result = strncmp(&buf[1], comparator, 1);
+	    		if(result == 0) {
+	    			num_parts = atoi(&buf[0]);
+				}
+				// take result and add to 
+				strcat(response_string, buf);
+				num_iterations++;
+				if (num_iterations >= num_parts) {
+					more_to_come = 0;
+				}
+	    	}
+	    } else {
+	    	//might have to close the socket before this
+		    //probabaly won't reach this point
+		    close(s);
+		    // showing error for now
+			printf("nothing received");
+			return_type return_error;
+			char* error_msg = "nothing received";
+			return_error.return_val = error_msg;
+			return_error.return_size = sizeof(error_msg);
+			close(s);
+			return return_error;
+	    }
+    }     
+
+    //make return_type from reponse buf
+    return_type response;
+	response.return_val = response_string;
+	response.return_size = sizeof(response_string);
+	close(s);
+	return response;
 }
