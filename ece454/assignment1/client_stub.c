@@ -33,113 +33,163 @@ return_type make_remote_call(	const char *servernameorip,
     int n, s/*socket*/;
 
     host = gethostbyname(servernameorip);
-    if (host == NULL) {
-	perror("gethostbyname");
-	//should throw an error
-	// return 1;
+    if(host == NULL) {
+		perror("gethostbyname");
+	    // showing error for now
+		printf("host is NULL\n");
+		return_type return_error;
+		char* error_msg = "host is null";
+		return_error.return_val = error_msg;
+		return_error.return_size = sizeof(error_msg);
+		return return_error;
     }
 
     /* initialize socket */
-    if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
-	perror("socket");
-	//should throw an error
-	// return 1;
+    if((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
+		perror("socket");
+		//should throw an error
+		printf("socket error\n");
+		return_type return_error;
+		char* error_msg = "socket error";
+		return_error.return_val = error_msg;
+		return_error.return_size = sizeof(error_msg);
+		close(s);
     }
-
     /* initialize server addr */
     memset((char *) &server, 0, sizeof(struct sockaddr_in));
     server.sin_family = AF_INET;
     server.sin_port = htons(serverportnumber);
     server.sin_addr = *((struct in_addr*) host->h_addr);
 
+    ////////////////////////////////////////////////////////////////////
     //construct procedure call
-    char *procedure_call;
-	char *comma = ",";
+    char procedure_call[BUF_SIZE];
+    void * index = procedure_call;
+    printf("%s\n", procedure_name);
+    printf("%d\n", strlen(procedure_name));
     strcpy(procedure_call, procedure_name);
-    strcat(procedure_call, comma);
-    char *num_params;
-    sprintf(num_params, "%d", nparams);
-    strcat(procedure_call,num_params);
-    strcat(procedure_call, comma);
+    index += strlen(procedure_name);
+
+    memcpy((void *)(index), (void *)&nparams, sizeof(int)); // copy in number of params
+    index += sizeof(int);
+
     va_list arguments;
     va_start(arguments, nparams);
+    printf("before for loop\n");
     for (int i = 0; i < nparams; ++i) {
-    	// if (i == 0)
-    	strcat(procedure_call, va_arg(arguments, void *));
-    	if (i < nparams-1) {
-    		strcat(procedure_call, comma);
-    	}
-    }
+    	int arg_size = va_arg(arguments, int); 
+    	printf("i=%d, arg_size=%d\n", i, arg_size);
+    	memcpy((void *)(index), (void *)&arg_size, sizeof(int));
+	    index += sizeof(int);
 
-    /* send message */
-    if (sendto(s, procedure_call, sizeof(procedure_call), 0, (struct sockaddr *) &server, len) == -1) {
-	perror("sendto()");
+	    void * arg = va_arg(arguments, void *); 
+    	printf("i=%d, arg=%s\n", i, (char *)arg);
+	    memcpy((void *)(index), (void *)arg, arg_size);
+	    index += arg_size;
     }
+    printf("after for loop\n");
+    
+    // printf("%d\n", isalpha(buf[0]));
+    printf("procedure name: %s\n", (char *)(procedure_call));
+    printf("number of params: %d\n", *(int *)(procedure_call+strlen(procedure_name)));
+    printf("size of first param: %d\n", *(int *)(procedure_call+strlen(procedure_name)+sizeof(int)));
+    printf("val  of first param: %d\n", *(int *)(procedure_call+strlen(procedure_name)+sizeof(int)+sizeof(int)));
+    printf("size of secon param: %d\n", *(int *)(procedure_call+strlen(procedure_name)+sizeof(int)+sizeof(int)+sizeof(int)));
+    printf("val  of secon param: %d\n", *(int *)(procedure_call+strlen(procedure_name)+sizeof(int)+sizeof(int)+sizeof(int)+sizeof(int)));
+    /* send message */
+    if(sendto(s, procedure_call, sizeof(procedure_call), 0, (struct sockaddr *) &server, len) == -1) {
+		perror("sendto()");
+    }
+    printf("after sendto\n");
 
     /* receive echo.
     ** for single message, "while" is not necessary. But it allows the client 
     ** to stay in listen mode and thus function as a "server" - allowing it to 
     ** receive message sent from any endpoint.
     */
-    bool more_to_come = 1;
-    int num_parts = 0;
-    int num_iterations = 0;
-   
-    char* response_string;
 	
-    while (more_to_come) {
-    	if ((n = recvfrom(s, buf, BUF_SIZE, 0, (struct sockaddr *) &server, &len)) != -1) {
-	    	//received something
-	    	//return from here
-	    	printf(	"Received from %s:%d: ",	
-	    			inet_ntoa(server.sin_addr), 
-					ntohs(server.sin_port)); 
-	    	fflush(stdout);
-			write(1, buf, n);
-			write(1, "\n", 1);
+	if((n = recvfrom(s, buf, BUF_SIZE, 0, (struct sockaddr *) &server, &len)) != -1) {
+		printf("in first if\n");
+    	//received something
+    	//return from here
+    	printf(	"Received from %s:%d: ",	
+    			inet_ntoa(server.sin_addr), 
+				ntohs(server.sin_port)); 
+    	fflush(stdout);
+		write(1, buf, n);
+		write(1, "\n", 1);
 
-	    	if (len>BUF_SIZE) {
-	    		// make recvfrom call again with bigger BU_SIZE ?? (not sure)
-	    		// showing error for now
-	    		printf("response is bigger than BUF_SIZE");
-	    		return_type return_error;
-	    		char* error_msg = "buf too small";
-	    		return_error.return_val = error_msg;
-	    		return_error.return_size = sizeof(error_msg);
-	    		close(s);
-	    		return return_error;
-	    	} else {
-	    		char * comparator = "$";
-	    		int result = strncmp(&buf[1], comparator, 1);
-	    		if(result == 0) {
-	    			num_parts = atoi(&buf[0]);
-				}
-				// take result and add to 
-				strcat(response_string, buf);
-				num_iterations++;
-				if (num_iterations >= num_parts) {
-					more_to_come = 0;
-				}
-	    	}
-	    } else {
-	    	//might have to close the socket before this
-		    //probabaly won't reach this point
-		    close(s);
-		    // showing error for now
-			printf("nothing received");
-			return_type return_error;
-			char* error_msg = "nothing received";
-			return_error.return_val = error_msg;
-			return_error.return_size = sizeof(error_msg);
+    	if (len>BUF_SIZE) {
+    		printf("in second if\n");
+    		// make recvfrom call again with bigger BUF_SIZE ?? (not sure)
+    		// showing error for now
+    		printf("response is bigger than BUF_SIZE\n");
+    		return_type return_error;
+    		char* error_msg = "buf too small";
+    		return_error.return_val = error_msg;
+    		return_error.return_size = sizeof(error_msg);
+    		close(s);
+    		return return_error;
+    	} else {
+    		printf("in second else\n");
+    		return_type response;
+    		memcpy(&(response.return_size), buf, sizeof(int));
+    		memcpy(&(response.return_val), (buf+sizeof(int)), response.return_size);
 			close(s);
-			return return_error;
-	    }
-    }     
-
+			return response;
+    	}
+    } else {
+    	printf("in first else\n");
+    	//might have to close the socket before this
+	    //probabaly won't reach this point
+	    // showing error for now
+		printf("nothing received\n");
+		return_type return_error;
+		char* error_msg = "nothing received";
+		return_error.return_val = error_msg;
+		return_error.return_size = sizeof(error_msg);
+		close(s);
+		return return_error;
+    } 
+    printf("after recvfrom\n");
     //make return_type from reponse buf
-    return_type response;
-	response.return_val = response_string;
-	response.return_size = sizeof(response_string);
-	close(s);
-	return response;
+    
+}
+
+int main() {
+	
+	int a = -10, b = 20, c=30, d=60;
+
+	char *e = "e";
+	char *f = "f";
+	char *g = "g";
+	char *h = "h";
+	char *j = "j";
+
+	// return_type ans = make_remote_call("ecelinux3.uwaterloo.ca",
+	// 								5673,
+	// 								"addtwo", 2,
+	// 								sizeof(int), (void *)(&a),
+	// 								sizeof(int), (void *)(&b));
+
+	// return_type ans = make_remote_call("ecelinux3.uwaterloo.ca",
+	// 								5673,
+	// 								"mult", 4,
+	// 								sizeof(int), (void *)(&a),
+	// 								sizeof(int), (void *)(&b),
+	// 								sizeof(int), (void *)(&c),
+	// 								sizeof(int), (void *)(&d));
+
+	return_type ans = make_remote_call("ecelinux3.uwaterloo.ca",
+									5673,
+									"concatinate", 5,
+									sizeof(e), (void *)(e),
+									sizeof(f), (void *)(f),
+									sizeof(g), (void *)(g),
+									sizeof(h), (void *)(h),
+									sizeof(j), (void *)(j));
+	int i = *(int *)(ans.return_val);
+	printf("client, got result: %d\n", i);
+
+	return 0;
 }
