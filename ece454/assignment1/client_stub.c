@@ -166,11 +166,11 @@ int main() {
 	char *h = "h";
 	char *j = "j";
 
-	// return_type ans = make_remote_call("ecelinux3.uwaterloo.ca",
-	// 								5673,
-	// 								"addtwo", 2,
-	// 								sizeof(int), (void *)(&a),
-	// 								sizeof(int), (void *)(&b));
+	return_type ans = make_remote_call( "ecelinux3.uwaterloo.ca",
+										5673,
+										"addtwo", 2,
+										sizeof(int), (void *)(&a),
+										sizeof(int), (void *)(&b));
 
 	// return_type ans = make_remote_call("ecelinux3.uwaterloo.ca",
 	// 								5673,
@@ -180,14 +180,14 @@ int main() {
 	// 								sizeof(int), (void *)(&c),
 	// 								sizeof(int), (void *)(&d));
 
-	return_type ans = make_remote_call("ecelinux3.uwaterloo.ca",
-									5673,
-									"concatinate", 5,
-									sizeof(e), (void *)(e),
-									sizeof(f), (void *)(f),
-									sizeof(g), (void *)(g),
-									sizeof(h), (void *)(h),
-									sizeof(j), (void *)(j));
+	// return_type ans = make_remote_call("ecelinux3.uwaterloo.ca",
+	// 								5673,
+	// 								"concatinate", 5,
+	// 								sizeof(e), (void *)(e),
+	// 								sizeof(f), (void *)(f),
+	// 								sizeof(g), (void *)(g),
+	// 								sizeof(h), (void *)(h),
+	// 								sizeof(j), (void *)(j));
 	int i = *(int *)(ans.return_val);
 	printf("client, got result: %d\n", i);
 
