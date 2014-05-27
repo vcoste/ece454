@@ -1,3 +1,0 @@
-good UDP tutorial and explination(really good!)   : http://www.cs.rutgers.edu/~pxk/417/notes/sockets/udp.html -read this and the below one together--
-where i got the udpServer and udpClient code from : http://www.xinotes.net/notes/note/1810/                   --------------------------
-stackoverflow question about creating UDP socket  : http://stackoverflow.com/questions/1955198/when-is-ipproto-udp-required
