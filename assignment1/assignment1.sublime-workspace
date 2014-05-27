@@ -1,0 +1,483 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"so",
+				"socket"
+			],
+			[
+				"soc",
+				"sockaddr_in"
+			],
+			[
+				"ma",
+				"main	main()"
+			],
+			[
+				"gets",
+				"GetShape1"
+			],
+			[
+				"for",
+				"for	for (…) {…}"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "ece454rpc_types.h",
+			"settings":
+			{
+				"buffer_size": 2388,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Makefile",
+			"settings":
+			{
+				"buffer_size": 314,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "client_stub.c",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "myclient.c",
+			"settings":
+			{
+				"buffer_size": 1347,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "myserver.c",
+			"settings":
+			{
+				"buffer_size": 1407,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "server_stub.c",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 87.0,
+		"selected_items":
+		[
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"upgrade",
+				"Package Control: Upgrade/Overwrite All Packages"
+			],
+			[
+				"upd",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"update",
+				"Package Control: Upgrade/Overwrite All Packages"
+			],
+			[
+				"package con",
+				"Package Control: Install Package"
+			],
+			[
+				"package",
+				"Package Control: Add Channel"
+			]
+		],
+		"width": 467.0
+	},
+	"console":
+	{
+		"height": 139.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ASS1/resources.txt",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ASS1/client_stub.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ASS1/udpClient.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ASS1/udpServer.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ASS1/.dropbox",
+		"/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/User/SublimeLinter.sublime-settings",
+		"/Users/justinwilliams/Documents/dev/firstJavascript/js/game.js",
+		"/Users/justinwilliams/Documents/dev/firstJavascript/js/box2dutils.js",
+		"/Users/justinwilliams/Documents/dev/firstJavascript/index.html",
+		"/Users/justinwilliams/Downloads/mod_wsgi-3.4/Makefile",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/app/Config/core.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/app/Config/database.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Model/Datasource/Database/Mysql.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/app/index.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/index.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/get-pip.py",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Model/Datasource/Database/Postgres.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Model/Datasource/Database/Sqlite.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Test/Case/Model/Datasource/Session/DatabaseSessionTest.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Test/Case/AllDatabaseTest.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/View/Errors/missing_database.ctp",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Console/Templates/skel/Config/database.php.default",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Model/Datasource/Session/DatabaseSession.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Test/Case/Controller/Component/Acl/DbAclTest.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/app/Config/Schema/db_acl.php",
+		"/Applications/MAMP/bin/php/php5.5.10/conf/php.ini",
+		"/Users/justinwilliams/Dropbox/webSte/index.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/app/Controller/PagesController.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/View/Helper/PaginatorHelper.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Configure/PhpReader.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/TestSuite/templates/phpunit.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Test/test_app/Config/htmlhelper_minimized.ini",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/app/Config/database.php.default",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Console/ConsoleOutput.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/composer.json",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Test/Fixture/CounterCachePostNonstandardPrimaryKeyFixture.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Network/CakeRequest.php"
+	],
+	"find":
+	{
+		"height": 25.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"canvasElem.",
+			".dll",
+			"extension",
+			"extension_dir",
+			"pdo",
+			"extension_dir",
+			"pdo",
+			"mysql",
+			"sqlite",
+			"PDO"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 5,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "ece454rpc_types.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2388,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								710,
+								710
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "Makefile",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 314,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								194,
+								205
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Makefile/Makefile.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "client_stub.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "myclient.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1347,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								714,
+								714
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 306.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "myserver.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1407,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1177,
+								1177
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "server_stub.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 25.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "assignment1.sublime-project",
+	"replace":
+	{
+		"height": 46.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"inde",
+				"~/Documents/dev/firstJavascript/index.html"
+			],
+			[
+				"database",
+				"lib/Cake/Model/Datasource/Database/Mysql.php"
+			],
+			[
+				"core.",
+				"app/Config/core.php"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 167.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
