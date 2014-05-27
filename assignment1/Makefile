@@ -1,5 +1,7 @@
 objects := $(patsubst %.c,%.o,$(wildcard *.c))
 
+all: server client
+
 server: libstubs.a serverapp.o
 	gcc serverapp.o -L. -lstubs -o server.out
 
