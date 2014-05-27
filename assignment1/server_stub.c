@@ -115,7 +115,7 @@ bool parseBuffer(const void *buffer, arg_type **args, fp_type *fp, int *n_params
 			printf("procedure does not exist: %s\n", func_name);
 			return false;
 		}
-
+		printf("Parsing arguments for: %s\n", func_name);
 		*n_params = *(int*)ptrIdx;
 		ptrIdx += sizeof(int);
 
@@ -181,12 +181,15 @@ void launch_server() {
     	arg_type *args;
     	fp_type fn_pointer;
     	return_type *result = malloc(sizeof(result));
-    	void *ret_buf[BUF_SIZE];
+    	char ret_buf[BUF_SIZE];
 
     	if (parseBuffer(buf, &args, &fn_pointer, &n_params)) {
+    		printf("Buffer parsed\n");
+    		
     		*result = fn_pointer(n_params, args);
-    		memcpy(ret_buf, result->return_size, sizeof(int));
-    		memcpy(ret_buf + sizeof(int), result->return_val, result->return_size);
+    		memcpy(ret_buf, &result->return_size, sizeof(int));
+    		memcpy((ret_buf + sizeof(int)), result->return_val, result->return_size);
+
     		printf("ret_buf.size: %d\n", result->return_size);
     		printf("ret_buf.val: %d\n", *(int *)(result->return_val));
     		sendto(s, ret_buf, sizeof(ret_buf), 0, (struct sockaddr *) &client, len);

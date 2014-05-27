@@ -123,11 +123,11 @@ return_type make_remote_call(	const char *servernameorip,
 
     	if (len>BUF_SIZE) {
     		printf("in second if\n");
-    		// make recvfrom call again with bigger BUF_SIZE ?? (not sure)
     		// showing error for now
     		printf("response is bigger than BUF_SIZE\n");
     		return_type return_error;
     		char* error_msg = "buf too small";
+
     		return_error.return_val = error_msg;
     		return_error.return_size = sizeof(error_msg);
     		close(s);
@@ -135,11 +135,13 @@ return_type make_remote_call(	const char *servernameorip,
     	} else {
             return_type *response = malloc(sizeof(*response));;
             memcpy(&(response->return_size), buf, sizeof(int));
-            printf("response.size: %d\n", response->return_size);
 
             response->return_val = malloc(response->return_size);
             memcpy(response->return_val, (buf + sizeof(int)), response->return_size);
-            printf("response.val: %d\n", *(int *)(response->return_val));
+
+            printf("In received buffer: size of val: %d, value: %d\n", *((int *)buf), *((int *)(buf+4)));
+
+            printf("Parsed into response: size of val: %d, value: %d\n", response->return_size, *((int *)response->return_val));
             
             // TODO: handle errors better
             close(s);
