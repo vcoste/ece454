@@ -30,9 +30,9 @@ bool register_procedure(const char *procedure_name, const int nparams, fp_type f
 	func_node *itr;
 	func_node *newFunc;
 
-	// TODO: compare by procedure names here
 	for (itr = functions; itr; itr = itr->next) {
-		if (fnpointer == itr->fnpointer) {
+		if (strcmp(itr->procedure_name, procedure_name) == 0) {
+			printf("Procedure %s already exists as: %s\n", procedure_name, itr->procedure_name);
 			found = true;
 			break;
 		}
@@ -45,6 +45,7 @@ bool register_procedure(const char *procedure_name, const int nparams, fp_type f
 		newFunc->fnpointer = fnpointer;
 		newFunc->next = functions;
 		functions = newFunc;
+		printf("Added procedure: %s\n", procedure_name);
 		return true;	
 	} else {
 		return false;
@@ -174,7 +175,6 @@ void launch_server() {
     	perror("Unable to bind to socket");
     }
 
-    // printf("Connected to port: %d\n", ntohs(server.sin_port));
     printf(	"Server started at %s:%d\n",	
     			inet_ntoa(server.sin_addr), 
 				ntohs(server.sin_port)); 
@@ -196,6 +196,9 @@ void launch_server() {
     		memcpy((ret_buf + sizeof(int)), result->return_val, result->return_size);
 
     		sendto(s, ret_buf, sizeof(ret_buf), 0, (struct sockaddr *) &client, len);
+
+    		free(args);
+    		args = 0;
     	} else {
     		perror("not parsed\n");
     		char *error_msg = "Error, function not found";

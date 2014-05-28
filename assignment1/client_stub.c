@@ -66,20 +66,16 @@ return_type make_remote_call(	const char *servernameorip,
     char procedure_call[BUF_SIZE];
     void * index = procedure_call;
 
-    printf("%s\n", procedure_name);
-    printf("%lu\n", strlen(procedure_name));
-
     strcpy(index, procedure_name);
     index += strlen(procedure_name)+1;
-
-    printf("procedure_name length: %lu\nprocedure_call length: %lu\n", strlen(procedure_name), strlen(procedure_call));    
 
     memcpy((void *)(index), (void *)&nparams, sizeof(int)); // copy in number of params
     index += sizeof(int);
 
     va_list arguments;
     va_start(arguments, nparams);
-    for (int i = 0; i < nparams; ++i) {
+    int i;
+    for (i = 0; i < nparams; ++i) {
     	int arg_size = va_arg(arguments, int); 
     	memcpy((void *)(index), (void *)&arg_size, sizeof(int));
 	    index += sizeof(int);

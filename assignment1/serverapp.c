@@ -8,6 +8,7 @@ return_type r;
 
 return_type add(const int nparams, arg_type* a)
 {
+	printf("In RPC add\n");
 	if(nparams != 2) {
 		/* Error! */
 		r.return_val = NULL;
@@ -23,7 +24,9 @@ return_type add(const int nparams, arg_type* a)
 	}
 
 	int i = *(int *)(a->arg_val);
+	printf("p1 %d\n", i);
 	int j = *(int *)(a->next->arg_val);
+	printf("p2 %d\n", j);
 
 	ret_int = i+j;
 	r.return_val = (void *)(&ret_int);
@@ -56,7 +59,9 @@ return_type concat(const int nparams, arg_type* a) {
 }
 
 int main() {
-	// register_procedure("addtwo", 2, add);
+	printf("Registering addtwo\n");
+	register_procedure("addtwo", 2, add);
+	printf("Registering concattwo\n");
 	register_procedure("concattwo", 2, concat);
 
 	launch_server();
