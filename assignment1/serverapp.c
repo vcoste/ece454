@@ -61,6 +61,8 @@ return_type concat(const int nparams, arg_type* a) {
 int main() {
 	printf("Registering addtwo\n");
 	register_procedure("addtwo", 2, add);
+	printf("Registering addtwo\n");
+	register_procedure("addtwo", 3, add);
 	printf("Registering concattwo\n");
 	register_procedure("concattwo", 2, concat);
 

@@ -18,19 +18,27 @@
 //  * client code uses to invoke. The arguments should be self-explanatory.
 //  *
 //  * For each of the nparams parameters, we have two arguments: size of the
-//  * argument, and a (void *) to the argument. 
+//  * argument, and a (void *) to the argument.
+
+/**
+ * [make_remote_call description]
+ * @param  servernameorip
+ * @param  serverportnumber
+ * @param  procedure_name
+ * @param  nparams
+ * @return
+ */
 return_type make_remote_call(	const char *servernameorip,
 	                            const int serverportnumber,
 	                            const char *procedure_name,
 	                            const int nparams,
 			    				...) {
 	// setup UDP connection here
-
 	struct sockaddr_in server;
     socklen_t len = sizeof(struct sockaddr_in);
     char buf[BUF_SIZE];
     struct hostent *host;
-    int n, s/*socket*/;
+    int n, s;
 
     host = gethostbyname(servernameorip);
     if(host == NULL) {
@@ -44,7 +52,7 @@ return_type make_remote_call(	const char *servernameorip,
 		return return_error;
     }
 
-    /* initialize socket */
+    // initialize socket
     if((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
 		perror("socket");
 		//should throw an error
@@ -55,23 +63,26 @@ return_type make_remote_call(	const char *servernameorip,
 		return_error.return_size = sizeof(error_msg);
 		close(s);
     }
-    /* initialize server addr */
+
+    //initialize server addr
     memset((char *) &server, 0, sizeof(struct sockaddr_in));
     server.sin_family = AF_INET;
     server.sin_port = htons(serverportnumber);
     server.sin_addr = *((struct in_addr*) host->h_addr);
 
-    ////////////////////////////////////////////////////////////////////
-    //construct procedure call
+    // construct procedure call buffer
     char procedure_call[BUF_SIZE];
     void * index = procedure_call;
 
+    // copy in name of the procedure
     strcpy(index, procedure_name);
     index += strlen(procedure_name)+1;
 
-    memcpy((void *)(index), (void *)&nparams, sizeof(int)); // copy in number of params
+    // copy in number of params
+    memcpy((void *)(index), (void *)&nparams, sizeof(int));
     index += sizeof(int);
 
+    // populating list of arguments in the procedure call
     va_list arguments;
     va_start(arguments, nparams);
     int i;
@@ -85,27 +96,21 @@ return_type make_remote_call(	const char *servernameorip,
 	    index += arg_size;
     }
     
-    /* send message */
+    // send message
     if(sendto(s, procedure_call, sizeof(procedure_call), 0, (struct sockaddr *) &server, len) == -1) {
 		perror("sendto()");
     }
 
-    /* receive echo.
-    ** for single message, "while" is not necessary. But it allows the client 
-    ** to stay in listen mode and thus function as a "server" - allowing it to 
-    ** receive message sent from any endpoint.
-    */
-	
+    // receive response.
 	if((n = recvfrom(s, buf, BUF_SIZE, 0, (struct sockaddr *) &server, &len)) != -1) {
     	//received something
-    	//return from here
-    	printf(	"Received from %s:%d\n",	
+    	printf( "Received from %s:%d\n",	
     			inet_ntoa(server.sin_addr), 
 				ntohs(server.sin_port)); 
     	fflush(stdout);
 
     	if (len>BUF_SIZE) {
-    		// showing error for now
+    		// showing error for now if BUF_SIZE is too small
     		printf("response is bigger than BUF_SIZE\n");
     		return_type return_error;
     		char* error_msg = "buf too small";
@@ -115,6 +120,7 @@ return_type make_remote_call(	const char *servernameorip,
     		close(s);
     		return return_error;
     	} else {
+            // parsing response and creating return_type response object
             return_type *response = malloc(sizeof(*response));;
             memcpy(&(response->return_size), buf, sizeof(int));
 
@@ -125,10 +131,7 @@ return_type make_remote_call(	const char *servernameorip,
 			return *response;
     	}
     } else {
-    	printf("in first else\n");
-    	//might have to close the socket before this
-	    //probabaly won't reach this point
-	    // showing error for now
+	    // nothing received - showing error for now
 		printf("nothing received\n");
 		return_type return_error;
 		char* error_msg = "nothing received";
@@ -136,8 +139,5 @@ return_type make_remote_call(	const char *servernameorip,
 		return_error.return_size = sizeof(error_msg);
 		close(s);
 		return return_error;
-    } 
-    printf("after recvfrom\n");
-    //make return_type from reponse buf
-    
+    }    
 }

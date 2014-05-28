@@ -165,19 +165,21 @@ void launch_server() {
 	server.sin_port = 0;
 	server.sin_addr.s_addr = htonl(INADDR_ANY);
 
-	/* initialize socket */
+	// initialize socket
     if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
     	perror("socket");
     	return;
     }
+
     // bind socket
     if (mybind(s, &server) < 0) {
     	perror("Unable to bind to socket");
     }
 
-    printf(	"Server started at %s:%d\n",	
-    			inet_ntoa(server.sin_addr), 
-				ntohs(server.sin_port)); 
+    // printing IPaddress and port number
+    printf(	"%s %d\n",	
+    		inet_ntoa(server.sin_addr), 
+			ntohs(server.sin_port)); 
 	fflush(stdout);
 
     while ((n = recvfrom(s, buf, BUF_SIZE, 0, (struct sockaddr *) &client, &len)) != -1) {
@@ -206,12 +208,4 @@ void launch_server() {
     		sendto(s, ret_buf, strlen((char*)ret_buf), 0, (struct sockaddr *) &client, len);
     	}
     }
-
-	//ouput server and port
-	// printf("ecelinux3.uwaterloo.ca 5764"); //this is just an example
-
-	//start server and wait for procedure calls
-	//when client request arrives, invoke it locally and return response to client
-
-	//should not return
 }
