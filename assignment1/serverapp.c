@@ -38,7 +38,7 @@ return_type add(const int nparams, arg_type* a)
 return_type addThree(const int nparams, arg_type* a)
 {
 	printf("In RPC add\n");
-	if(nparams != 3) {
+	if(nparams != 5) {
 		/* Error! */
 		r.return_val = NULL;
 		r.return_size = 0;
@@ -58,8 +58,12 @@ return_type addThree(const int nparams, arg_type* a)
 	printf("p2 %d\n", j);
 	int k = *(int *)(a->next->next->arg_val);
 	printf("p3 %d\n", k);
+	int l = *(int *)(a->next->next->next->arg_val);
+	printf("p3 %d\n", l);
+	int m = *(int *)(a->next->next->next->next->arg_val);
+	printf("p3 %d\n", m);
 
-	ret_int = i+j+k;
+	ret_int = i+j+k+l+m;
 	r.return_val = (void *)(&ret_int);
 	r.return_size = sizeof(int);
 

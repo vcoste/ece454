@@ -11,6 +11,8 @@ int main(int argc, char **argv)
 	int arg1Int = 4;
 	int arg2Int = 8;
 	int arg3Int = 5;
+	int arg4Int = 5;
+	int arg5Int = 5;
 
 
 	if (argc == 3){
@@ -34,10 +36,12 @@ int main(int argc, char **argv)
 
 		return_type ans3 = make_remote_call(	argv[1],
 												atoi(argv[2]),
-												"addthree", 3,
+												"addthree", 5,
 												sizeof(arg1Int), (void *)(&arg1Int),
 												sizeof(arg2Int), (void *)(&arg2Int),
-												sizeof(arg3Int), (void *)(&arg3Int));
+												sizeof(arg3Int), (void *)(&arg3Int),
+												sizeof(arg4Int), (void *)(&arg4Int),
+												sizeof(arg5Int), (void *)(&arg5Int));
 		int result3 = *(int*)ans3.return_val;
 		printf("Add, client got result: %d\n", result3);
 	} else {
