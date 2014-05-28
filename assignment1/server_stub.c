@@ -116,10 +116,11 @@ bool parseBuffer(const void *buffer, arg_type **args, fp_type *fp, int *n_params
 		printf("Parsing arguments for: %s\n", func_name);
 		*n_params = *(int*)ptrIdx;
 		ptrIdx += sizeof(int);
-
+		
+		arg_type *temp;
 		for (i = 0; i < *n_params; ++i) {
-			arg_type *temp = malloc(sizeof(*temp));
-
+			printf("in for loop %d\n", i);
+			temp = malloc(sizeof(*temp));
 			temp->arg_size = *(int *)ptrIdx;
 			ptrIdx += sizeof(int);
 
@@ -127,12 +128,13 @@ bool parseBuffer(const void *buffer, arg_type **args, fp_type *fp, int *n_params
 			memcpy(temp->arg_val, ptrIdx, temp->arg_size);
 			ptrIdx += temp->arg_size;
 
-			// append to head, create if list is empty
+			// append to list, create if list is empty
 			if (*args) {
 				((arg_type *)*args)->next = temp;
 			} else {
 				*args = temp;
 			}
+			temp = temp->next;
 		}
 
 		return true;

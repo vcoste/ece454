@@ -12,6 +12,7 @@ int main(int argc, char **argv)
 	int arg2Int = 8;
 	int arg3Int = 5;
 
+
 	if (argc == 3){
 
 		printf("Sending arg1: %s, arg2: %s\n", arg1Str, arg2Str);
@@ -33,7 +34,7 @@ int main(int argc, char **argv)
 
 		return_type ans3 = make_remote_call(	argv[1],
 												atoi(argv[2]),
-												"addtwo", 3,
+												"addthree", 3,
 												sizeof(arg1Int), (void *)(&arg1Int),
 												sizeof(arg2Int), (void *)(&arg2Int),
 												sizeof(arg3Int), (void *)(&arg3Int));

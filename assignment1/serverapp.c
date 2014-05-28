@@ -35,6 +35,37 @@ return_type add(const int nparams, arg_type* a)
 	return r;
 }
 
+return_type addThree(const int nparams, arg_type* a)
+{
+	printf("In RPC add\n");
+	if(nparams != 3) {
+		/* Error! */
+		r.return_val = NULL;
+		r.return_size = 0;
+		return r;
+	}
+
+	if(a->arg_size != sizeof(int) || a->next->arg_size != sizeof(int) || a->next->next->arg_size != sizeof(int)) {
+		/* Error! */
+		r.return_val = NULL;
+		r.return_size = 0;
+		return r;
+	}
+
+	int i = *(int *)(a->arg_val);
+	printf("p1 %d\n", i);
+	int j = *(int *)(a->next->arg_val);
+	printf("p2 %d\n", j);
+	int k = *(int *)(a->next->next->arg_val);
+	printf("p3 %d\n", k);
+
+	ret_int = i+j+k;
+	r.return_val = (void *)(&ret_int);
+	r.return_size = sizeof(int);
+
+	return r;
+}
+
 return_type concat(const int nparams, arg_type* a) {
 	if (nparams != 2) {
 		r.return_val = NULL;
@@ -61,8 +92,8 @@ return_type concat(const int nparams, arg_type* a) {
 int main() {
 	printf("Registering addtwo\n");
 	register_procedure("addtwo", 2, add);
-	printf("Registering addtwo\n");
-	register_procedure("addtwo", 3, add);
+	printf("Registering addThree\n");
+	register_procedure("addthree", 3, addThree);
 	printf("Registering concattwo\n");
 	register_procedure("concattwo", 2, concat);
 
