@@ -3,14 +3,16 @@
 
 int main()
 {
-	int a = -10, b = 20;
+	char *arg1Str = "ab";
+	char *arg2Str = "cd";
+
 	return_type ans = make_remote_call( "localhost",
 										10000,
-										"addtwo", 2,
-										sizeof(int), (void *)(&a),
-										sizeof(int), (void *)(&b));
-	int i = *(int *)(ans.return_val);
-	printf("client, got result: %d\n", i);
+										"concattwo", 2,
+										sizeof(arg1Str), (void *)(arg1Str),
+										sizeof(arg2Str), (void *)(arg2Str));
+	char *result = (char *)ans.return_val;
+	printf("client, got result: %s\n", result);
 
 	return 0;
 }

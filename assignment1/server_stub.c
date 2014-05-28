@@ -93,8 +93,6 @@ bool procedureExists(char *fn_name, fp_type *fp) {
 	func_node *itr;
 
 	for (itr = functions; itr; itr = itr->next) {
-		// printf("name: %s, lenght:%lu\n", fn_name, strlen(fn_name));
-		// printf("name: %s, lenght:%lu\n", itr->procedure_name, strlen(itr->procedure_name));
 		if (strcmp(itr->procedure_name, fn_name) == 0) {
 			*fp = itr->fnpointer;
 			return true;
@@ -110,7 +108,6 @@ bool parseBuffer(const void *buffer, arg_type **args, fp_type *fp, int *n_params
 	if (isalpha(*(char *)ptrIdx)) {
 		strcpy(func_name, buffer); // get function name
 		ptrIdx += strlen(func_name)+1;
-		// printf("func_name: %s\n", func_name);
 		if (!procedureExists(func_name, fp)) {
 			printf("procedure does not exist: %s\n", func_name);
 			return false;
@@ -129,8 +126,12 @@ bool parseBuffer(const void *buffer, arg_type **args, fp_type *fp, int *n_params
 			memcpy(temp->arg_val, ptrIdx, temp->arg_size);
 			ptrIdx += temp->arg_size;
 
-			temp->next = *args;
-			*args = temp;
+			// append to head, create if list is empty
+			if (*args) {
+				((arg_type *)*args)->next = temp;
+			} else {
+				*args = temp;
+			}
 		}
 
 		return true;
@@ -173,7 +174,11 @@ void launch_server() {
     	perror("Unable to bind to socket");
     }
 
-    printf("Connected to port: %d\n", ntohs(server.sin_port));
+    // printf("Connected to port: %d\n", ntohs(server.sin_port));
+    printf(	"Server started at %s:%d\n",	
+    			inet_ntoa(server.sin_addr), 
+				ntohs(server.sin_port)); 
+	fflush(stdout);
 
     while ((n = recvfrom(s, buf, BUF_SIZE, 0, (struct sockaddr *) &client, &len)) != -1) {
     	printf("received a request\n");
@@ -190,12 +195,10 @@ void launch_server() {
     		memcpy(ret_buf, &result->return_size, sizeof(int));
     		memcpy((ret_buf + sizeof(int)), result->return_val, result->return_size);
 
-    		printf("ret_buf.size: %d\n", result->return_size);
-    		printf("ret_buf.val: %d\n", *(int *)(result->return_val));
     		sendto(s, ret_buf, sizeof(ret_buf), 0, (struct sockaddr *) &client, len);
     	} else {
-    		printf("not parsed\n");
-    		char * error_msg = "Error, function not found";
+    		perror("not parsed\n");
+    		char *error_msg = "Error, function not found";
     		memcpy(ret_buf, error_msg, strlen(error_msg));
     		sendto(s, ret_buf, strlen((char*)ret_buf), 0, (struct sockaddr *) &client, len);
     	}

@@ -79,32 +79,20 @@ return_type make_remote_call(	const char *servernameorip,
 
     va_list arguments;
     va_start(arguments, nparams);
-    printf("before for loop\n");
     for (int i = 0; i < nparams; ++i) {
     	int arg_size = va_arg(arguments, int); 
-    	printf("i=%d, arg_size=%d\n", i, arg_size);
     	memcpy((void *)(index), (void *)&arg_size, sizeof(int));
 	    index += sizeof(int);
 
 	    void * arg = va_arg(arguments, void *); 
-    	printf("i=%d, arg=%d\n", i, *(int *)arg);
 	    memcpy((void *)(index), (void *)arg, arg_size);
 	    index += arg_size;
     }
-    printf("after for loop\n");
     
-    // printf("%d\n", isalpha(buf[0]));
-    printf("procedure name: %s\n", (char *)(procedure_call));
-    printf("number of params: %d\n", *(int *)(procedure_call+strlen(procedure_name)));
-    printf("size of first param: %d\n", *(int *)(procedure_call+strlen(procedure_name)+sizeof(int)));
-    printf("val  of first param: %d\n", *(int *)(procedure_call+strlen(procedure_name)+sizeof(int)+sizeof(int)));
-    printf("size of secon param: %d\n", *(int *)(procedure_call+strlen(procedure_name)+sizeof(int)+sizeof(int)+sizeof(int)));
-    printf("val  of secon param: %d\n", *(int *)(procedure_call+strlen(procedure_name)+sizeof(int)+sizeof(int)+sizeof(int)+sizeof(int)));
     /* send message */
     if(sendto(s, procedure_call, sizeof(procedure_call), 0, (struct sockaddr *) &server, len) == -1) {
 		perror("sendto()");
     }
-    printf("after sendto\n");
 
     /* receive echo.
     ** for single message, "while" is not necessary. But it allows the client 
@@ -113,7 +101,6 @@ return_type make_remote_call(	const char *servernameorip,
     */
 	
 	if((n = recvfrom(s, buf, BUF_SIZE, 0, (struct sockaddr *) &server, &len)) != -1) {
-		printf("in first if\n");
     	//received something
     	//return from here
     	printf(	"Received from %s:%d\n",	
@@ -122,7 +109,6 @@ return_type make_remote_call(	const char *servernameorip,
     	fflush(stdout);
 
     	if (len>BUF_SIZE) {
-    		printf("in second if\n");
     		// showing error for now
     		printf("response is bigger than BUF_SIZE\n");
     		return_type return_error;
@@ -139,11 +125,6 @@ return_type make_remote_call(	const char *servernameorip,
             response->return_val = malloc(response->return_size);
             memcpy(response->return_val, (buf + sizeof(int)), response->return_size);
 
-            printf("In received buffer: size of val: %d, value: %d\n", *((int *)buf), *((int *)(buf+4)));
-
-            printf("Parsed into response: size of val: %d, value: %d\n", response->return_size, *((int *)response->return_val));
-            
-            // TODO: handle errors better
             close(s);
 			return *response;
     	}
