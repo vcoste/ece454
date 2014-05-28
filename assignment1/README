@@ -1,0 +1,15 @@
+ECE 454 Assignment 1
+Authors:
+	Justin Williams ID# 20365214
+	Vincent Coste   ID# 20365463
+
+Instructions:
+	Makefile complies any .c files in the current directory. The makefile expects serverapp.c and clientapp.c which it will link the archived libsutubs file to. Generates server.out and client.out.
+	Useage: launch the server and it will return the current IP address (will be localhost) and the port number obtained
+		To run the client: ./client.out <address> <port> 
+		where the address and port numbers are output by the server example:
+		Server:	./server.out 
+				Server started at: 0.0.0.0:10000
+				<will add procedures given>s
+		Client:	./client.out localhost 10000
+				<will run whatever client scripts given>

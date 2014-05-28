@@ -90,6 +90,13 @@ int mybind(int sockfd, struct sockaddr_in *addr) {
     return 0;
 }
 
+/**
+ * Checks the linked list of functions to see if the procedure already has been added. Procedures can 
+ * reference the same function as long as they have different names
+ * @param  fn_name name of the procedure
+ * @param  fp      pointer to the desired function
+ * @return         true if function has been added to list, false if not
+ */
 bool procedureExists(char *fn_name, fp_type *fp) {
 	func_node *itr;
 
@@ -102,6 +109,18 @@ bool procedureExists(char *fn_name, fp_type *fp) {
 	return false;
 }
 
+/**
+ * Parses the buffer received from the client after a recvfrom has returned. The buffer expects the following format:
+ * String[varible number of bits, null-terminated]Number of params[Sizeof(int)], size of parameter[sizeof(int)], 
+ * first parameter data[size is given at the previous point in the buffer]
+ * @param  buffer   buffer received from recvfrom
+ * @param  args     a pointer to an args struct pointer, this will be overwritten and populated with the values in
+ *                  the buffer
+ * @param  fp       pointer to a function pointer, desired function is found in the pointer list and this value is
+ *                  updated to point to the correct function
+ * @param  n_params number of parameters sent by the client, this value is overwritten
+ * @return          returns true if parsed correctly
+ */
 bool parseBuffer(const void *buffer, arg_type **args, fp_type *fp, int *n_params) {
 	char func_name[100];
 	int i;
@@ -180,7 +199,7 @@ void launch_server() {
     }
 
     // printing IPaddress and port number
-    printf(	"%s %d\n",	
+    printf(	"Server started at: %s:%d\n",	
     		inet_ntoa(server.sin_addr), 
 			ntohs(server.sin_port)); 
 	fflush(stdout);
