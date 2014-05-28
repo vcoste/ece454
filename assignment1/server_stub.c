@@ -117,7 +117,7 @@ bool parseBuffer(const void *buffer, arg_type **args, fp_type *fp, int *n_params
 		*n_params = *(int*)ptrIdx;
 		ptrIdx += sizeof(int);
 		
-		arg_type *temp;
+		arg_type *temp, *tail;
 		for (i = 0; i < *n_params; ++i) {
 			printf("in for loop %d\n", i);
 			temp = malloc(sizeof(*temp));
@@ -130,11 +130,12 @@ bool parseBuffer(const void *buffer, arg_type **args, fp_type *fp, int *n_params
 
 			// append to list, create if list is empty
 			if (*args) {
-				((arg_type *)*args)->next = temp;
+				tail->next = temp;
+				tail = tail->next;
 			} else {
 				*args = temp;
+				tail = temp;
 			}
-			temp = temp->next;
 		}
 
 		return true;
@@ -189,12 +190,12 @@ void launch_server() {
     	int n_params;
     	arg_type *args;
     	fp_type fn_pointer;
-    	return_type *result = malloc(sizeof(result));
+    	return_type *result = (return_type *)malloc(sizeof(result));
     	char ret_buf[BUF_SIZE];
 
     	if (parseBuffer(buf, &args, &fn_pointer, &n_params)) {
     		printf("Buffer parsed\n");
-    		
+
     		*result = fn_pointer(n_params, args);
     		memcpy(ret_buf, &result->return_size, sizeof(int));
     		memcpy((ret_buf + sizeof(int)), result->return_val, result->return_size);
