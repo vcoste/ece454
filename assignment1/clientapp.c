@@ -5,7 +5,7 @@ int main()
 {
 	int a = -10, b = 20;
 	return_type ans = make_remote_call( "localhost",
-										10001,
+										10000,
 										"addtwo", 2,
 										sizeof(int), (void *)(&a),
 										sizeof(int), (void *)(&b));
