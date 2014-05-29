@@ -21,12 +21,13 @@
 //  * argument, and a (void *) to the argument.
 
 /**
- * [make_remote_call description]
- * @param  servernameorip
- * @param  serverportnumber
- * @param  procedure_name
- * @param  nparams
- * @return
+ * This is used by the client application program to invoke a remote method. 
+ * @param  char *   servernameorip
+ * @param  int      serverportnumber
+ * @param  char *   procedure_name
+ * @param  int      nparams          number of parameters sent to the remote method
+ * @param  ...      
+ * @return return_type
  */
 return_type make_remote_call(	const char *servernameorip,
 	                            const int serverportnumber,

@@ -199,7 +199,7 @@ void launch_server() {
     }
 
     // printing IPaddress and port number
-    printf(	"Server started at: %s:%d\n",	
+    printf(	"%s %d\n",	
     		inet_ntoa(server.sin_addr), 
 			ntohs(server.sin_port)); 
 	fflush(stdout);
