@@ -8,26 +8,20 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <stdarg.h>
-
 #include "ece454rpc_types.h"
 
 #define BUF_SIZE 1024
 
-//  The following needs to be implemented in the client stub. This is a
-//  * procedure with a variable number of arguments that the app programmer's
-//  * client code uses to invoke. The arguments should be self-explanatory.
-//  *
-//  * For each of the nparams parameters, we have two arguments: size of the
-//  * argument, and a (void *) to the argument.
-
 /**
  * This is used by the client application program to invoke a remote method. 
- * @param  char *   servernameorip
- * @param  int      serverportnumber
- * @param  char *   procedure_name
- * @param  int      nparams          number of parameters sent to the remote method
- * @param  ...      
- * @return return_type
+ * @param  char *   name or IP address of the server to connect to
+ * @param  int      port number to connect to on the server
+ * @param  char *   name of the procedure to call
+ * @param  int      number of parameters sent to the remote method
+ * @param  ...      For each of the nparams parameters, we have two arguments:
+ *                  <size of the argument,(void *) to the argument>
+ * @return          the return value of the remote procedure call with the 
+ *                  correct type
  */
 return_type make_remote_call(	const char *servernameorip,
 	                            const int serverportnumber,
@@ -43,8 +37,8 @@ return_type make_remote_call(	const char *servernameorip,
 
     host = gethostbyname(servernameorip);
     if(host == NULL) {
+        // Hostname not found
 		perror("gethostbyname");
-	    // showing error for now
 		printf("host is NULL\n");
 		return_type return_error;
 		char* error_msg = "host is null";
@@ -55,8 +49,8 @@ return_type make_remote_call(	const char *servernameorip,
 
     // initialize socket
     if((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
-		perror("socket");
-		//should throw an error
+		// Error with socket
+        perror("socket");
 		printf("socket error\n");
 		return_type return_error;
 		char* error_msg = "socket error";
@@ -71,23 +65,23 @@ return_type make_remote_call(	const char *servernameorip,
     server.sin_port = htons(serverportnumber);
     server.sin_addr = *((struct in_addr*) host->h_addr);
 
-    // construct procedure call buffer
+    // construct procedure_call buffer
     char procedure_call[BUF_SIZE];
     void * index = procedure_call;
 
-    // copy in name of the procedure
+    // copy name of the procedure into procedure_call
     strcpy(index, procedure_name);
     index += strlen(procedure_name)+1;
 
-    // copy in number of params
+    // copy number of params into procedure_call
     memcpy((void *)(index), (void *)&nparams, sizeof(int));
     index += sizeof(int);
 
-    // populating list of arguments in the procedure call
+    // populating list of arguments into procedure_call
     va_list arguments;
     va_start(arguments, nparams);
     int i;
-    for (i = 0; i < nparams; ++i) {
+    for(i = 0; i < nparams; ++i) {
     	int arg_size = va_arg(arguments, int); 
     	memcpy((void *)(index), (void *)&arg_size, sizeof(int));
 	    index += sizeof(int);
@@ -98,20 +92,30 @@ return_type make_remote_call(	const char *servernameorip,
     }
     
     // send message
-    if(sendto(s, procedure_call, sizeof(procedure_call), 0, (struct sockaddr *) &server, len) == -1) {
+    if(sendto(  s,
+                procedure_call,
+                sizeof(procedure_call),
+                0,
+                (struct sockaddr *) &server,
+                len) == -1) {
 		perror("sendto()");
     }
 
     // receive response.
-	if((n = recvfrom(s, buf, BUF_SIZE, 0, (struct sockaddr *) &server, &len)) != -1) {
-    	//received something
+	if((n = recvfrom(  s,
+                       buf,
+                       BUF_SIZE,
+                       0,
+                       (struct sockaddr *) &server,
+                       &len)) != -1) {
+    	// received something
     	printf( "Received from %s:%d\n",	
     			inet_ntoa(server.sin_addr), 
 				ntohs(server.sin_port)); 
     	fflush(stdout);
 
-    	if (len>BUF_SIZE) {
-    		// showing error for now if BUF_SIZE is too small
+    	if(len>BUF_SIZE) {
+    		// Error, BUF_SIZE is too small
     		printf("response is bigger than BUF_SIZE\n");
     		return_type return_error;
     		char* error_msg = "buf too small";
@@ -126,13 +130,15 @@ return_type make_remote_call(	const char *servernameorip,
             memcpy(&(response->return_size), buf, sizeof(int));
 
             response->return_val = malloc(response->return_size);
-            memcpy(response->return_val, (buf + sizeof(int)), response->return_size);
+            memcpy( response->return_val, 
+                    (buf + sizeof(int)), 
+                    response->return_size);
 
             close(s);
 			return *response;
     	}
     } else {
-	    // nothing received - showing error for now
+	    // nothing received from server
 		printf("nothing received\n");
 		return_type return_error;
 		char* error_msg = "nothing received";
