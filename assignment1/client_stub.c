@@ -39,7 +39,6 @@ return_type make_remote_call(	const char *servernameorip,
     if(host == NULL) {
         // Hostname not found
 		perror("gethostbyname");
-		printf("host is NULL\n");
 		return_type return_error;
 		char* error_msg = "host is null";
 		return_error.return_val = error_msg;
@@ -51,7 +50,6 @@ return_type make_remote_call(	const char *servernameorip,
     if((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
 		// Error with socket
         perror("socket");
-		printf("socket error\n");
 		return_type return_error;
 		char* error_msg = "socket error";
 		return_error.return_val = error_msg;
@@ -109,14 +107,10 @@ return_type make_remote_call(	const char *servernameorip,
                        (struct sockaddr *) &server,
                        &len)) != -1) {
     	// received something
-    	printf( "Received from %s:%d\n",	
-    			inet_ntoa(server.sin_addr), 
-				ntohs(server.sin_port)); 
     	fflush(stdout);
 
     	if(len>BUF_SIZE) {
     		// Error, BUF_SIZE is too small
-    		printf("response is bigger than BUF_SIZE\n");
     		return_type return_error;
     		char* error_msg = "buf too small";
 
@@ -139,7 +133,6 @@ return_type make_remote_call(	const char *servernameorip,
     	}
     } else {
 	    // nothing received from server
-		printf("nothing received\n");
 		return_type return_error;
 		char* error_msg = "nothing received";
 		return_error.return_val = error_msg;

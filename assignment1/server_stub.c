@@ -37,9 +37,6 @@ bool register_procedure(const char *procedure_name,
 
 	for(itr = functions; itr; itr = itr->next) {
 		if (strcmp(itr->procedure_name, procedure_name) == 0) {
-			printf(	"Procedure %s already exists as: %s\n", 
-					procedure_name, 
-					itr->procedure_name);
 			found = true;
 			break;
 		}
@@ -52,7 +49,6 @@ bool register_procedure(const char *procedure_name,
 		newFunc->fnpointer = fnpointer;
 		newFunc->next = functions;
 		functions = newFunc;
-		printf("Added procedure: %s\n", procedure_name);
 		return true;	
 	} else {
 		return false;
@@ -140,19 +136,17 @@ bool parseBuffer(const void *buffer, arg_type **args, fp_type *fp, int *n_params
 	int i;
 	void *ptrIdx = buffer;
 	if(isalpha(*(char *)ptrIdx)) {
-		strcpy(func_name, buffer); // get function name
+		// get function name
+		strcpy(func_name, buffer); 
 		ptrIdx += strlen(func_name)+1;
 		if(!procedureExists(func_name, fp)) {
-			printf("procedure does not exist: %s\n", func_name);
 			return false;
 		}
-		printf("Parsing arguments for: %s\n", func_name);
 		*n_params = *(int*)ptrIdx;
 		ptrIdx += sizeof(int);
 		
 		arg_type *temp, *tail;
 		for(i = 0; i < *n_params; ++i) {
-			printf("in for loop %d\n", i);
 			temp = malloc(sizeof(*temp));
 			temp->arg_size = *(int *)ptrIdx;
 			ptrIdx += sizeof(int);
@@ -173,7 +167,7 @@ bool parseBuffer(const void *buffer, arg_type **args, fp_type *fp, int *n_params
 
 		return true;
 	}
-	printf("Not alpha\n");
+	// printf("Not alpha\n");
 	return false;
 }
 
@@ -184,7 +178,8 @@ bool parseBuffer(const void *buffer, arg_type **args, fp_type *fp, int *n_params
  * servicing them by sending the return value back to the client.
  */
 void launch_server() {
-	int s, n, len = sizeof(struct sockaddr_in);
+	int s, n;
+	socklen_t len = sizeof(struct sockaddr_in);
 	char buf[BUF_SIZE];
 	char *received_data = (char *)malloc(BUF_SIZE);
 	struct sockaddr_in server, client;
@@ -212,7 +207,6 @@ void launch_server() {
 	fflush(stdout);
 
     while((n = recvfrom(s, buf, BUF_SIZE, 0, (struct sockaddr *) &client, &len)) != -1) {
-    	printf("received a request\n");
     	int n_params;
     	arg_type *args;
     	fp_type fn_pointer;
@@ -220,8 +214,6 @@ void launch_server() {
     	char ret_buf[BUF_SIZE];
 
     	if(parseBuffer(buf, &args, &fn_pointer, &n_params)) {
-    		printf("Buffer parsed\n");
-
     		*result = fn_pointer(n_params, args);
     		memcpy(ret_buf, &result->return_size, sizeof(int));
     		memcpy((ret_buf + sizeof(int)), result->return_val, result->return_size);
