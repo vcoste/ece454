@@ -18,21 +18,25 @@ func_node *functions;
 int ret_int;
 return_type r;
 
-/* The following need to be implemented in the server stub */
-
-/* register_procedure() -- invoked by the app programmer's server code
- * to register a procedure with this server_stub. Note that more than
- * one procedure can be registered */
-bool register_procedure(const char *procedure_name, const int nparams, fp_type fnpointer) {
-	//check if it already exists
+/**
+ * Invoked by the app programmer's server code to register a procedure
+ * @param  procedure_name	name of the procedure to register
+ * @param  nparams 			number of parameters in the procedure to register
+ * @param  fnpointer 		function pointer to the procedure implementation
+ * @return                  true if the procedure was registered successfully
+ * 							false otherwise
+ */
+bool register_procedure(const char *procedure_name, 
+						const int nparams, 
+						fp_type fnpointer) {
+	// Check if the procedure already exists
 	// if it doesn't add it to a linked list
 	bool found = false;
 	func_node *itr;
 	func_node *newFunc;
 
-	for (itr = functions; itr; itr = itr->next) {
+	for(itr = functions; itr; itr = itr->next) {
 		if (strcmp(itr->procedure_name, procedure_name) == 0) {
-			printf("Procedure %s already exists as: %s\n", procedure_name, itr->procedure_name);
 			found = true;
 			break;
 		}
@@ -45,7 +49,6 @@ bool register_procedure(const char *procedure_name, const int nparams, fp_type f
 		newFunc->fnpointer = fnpointer;
 		newFunc->next = functions;
 		functions = newFunc;
-		printf("Added procedure: %s\n", procedure_name);
 		return true;	
 	} else {
 		return false;
@@ -64,7 +67,8 @@ int mybind(int sockfd, struct sockaddr_in *addr) {
     }
 
     if(addr->sin_port != 0) {
-		fprintf(stderr, "mybind(): addr->sin_port is non-zero. Perhaps you want bind() instead?\n");
+		fprintf(stderr, 
+				"mybind(): addr->sin_port is non-zero. Perhaps you want bind() instead?\n");
 		return -1;
     }
 
@@ -81,7 +85,8 @@ int mybind(int sockfd, struct sockaddr_in *addr) {
     }
 
     if(p > PORT_RANGE_HI) {
-		fprintf(stderr, "mybind(): all bind() attempts failed. No port available...?\n");
+		fprintf(stderr, 
+				"mybind(): all bind() attempts failed. No port available...?\n");
 		return -1;
     }
 
@@ -91,8 +96,9 @@ int mybind(int sockfd, struct sockaddr_in *addr) {
 }
 
 /**
- * Checks the linked list of functions to see if the procedure already has been added. Procedures can 
- * reference the same function as long as they have different names
+ * Checks the linked list of functions to see if the procedure already has been
+ * added. Procedures can reference the same function as long as they have 
+ * different names
  * @param  fn_name name of the procedure
  * @param  fp      pointer to the desired function
  * @return         true if function has been added to list, false if not
@@ -100,7 +106,7 @@ int mybind(int sockfd, struct sockaddr_in *addr) {
 bool procedureExists(char *fn_name, fp_type *fp) {
 	func_node *itr;
 
-	for (itr = functions; itr; itr = itr->next) {
+	for(itr = functions; itr; itr = itr->next) {
 		if (strcmp(itr->procedure_name, fn_name) == 0) {
 			*fp = itr->fnpointer;
 			return true;
@@ -110,35 +116,37 @@ bool procedureExists(char *fn_name, fp_type *fp) {
 }
 
 /**
- * Parses the buffer received from the client after a recvfrom has returned. The buffer expects the following format:
- * String[varible number of bits, null-terminated]Number of params[Sizeof(int)], size of parameter[sizeof(int)], 
+ * Parses the buffer received from the client after a recvfrom has returned. 
+ * The buffer expects the following format:
+ * String[varible number of bits, null-terminated],
+ * Number of params[Sizeof(int)], 
+ * size of parameter[sizeof(int)], 
  * first parameter data[size is given at the previous point in the buffer]
  * @param  buffer   buffer received from recvfrom
- * @param  args     a pointer to an args struct pointer, this will be overwritten and populated with the values in
- *                  the buffer
- * @param  fp       pointer to a function pointer, desired function is found in the pointer list and this value is
- *                  updated to point to the correct function
+ * @param  args     a pointer to an args struct pointer, this will be 
+ * 					overwritten and populated with the values in the buffer
+ * @param  fp       pointer to a function pointer, desired function is found in
+ * 					the pointer list and this value is updated to point to the
+ * 					correct function
  * @param  n_params number of parameters sent by the client, this value is overwritten
- * @return          returns true if parsed correctly
+ * @return          returns true if parsed correctly, false otherwise
  */
 bool parseBuffer(const void *buffer, arg_type **args, fp_type *fp, int *n_params) {
 	char func_name[100];
 	int i;
 	void *ptrIdx = buffer;
-	if (isalpha(*(char *)ptrIdx)) {
-		strcpy(func_name, buffer); // get function name
+	if(isalpha(*(char *)ptrIdx)) {
+		// get function name
+		strcpy(func_name, buffer); 
 		ptrIdx += strlen(func_name)+1;
-		if (!procedureExists(func_name, fp)) {
-			printf("procedure does not exist: %s\n", func_name);
+		if(!procedureExists(func_name, fp)) {
 			return false;
 		}
-		printf("Parsing arguments for: %s\n", func_name);
 		*n_params = *(int*)ptrIdx;
 		ptrIdx += sizeof(int);
 		
 		arg_type *temp, *tail;
-		for (i = 0; i < *n_params; ++i) {
-			printf("in for loop %d\n", i);
+		for(i = 0; i < *n_params; ++i) {
 			temp = malloc(sizeof(*temp));
 			temp->arg_size = *(int *)ptrIdx;
 			ptrIdx += sizeof(int);
@@ -148,7 +156,7 @@ bool parseBuffer(const void *buffer, arg_type **args, fp_type *fp, int *n_params
 			ptrIdx += temp->arg_size;
 
 			// append to list, create if list is empty
-			if (*args) {
+			if(*args) {
 				tail->next = temp;
 				tail = tail->next;
 			} else {
@@ -159,25 +167,19 @@ bool parseBuffer(const void *buffer, arg_type **args, fp_type *fp, int *n_params
 
 		return true;
 	}
-	printf("Not alpha\n");
+	// printf("Not alpha\n");
 	return false;
 }
 
-/* launch_server() -- used by the app programmer's server code to indicate that
-	* it wants start receiving rpc invocations for functions that it registered
-	* with the server stub.
-	*
-	* IMPORTANT: the first thing that should happen when launch_server() is invoked
-	* is that it should print out, to stdout, the IP address/domain name and
-	* port number on which it listens.
-	*
-	* launch_server() simply runs forever. That is, it waits for a client request.
-	* When it receives a request, it services it by invoking the appropriate 
-	* application procedure. It returns the result to the client, and goes back
-	* to listening for more requests. 
-*/
+/**
+ * Used by the app programmer's server code to indicate that it wants start 
+ * receiving rpc invocations for functions that it registered with the 
+ * server stub. This method runs forever waiting for client request and 
+ * servicing them by sending the return value back to the client.
+ */
 void launch_server() {
-	int s, n, len = sizeof(struct sockaddr_in);
+	int s, n;
+	socklen_t len = sizeof(struct sockaddr_in);
 	char buf[BUF_SIZE];
 	char *received_data = (char *)malloc(BUF_SIZE);
 	struct sockaddr_in server, client;
@@ -188,33 +190,30 @@ void launch_server() {
 	server.sin_addr.s_addr = htonl(INADDR_ANY);
 
 	// initialize socket
-    if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
+    if((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
     	perror("socket");
     	return;
     }
 
     // bind socket
-    if (mybind(s, &server) < 0) {
+    if(mybind(s, &server) < 0) {
     	perror("Unable to bind to socket");
     }
 
     // printing IPaddress and port number
-    printf(	"Server started at: %s:%d\n",	
+    printf(	"%s %d\n",	
     		inet_ntoa(server.sin_addr), 
 			ntohs(server.sin_port)); 
 	fflush(stdout);
 
-    while ((n = recvfrom(s, buf, BUF_SIZE, 0, (struct sockaddr *) &client, &len)) != -1) {
-    	printf("received a request\n");
+    while((n = recvfrom(s, buf, BUF_SIZE, 0, (struct sockaddr *) &client, &len)) != -1) {
     	int n_params;
     	arg_type *args;
     	fp_type fn_pointer;
     	return_type *result = (return_type *)malloc(sizeof(result));
     	char ret_buf[BUF_SIZE];
 
-    	if (parseBuffer(buf, &args, &fn_pointer, &n_params)) {
-    		printf("Buffer parsed\n");
-
+    	if(parseBuffer(buf, &args, &fn_pointer, &n_params)) {
     		*result = fn_pointer(n_params, args);
     		memcpy(ret_buf, &result->return_size, sizeof(int));
     		memcpy((ret_buf + sizeof(int)), result->return_val, result->return_size);
