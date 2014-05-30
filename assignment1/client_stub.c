@@ -39,22 +39,29 @@ return_type make_remote_call(	const char *servernameorip,
     if(host == NULL) {
         // Hostname not found
 		perror("gethostbyname");
-		return_type return_error;
-		char* error_msg = "host is null";
-		return_error.return_val = error_msg;
-		return_error.return_size = sizeof(error_msg);
-		return return_error;
+        return_type *return_error = malloc(sizeof(*return_error));
+        int zero_size = 0;
+        memcpy(&(return_error->return_size), &zero_size, sizeof(zero_size));
+        return_error->return_val = malloc(return_error->return_size);
+        memcpy( return_error->return_val, 
+                NULL, 
+                return_error->return_size);
+		return *return_error;
     }
 
     // initialize socket
     if((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
 		// Error with socket
         perror("socket");
-		return_type return_error;
-		char* error_msg = "socket error";
-		return_error.return_val = error_msg;
-		return_error.return_size = sizeof(error_msg);
+        return_type *return_error = malloc(sizeof(*return_error));
+        int zero_size = 0;
+        memcpy(&(return_error->return_size), &zero_size, sizeof(zero_size));
+        return_error->return_val = malloc(return_error->return_size);
+        memcpy( return_error->return_val, 
+                NULL, 
+                return_error->return_size);
 		close(s);
+        return *return_error;
     }
 
     //initialize server addr
@@ -97,6 +104,15 @@ return_type make_remote_call(	const char *servernameorip,
                 (struct sockaddr *) &server,
                 len) == -1) {
 		perror("sendto()");
+        return_type *return_error = malloc(sizeof(*return_error));
+        int zero_size = 0;
+        memcpy(&(return_error->return_size), &zero_size, sizeof(zero_size));
+        return_error->return_val = malloc(return_error->return_size);
+        memcpy( return_error->return_val, 
+                NULL, 
+                return_error->return_size);
+        close(s);
+        return *return_error;
     }
 
     // receive response.
@@ -111,33 +127,37 @@ return_type make_remote_call(	const char *servernameorip,
 
     	if(len>BUF_SIZE) {
     		// Error, BUF_SIZE is too small
-    		return_type return_error;
-    		char* error_msg = "buf too small";
-
-    		return_error.return_val = error_msg;
-    		return_error.return_size = sizeof(error_msg);
+    		return_type *return_error = malloc(sizeof(*return_error));
+            int zero_size = 0;
+            memcpy(&(return_error->return_size), &zero_size, sizeof(zero_size));
+            return_error->return_val = malloc(return_error->return_size);
+            memcpy( return_error->return_val, 
+                    NULL, 
+                    return_error->return_size);
     		close(s);
-    		return return_error;
+    		return *return_error;
     	} else {
             // parsing response and creating return_type response object
             return_type *response = malloc(sizeof(*response));;
             memcpy(&(response->return_size), buf, sizeof(int));
-
             response->return_val = malloc(response->return_size);
             memcpy( response->return_val, 
                     (buf + sizeof(int)), 
                     response->return_size);
-
             close(s);
 			return *response;
     	}
     } else {
 	    // nothing received from server
-		return_type return_error;
-		char* error_msg = "nothing received";
-		return_error.return_val = error_msg;
-		return_error.return_size = sizeof(error_msg);
+
+        return_type *return_error = malloc(sizeof(*return_error));
+        int zero_size = 0;
+        memcpy(&(return_error->return_size), &zero_size, sizeof(zero_size));
+        return_error->return_val = malloc(return_error->return_size);
+        memcpy( return_error->return_val, 
+                NULL, 
+                return_error->return_size);
 		close(s);
-		return return_error;
+		return *return_error;
     }    
 }
