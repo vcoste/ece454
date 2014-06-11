@@ -4,6 +4,18 @@
 		"selected_items":
 		[
 			[
+				"inet",
+				"inet_ntoa"
+			],
+			[
+				"arg4i",
+				"arg4Int"
+			],
+			[
+				"arg3i",
+				"arg3Int"
+			],
+			[
 				"so",
 				"socket"
 			],
@@ -31,39 +43,7 @@
 			"file": "ece454rpc_types.h",
 			"settings":
 			{
-				"buffer_size": 2388,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "Makefile",
-			"settings":
-			{
-				"buffer_size": 314,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "client_stub.c",
-			"settings":
-			{
-				"buffer_size": 0,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "myclient.c",
-			"settings":
-			{
-				"buffer_size": 1347,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "myserver.c",
-			"settings":
-			{
-				"buffer_size": 1407,
+				"buffer_size": 2519,
 				"line_ending": "Unix"
 			}
 		},
@@ -71,7 +51,46 @@
 			"file": "server_stub.c",
 			"settings":
 			{
+				"buffer_size": 6532,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"settings":
+			{
 				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "client_stub.c",
+			"settings":
+			{
+				"buffer_size": 5626,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "clientapp.c",
+			"settings":
+			{
+				"buffer_size": 1449,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "serverapp.c",
+			"settings":
+			{
+				"buffer_size": 2766,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "README",
+			"settings":
+			{
+				"buffer_size": 719,
 				"line_ending": "Unix"
 			}
 		}
@@ -79,15 +98,15 @@
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 87.0,
+		"height": 167.0,
 		"selected_items":
 		[
 			[
-				"install",
+				"instal",
 				"Package Control: Install Package"
 			],
 			[
-				"instal",
+				"install",
 				"Package Control: Install Package"
 			],
 			[
@@ -111,7 +130,7 @@
 				"Package Control: Add Channel"
 			]
 		],
-		"width": 467.0
+		"width": 593.0
 	},
 	"console":
 	{
@@ -132,6 +151,11 @@
 	},
 	"file_history":
 	[
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/Makefile",
+		"/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/server.out",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/myserver.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/myclient.c",
 		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ASS1/resources.txt",
 		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ASS1/client_stub.c",
 		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ASS1/udpClient.c",
@@ -186,6 +210,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"Regustering",
+			"args-",
 			"canvasElem.",
 			".dll",
 			"extension",
@@ -213,7 +239,7 @@
 	"groups":
 	[
 		{
-			"selected": 5,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -222,15 +248,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2388,
+						"buffer_size": 2519,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								710,
-								710
+								0,
+								0
 							]
 						],
 						"settings":
@@ -241,40 +267,40 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "Makefile",
+					"file": "server_stub.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 314,
+						"buffer_size": 6532,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								194,
-								205
+								2706,
+								2706
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Makefile/Makefile.tmLanguage"
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1316.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "client_stub.c",
 					"semi_transient": false,
 					"settings":
 					{
@@ -291,7 +317,95 @@
 						],
 						"settings":
 						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "client_stub.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5626,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
 							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 353.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "clientapp.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1449,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1025,
+								1025
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 17.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "serverapp.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2766,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1358,
+								1358
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
@@ -302,90 +416,32 @@
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "myclient.c",
+					"buffer": 6,
+					"file": "README",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1347,
+						"buffer_size": 719,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								714,
-								714
+								77,
+								89
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C++.tmLanguage",
+							"syntax": "Packages/Text/Plain text.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 306.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "myserver.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1407,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1177,
-								1177
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "server_stub.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 0,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
 					"type": "text"
 				}
 			]
@@ -437,6 +493,14 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"make",
+				"Makefile"
+			],
+			[
+				"serverp",
+				"serverapp.c"
+			],
 			[
 				"inde",
 				"~/Documents/dev/firstJavascript/index.html"
