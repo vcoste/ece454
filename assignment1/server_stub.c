@@ -8,6 +8,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <errno.h>
+#include <ifaddrs.h>
 #include "ece454rpc_types.h"
 
 #define	PORT_RANGE_LO	10000
@@ -115,6 +116,32 @@ bool procedureExists(char *fn_name, fp_type *fp) {
 	return false;
 }
 
+/*
+ * Returns the public address of the current host machine.
+ */
+uint32_t getIPaddress() {
+    struct ifaddrs *ifa_list_head = NULL;
+    uint32_t addr = 0;
+    getifaddrs(&ifa_list_head);
+    struct ifaddrs *ifa;
+ 
+    for (ifa = ifa_list_head; ifa != NULL; ifa = ifa->ifa_next) {
+        if (ifa ->ifa_addr->sa_family == AF_INET) {
+            struct in_addr * address_ptr = NULL;
+            address_ptr = &((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+            if (strncmp("lo", ifa->ifa_name, 2) != 0) {
+                addr = address_ptr->s_addr;
+            }
+        }
+    }
+ 
+    if (ifa_list_head != NULL) {
+        freeifaddrs(ifa_list_head);
+    } /* if we found an IP address list, free it's memory */
+ 
+    return addr;
+}
+
 /**
  * Parses the buffer received from the client after a recvfrom has returned. 
  * The buffer expects the following format:
@@ -201,7 +228,7 @@ void launch_server() {
     }
 
     // printing IPaddress and port number
-    printf(	"%s %d\n",	
+    printf(	"%s %d\n",
     		inet_ntoa(server.sin_addr), 
 			ntohs(server.sin_port)); 
 	fflush(stdout);
