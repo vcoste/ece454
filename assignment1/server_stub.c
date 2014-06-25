@@ -214,7 +214,7 @@ void launch_server() {
 	memset((char *) &server, 0, sizeof(struct sockaddr_in));
 	server.sin_family = AF_INET;
 	server.sin_port = 0;
-	server.sin_addr.s_addr = htonl(INADDR_ANY);
+	server.sin_addr.s_addr = getIPaddress();
 
 	// initialize socket
     if((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
