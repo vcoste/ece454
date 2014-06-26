@@ -10,7 +10,7 @@
 #include <stdarg.h>
 #include "ece454rpc_types.h"
 
-#define BUF_SIZE 1024
+#define BUF_SIZE 65507
 
 /**
  * This is used by the client application program to invoke a remote method. 

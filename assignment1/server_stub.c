@@ -13,7 +13,7 @@
 
 #define	PORT_RANGE_LO	10000
 #define PORT_RANGE_HI	10100
-#define BUF_SIZE		1024
+#define BUF_SIZE		65507
 
 func_node *functions;
 int ret_int;
@@ -191,10 +191,8 @@ bool parseBuffer(const void *buffer, arg_type **args, fp_type *fp, int *n_params
 				tail = temp;
 			}
 		}
-
 		return true;
 	}
-	// printf("Not alpha\n");
 	return false;
 }
 
