@@ -167,6 +167,7 @@ bool parseBuffer(const void *buffer, arg_type **args, fp_type *fp, int *n_params
 		strcpy(func_name, buffer); 
 		ptrIdx += strlen(func_name)+1;
 		if(!procedureExists(func_name, fp)) {
+			printf("funciton not found, returning false (server_stub)\n");
 			return false;
 		}
 		*n_params = *(int*)ptrIdx;
@@ -248,10 +249,17 @@ void launch_server() {
     		free(args);
     		args = 0;
     	} else {
+    		// should we do nothing if it's not parsed?
     		perror("not parsed\n");
+    		printf("NOT parsed (server_stub)\n");
     		char *error_msg = "Error, function not found";
-    		memcpy(ret_buf, error_msg, strlen(error_msg));
+    		int error_size = 0;
+    		memcpy(ret_buf, &error_size, sizeof(int));
+    		printf("1\n");
+    		memcpy((ret_buf + sizeof(int)), error_msg, strlen(error_msg));
+    		printf("2\n");
     		sendto(s, ret_buf, strlen((char*)ret_buf), 0, (struct sockaddr *) &client, len);
+    		printf("3\n");
     	}
     }
 }
