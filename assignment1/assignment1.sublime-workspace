@@ -40,25 +40,10 @@
 	"buffers":
 	[
 		{
-			"file": "ece454rpc_types.h",
-			"settings":
-			{
-				"buffer_size": 2519,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "server_stub.c",
 			"settings":
 			{
-				"buffer_size": 6532,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"settings":
-			{
-				"buffer_size": 0,
+				"buffer_size": 7580,
 				"line_ending": "Unix"
 			}
 		},
@@ -66,31 +51,15 @@
 			"file": "client_stub.c",
 			"settings":
 			{
-				"buffer_size": 5626,
+				"buffer_size": 6216,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "clientapp.c",
+			"file": "resources.txt",
 			"settings":
 			{
-				"buffer_size": 1449,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "serverapp.c",
-			"settings":
-			{
-				"buffer_size": 2766,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "README",
-			"settings":
-			{
-				"buffer_size": 719,
+				"buffer_size": 410,
 				"line_ending": "Unix"
 			}
 		}
@@ -151,7 +120,20 @@
 	},
 	"file_history":
 	[
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/assignment1.sublime-project",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/.gitignore",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/README",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/serverapp.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/clientapp.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/test_tool/client_stub.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/client_stub.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/test_tool/server_stub.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/server_stub.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/test_tool/ece454rpc_types.h",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/test_tool/Makefile",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/ece454rpc_types.h",
 		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/Makefile",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/client.out",
 		"/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
 		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/server.out",
 		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/myserver.c",
@@ -196,7 +178,7 @@
 	],
 	"find":
 	{
-		"height": 25.0
+		"height": 35.0
 	},
 	"find_in_files":
 	{
@@ -207,9 +189,17 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": false,
+		"case_sensitive": true,
 		"find_history":
 		[
+			"printf",
+			"prinft",
+			"\n	",
+			"n",
+			"Leaving",
+			"printf",
+			"getIPaddress",
+			"main",
 			"Regustering",
 			"args-",
 			"canvasElem.",
@@ -239,108 +229,52 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "ece454rpc_types.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2519,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
 					"file": "server_stub.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6532,
+						"buffer_size": 7580,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2706,
-								2706
+								1510,
+								1516
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/C++/C++.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 1316.0,
+						"translation.y": 646.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 0,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
+					"buffer": 1,
 					"file": "client_stub.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5626,
+						"buffer_size": 6216,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								3006,
+								3013
 							]
 						],
 						"settings":
@@ -350,92 +284,32 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 353.0,
+						"translation.y": 1249.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
-					"file": "clientapp.c",
+					"buffer": 2,
+					"file": "resources.txt",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1449,
+						"buffer_size": 410,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1025,
-								1025
+								286,
+								286
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 17.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "serverapp.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2766,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1358,
-								1358
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "README",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 719,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								77,
-								89
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -493,6 +367,14 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"serves",
+				"server_stub.c"
+			],
+			[
+				"clients",
+				"client_stub.c"
+			],
 			[
 				"make",
 				"Makefile"
