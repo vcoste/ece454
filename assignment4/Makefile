@@ -1,6 +1,13 @@
 OBJECTS := $(patsubst %.c,%.o,$(wildcard *.c))
 
-fs_client: fs_client.o fs_dummy.o
+server: fs_server.o
+	gcc fs_server.o -o server.out
+
+client: client-api.a fs_client.o
+	gcc fs_client.o -L. -lclient_api.a -o client.out
+
+client-api.a: client_api.o
+	ar r libclient_api.a client_api.o
 
 $(OBJECTS): %.o: %.c ece454_fs.h
 	gcc -c $< -o $@
