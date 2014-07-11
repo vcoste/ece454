@@ -4,7 +4,7 @@ server: fs_server.o
 	gcc fs_server.o -o server.out
 
 client: client-api.a fs_client.o
-	gcc clien_tapp.out -L. -lclient_api.a
+	gcc fs_client.o -L. -lclient_api.a -o client.out
 
 client-api.a: client_api.o
 	ar r libclient_api.a client_api.o
