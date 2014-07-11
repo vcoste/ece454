@@ -9,6 +9,7 @@
 #define _ECE_FS_OTHER_INCLUDES_
 #include <sys/types.h>
 #include <dirent.h>
+#include "simplified_rpc/ece454rpc_types.h"
 
 typedef DIR FSDIR;
 
