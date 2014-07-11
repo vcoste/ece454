@@ -1,0 +1,504 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"if",
+				"ifmain	if __name__ == '__main__'"
+			],
+			[
+				"ser",
+				"serializible"
+			],
+			[
+				"send",
+				"sendSerialized"
+			],
+			[
+				"inet",
+				"inet_ntoa"
+			],
+			[
+				"arg4i",
+				"arg4Int"
+			],
+			[
+				"arg3i",
+				"arg3Int"
+			],
+			[
+				"so",
+				"socket"
+			],
+			[
+				"soc",
+				"sockaddr_in"
+			],
+			[
+				"ma",
+				"main	main()"
+			],
+			[
+				"gets",
+				"GetShape1"
+			],
+			[
+				"for",
+				"for	for (…) {…}"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+			"settings":
+			{
+				"buffer_size": 352,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "fsOtherIncludes.h",
+			"settings":
+			{
+				"buffer_size": 292,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "fs_client.c",
+			"settings":
+			{
+				"buffer_size": 2060,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ece454_fs.h",
+			"settings":
+			{
+				"buffer_size": 1046,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 107.0,
+		"selected_items":
+		[
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"upgrade",
+				"Package Control: Upgrade/Overwrite All Packages"
+			],
+			[
+				"upd",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"update",
+				"Package Control: Upgrade/Overwrite All Packages"
+			],
+			[
+				"package con",
+				"Package Control: Install Package"
+			],
+			[
+				"package",
+				"Package Control: Add Channel"
+			]
+		],
+		"width": 593.0
+	},
+	"console":
+	{
+		"height": 139.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/Users/justinwilliams/Documents/eeg/emokit-master/python/emokit/emotiv.py",
+		"/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/SublimeLinter/Default (OSX).sublime-keymap",
+		"/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/User/Default (OSX).sublime-keymap",
+		"/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/SublimeLinter/SublimeLinter.sublime-settings",
+		"/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/User/SublimeLinter.sublime-settings",
+		"/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/Package Control/Package Control.sublime-settings",
+		"/Users/justinwilliams/Dropbox/4A/ECE458 - Computer Security/Project458/ece458-voting-system/client.py",
+		"/Users/justinwilliams/Dropbox/4A/ECE458 - Computer Security/Project458/ece458-voting-system/client2.py",
+		"/Users/justinwilliams/Dropbox/4A/ECE458 - Computer Security/Project458/ece458-voting-system/server2.py",
+		"/Users/justinwilliams/Dropbox/4A/ECE458 - Computer Security/Project458/ece458-voting-system/server.py",
+		"/Users/justinwilliams/Dropbox/4A/ECE458 - Computer Security/Project458/ece458-voting-system/.gitignore",
+		"/Users/justinwilliams/Dropbox/4A/ECE458 - Computer Security/Project458/ece458-voting-system/vote.py",
+		"/Users/justinwilliams/Dropbox/4A/ECE458 - Computer Security/Project458/ece458-voting-system/db.py",
+		"/Users/justinwilliams/Dropbox/4A/ECE458 - Computer Security/Project458/ece458-voting-system/generate_tables.sql",
+		"/Users/justinwilliams/Dropbox/4A/ECE458 - Computer Security/Project458/ece458-voting-system/ece458Proj.sublime-project",
+		"/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/assignment1.sublime-project",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/.gitignore",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/README",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/serverapp.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/clientapp.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/test_tool/client_stub.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/client_stub.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/test_tool/server_stub.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/server_stub.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/test_tool/ece454rpc_types.h",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/test_tool/Makefile",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/ece454rpc_types.h",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/Makefile",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/client.out",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/server.out",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/myserver.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/myclient.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ASS1/resources.txt",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ASS1/client_stub.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ASS1/udpClient.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ASS1/udpServer.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ASS1/.dropbox",
+		"/Users/justinwilliams/Documents/dev/firstJavascript/js/game.js",
+		"/Users/justinwilliams/Documents/dev/firstJavascript/js/box2dutils.js",
+		"/Users/justinwilliams/Documents/dev/firstJavascript/index.html",
+		"/Users/justinwilliams/Downloads/mod_wsgi-3.4/Makefile",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/app/Config/core.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/app/Config/database.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Model/Datasource/Database/Mysql.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/app/index.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/index.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/get-pip.py",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Model/Datasource/Database/Postgres.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Model/Datasource/Database/Sqlite.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Test/Case/Model/Datasource/Session/DatabaseSessionTest.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Test/Case/AllDatabaseTest.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/View/Errors/missing_database.ctp",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Console/Templates/skel/Config/database.php.default",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Model/Datasource/Session/DatabaseSession.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Test/Case/Controller/Component/Acl/DbAclTest.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/app/Config/Schema/db_acl.php",
+		"/Applications/MAMP/bin/php/php5.5.10/conf/php.ini",
+		"/Users/justinwilliams/Dropbox/webSte/index.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/app/Controller/PagesController.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/View/Helper/PaginatorHelper.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Configure/PhpReader.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/TestSuite/templates/phpunit.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Test/test_app/Config/htmlhelper_minimized.ini",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/app/Config/database.php.default",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Console/ConsoleOutput.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/composer.json",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Test/Fixture/CounterCachePostNonstandardPrimaryKeyFixture.php",
+		"/Users/justinwilliams/Dropbox/webSte/cakephp/lib/Cake/Network/CakeRequest.php"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"sock",
+			"self",
+			"arg",
+			"printf",
+			"prinft",
+			"\n	",
+			"n",
+			"Leaving",
+			"printf",
+			"getIPaddress",
+			"main",
+			"Regustering",
+			"args-",
+			"canvasElem.",
+			".dll",
+			"extension",
+			"extension_dir",
+			"pdo",
+			"extension_dir",
+			"pdo",
+			"mysql",
+			"sqlite",
+			"PDO"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 3,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 352,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								141,
+								141
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "fsOtherIncludes.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 292,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "fs_client.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2060,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "ece454_fs.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1046,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								272,
+								272
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 25.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "assignment4.sublime-project",
+	"replace":
+	{
+		"height": 46.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				".gi",
+				".gitignore"
+			],
+			[
+				"cli",
+				"client.py"
+			],
+			[
+				"serves",
+				"server_stub.c"
+			],
+			[
+				"clients",
+				"client_stub.c"
+			],
+			[
+				"make",
+				"Makefile"
+			],
+			[
+				"serverp",
+				"serverapp.c"
+			],
+			[
+				"inde",
+				"~/Documents/dev/firstJavascript/index.html"
+			],
+			[
+				"database",
+				"lib/Cake/Model/Datasource/Database/Mysql.php"
+			],
+			[
+				"core.",
+				"app/Config/core.php"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 167.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

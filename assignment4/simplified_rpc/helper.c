@@ -14,6 +14,8 @@
 #include <netinet/ip.h>
 #include "ece454rpc_types.h"
 
+#define MSG_NOSIGNAL 0
+
 #if 0
 #define _DEBUG_1_
 #endif
