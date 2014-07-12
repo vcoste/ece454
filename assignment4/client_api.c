@@ -9,6 +9,7 @@ struct remoteFolderServer {
 struct remoteFolderServer server;
 // remoteFolderServer *server = malloc(sizeof(struct remoteFolderServer));
 struct fsDirent dent;
+int clientId= 0;
 
 int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *localFolderName) {
 	// do similar stuff as ass1 client app
@@ -21,7 +22,13 @@ int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *
 										"fsMount", 1,
 										sizeof(localFolderName), (void *)(localFolderName));
 	int result = (int*)(ans.return_val);
-	return result;
+	if (result == -1) {
+		return result;
+	} else if (result >= 0) {
+		//save id
+		clientId = result;
+		return 0;
+	}
 }
 
 int fsUnmount(const char *localFolderName) {
@@ -31,13 +38,15 @@ int fsUnmount(const char *localFolderName) {
 	
 	return_type ans = make_remote_call( server.name,
 										server.port ,
-										"fsUnmount", 1,
-										sizeof(localFolderName), (void *)(localFolderName));
-	int result = *(int*)ans.return_val;
+										"fsUnmount", 2,
+										sizeof(localFolderName), (void *)(localFolderName),
+										sizeof(int), clientId);
+	int result = (int*)(ans.return_val);
 	return result;
 }
 
 FSDIR* fsOpenDir(const char *folderName) {
+
     return(opendir(folderName));
 }
 
