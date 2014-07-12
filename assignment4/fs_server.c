@@ -49,6 +49,7 @@ int giveID() {
 
 int main(int argc, char const *argv[]) {
 	register_procedure("fsMount", 0, fsMount);
+	printRegisteredProcedures();
 
     launch_server();
     return 0;
