@@ -12,7 +12,7 @@ struct fsDirent dent;
 int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *localFolderName) {
 	// do similar stuff as ass1 client app
 	// save ip address and port number for subsequent remote calls
-	
+	printf("Mounting to %s %d\n", srvIpOrDomName, srvPort);
 	strcpy (server.name,srvIpOrDomName);
 	server.port = srvPort;
 	return_type ans = make_remote_call( srvIpOrDomName,
