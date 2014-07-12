@@ -4,7 +4,7 @@
 
 #include "ece454_fs.h"
 
-void printBuf(char *buf, int size) {
+void fs_printBuf(char *buf, int size) {
     /* Should match the output from od -x */
     int i;
     for(i = 0; i < size; ) {
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
        exit(1);
     }
 
-    printBuf(buf, 256);
+    fs_printBuf(buf, 256);
 
     printf("fsClose(): %d\n", fsClose(ff));
 
