@@ -31,6 +31,7 @@ return_type make_remote_call(const char *servernameorip,
 			     ...)
 {
     /* Setup socket, connect(), etc. */
+    printf("in make_remote_call, ip:%s, port:%i\n", servernameorip, serverportnumber);
     struct addrinfo hints, *result;
     hints.ai_family = AF_INET;
     hints.ai_socktype = hints.ai_protocol = hints.ai_flags = 0;

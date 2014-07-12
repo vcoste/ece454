@@ -38,9 +38,10 @@ int main(int argc, char *argv[]) {
     else {
     	dirname = (char *)calloc(strlen(".")+1, sizeof(char));
     	strcpy(dirname, ".");
+        printf("dirname: %s\n", dirname);
     }
-
-    printf("fsMount(): %d\n", fsMount(NULL, 0, dirname));
+    printf("fsMount(): %d\n", fsMount(argv[1], atoi(argv[2]), dirname));
+    return 0;
     FSDIR *fd = fsOpenDir(dirname);
     if(fd == NULL) {
 	   perror("fsOpenDir"); exit(1);
