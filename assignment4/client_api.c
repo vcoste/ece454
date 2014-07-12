@@ -2,24 +2,25 @@
 #include <string.h>
 
 struct remoteFolderServer {
-	char *name;
+	char *name[20];
 	unsigned int port;
 };
 
 struct remoteFolderServer server;
+// remoteFolderServer *server = malloc(sizeof(struct remoteFolderServer));
 struct fsDirent dent;
 
 int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *localFolderName) {
 	// do similar stuff as ass1 client app
 	// save ip address and port number for subsequent remote calls
-	
-	strcpy (server.name,srvIpOrDomName);
+
+	strcpy(server.name, srvIpOrDomName);	
 	server.port = srvPort;
 	return_type ans = make_remote_call( srvIpOrDomName,
-										srvPort,
+										(int)srvPort,
 										"fsMount", 1,
 										sizeof(localFolderName), (void *)(localFolderName));
-	int result = *(int*)ans.return_val;
+	int result = (int*)(ans.return_val);
 	return result;
 }
 
