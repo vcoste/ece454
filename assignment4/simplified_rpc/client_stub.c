@@ -31,7 +31,7 @@ return_type make_remote_call(const char *servernameorip,
 			     ...)
 {
     /* Setup socket, connect(), etc. */
-    printf("in make_remote_call, ip:%s, port:%i\n", servernameorip, serverportnumber);
+    printf("in make_emrote_call, ip:%s, port:%i, procNAme: %s, nparams: %i\n", servernameorip, serverportnumber, procedure_name, nparams);
     struct addrinfo hints, *result;
     hints.ai_family = AF_INET;
     hints.ai_socktype = hints.ai_protocol = hints.ai_flags = 0;
@@ -50,7 +50,6 @@ return_type make_remote_call(const char *servernameorip,
     if(s < 0) {
 	perror("socket"); exit(1);
     }
-
     struct sockaddr_in mya;
     memset(&mya, 0, sizeof(struct sockaddr_in));
     mya.sin_family = AF_INET;

@@ -49,7 +49,7 @@ return_type fsMount(const int nparams, arg_type* a) {
 }
 
 return_type fsUnmount(const int nparams, arg_type* a) {
-
+	printf("in fsUnmount (server side)\n");
 	if (nparams != 1) {
 		r.return_val = NULL;
 		r.return_size = 0;
@@ -129,6 +129,7 @@ int main(int argc, char const *argv[]) {
 	printf("\n");
 
 	register_procedure("fsMount", 0, fsMount);
+	register_procedure("fsUnmount", 1, fsUnmount);
 	printRegisteredProcedures();
 
     launch_server();

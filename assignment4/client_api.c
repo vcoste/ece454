@@ -9,7 +9,7 @@ struct remoteFolderServer {
 struct remoteFolderServer server;
 // remoteFolderServer *server = malloc(sizeof(struct remoteFolderServer));
 struct fsDirent dent;
-int clientId= 0;
+int clientId = -1;
 
 int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *localFolderName) {
 	// do similar stuff as ass1 client app
@@ -34,12 +34,12 @@ int fsUnmount(const char *localFolderName) {
 	// 	the counterpart of fsMount() 
 	// 	to unmount a remote ﬁlesystem that is referred to locally by localFolderName. 
 	// 	Returns 0 on success, −1 on failure with errno set appropriately
-	
+	printf("serverName: %s, serverPort: %i, clientID: %i\n", server.name, server.port, clientId);
 	return_type ans = make_remote_call( server.name,
 										server.port ,
 										"fsUnmount", 2,
 										sizeof(localFolderName), (void *)(localFolderName),
-										sizeof(int), clientId);
+										sizeof(int), (void *)(&clientId));
 	int result = (int*)(ans.return_val);
 	return result;
 }
