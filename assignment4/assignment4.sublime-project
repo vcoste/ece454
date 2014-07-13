@@ -4,7 +4,7 @@
 		{
 			"follow_symlinks": true,
 			"path": ".",
-			"file_exclude_patterns": ["sample_client_app", "sample_server_app", "sample_client_app", "*.a", "*.pdf", ".DS_Store", "*.zip", "*.sublime-project", "*.sublime-workspace"]
+			"file_exclude_patterns": ["sample_client_app", "sample_server_app", "sample_client_app", "*.a", "*.pdf", ".DS_Store", "*.zip", "*.sublime-project", "*.sublime-workspace", "*.out"]
 		}
 	]
 }
