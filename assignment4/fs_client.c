@@ -34,20 +34,20 @@ int main(int argc, char *argv[]) {
     char *dirname = NULL;
 
     if(argc > 1) 
-        dirname = argv[1];
+        dirname = argv[3];
     else {
     	dirname = (char *)calloc(strlen(".")+1, sizeof(char));
     	strcpy(dirname, ".");
-        printf("dirname: %s\n", dirname);
     }
+    printf("dirname: %s\n", dirname);
     printf("fsMount(): %d\n", fsMount(argv[1], atoi(argv[2]), dirname));
     printf("fsUnmount(): %d\n", fsUnmount(dirname));
-    return 0;
     FSDIR *fd = fsOpenDir(dirname);
     if(fd == NULL) {
+        printf("yo!\n");
 	   perror("fsOpenDir"); exit(1);
     }
-
+    return 0;
     struct fsDirent *fdent = NULL;
     for(fdent = fsReadDir(fd); fdent != NULL; fdent = fsReadDir(fd)) {
 	   printf("\t %s, %d\n", fdent->entName, (int)(fdent->entType));

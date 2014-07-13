@@ -180,6 +180,9 @@ void returnResult(int s, return_type *ret) {
 	#ifdef _DEBUG_1_
 		printf("in returnResult()\n"); fflush(stdout);
 	#endif
+	if(ret == NULL ) {
+		printf("it's NULL\n");
+	}
 
 	if(ret == NULL || ret->return_size <= 0) {
 		int i = 0;
@@ -191,10 +194,12 @@ void returnResult(int s, return_type *ret) {
 		printf("returnResult(), return_size = %d\n", ret->return_size);
 		fflush(stdout);
 	#endif
-
+		printf("about to send bytes1\n");
 	/* else */
 	sendbytes(s, (void *)(&(ret->return_size)), sizeof(int));
+	printf("val: %s, size: %i\n", ret->return_val, ret->return_size);
 	sendbytes(s, ret->return_val, ret->return_size);
+	printf("about to send bytes3\n");
 }
 
 void freeArgs(arg_type *a) {
