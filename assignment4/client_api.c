@@ -2,6 +2,10 @@
 #include <string.h>
 #include <stdlib.h>
 
+#if 1
+#define _DEBUG_CLI_
+#endif
+
 struct remoteFolderServer {
 	char *name[20];
 	unsigned int port;
@@ -17,15 +21,21 @@ int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *
 	// save ip address and port number for subsequent remote calls
 	strcpy(server.name, srvIpOrDomName);	
 	server.port = srvPort;
+	#ifdef _DEBUG_CLI_
+	printf("Calling fsMount to server\n");
+	#endif
 	return_type ans = make_remote_call( srvIpOrDomName,
 										(int)srvPort,
-										"fsMount", 1,
+										"fsMount", 0,
 										sizeof(localFolderName), (void *)(localFolderName));
-	int result = (int*)(ans.return_val);
+	int result = *(int*)(ans.return_val);
 	if (result == -1) {
 		return result;
 	} else if (result >= 0) {
 		//save id
+		#ifdef _DEBUG_CLI_
+		printf("Successfully returned, given clientID: %d\n", result);
+		#endif
 		clientId = result;
 		return 0;
 	}
@@ -41,7 +51,7 @@ int fsUnmount(const char *localFolderName) {
 										"fsUnmount", 2,
 										sizeof(localFolderName), (void *)(localFolderName),
 										sizeof(int), (void *)(&clientId));
-	int result = (int*)(ans.return_val);
+	int result = *(int*)(ans.return_val);
 	return result;
 }
 
@@ -50,9 +60,11 @@ FSDIR* fsOpenDir(const char *folderName) {
 										server.port ,
 										"fsOpenDir", 1,
 										sizeof(folderName), (void *)(folderName));
-	DIR *dirPointer = (DIR *)malloc(ans.return_size);
-	dirPointer = (DIR*)(ans.return_val);
-    return(dirPointer);
+	if (ans.return_size) {
+		FSDIR *nice = NULL;
+		return nice;
+	}
+    return NULL; // TODO return FSDIR new implementation
 }
 
 int fsCloseDir(FSDIR *folder) {

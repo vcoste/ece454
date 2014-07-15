@@ -11,6 +11,9 @@
 #include <dirent.h>
 #include "simplified_rpc/ece454rpc_types.h"
 
-typedef DIR FSDIR;
+typedef struct fs_dir {
+	int id;
+	int status;
+} FSDIR;
 
 #endif
