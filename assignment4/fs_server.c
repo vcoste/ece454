@@ -74,10 +74,30 @@ return_type fsOpenDir(const int nparams, arg_type* a) {
 	}
 
 	DIR *desiredDir;
-	desiredDir = opendir(a->arg_val);
+	desiredDir = opendir((char *)a->arg_val);
 
 	r.return_val = desiredDir;
 	r.return_size = sizeof(desiredDir);
+
+	return r;
+}
+
+return_type fsCloseDir(const int nparams, arg_type* a) {
+
+	if (nparams != 1) {
+		r.return_val = NULL;
+		r.return_size = 0;
+		return r;
+	}
+
+	DIR *currentDir = (DIR *)malloc(sizeof(a->arg_size));
+	currentDir = a->arg_val;
+
+	if (closedir(currentDir) == 0) {
+		// success
+	} else {
+		// failure
+	}
 
 	return r;
 }
