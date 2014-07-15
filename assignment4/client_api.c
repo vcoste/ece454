@@ -1,5 +1,6 @@
 #include "ece454_fs.h"
 #include <string.h>
+#include <stdlib.h>
 
 struct remoteFolderServer {
 	char *name[20];
@@ -45,8 +46,13 @@ int fsUnmount(const char *localFolderName) {
 }
 
 FSDIR* fsOpenDir(const char *folderName) {
-
-    return(opendir(folderName));
+	return_type ans = make_remote_call( server.name,
+										server.port ,
+										"fsOpenDir", 1,
+										sizeof(folderName), (void *)(folderName));
+	DIR *dirPointer = (DIR *)malloc(ans.return_size);
+	dirPointer = (DIR*)(ans.return_val);
+    return(dirPointer);
 }
 
 int fsCloseDir(FSDIR *folder) {
