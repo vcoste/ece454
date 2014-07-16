@@ -94,21 +94,22 @@ return_type fsUnmount(const int nparams, arg_type* a) {
 	printf("in fsUnmount (server side)\n");
 	#endif
 
-	if (nparams == 2) {
+	if (nparams != 2) {
 		r.return_val  = NULL;
 		r.return_size = 0;
 		return r;
 	}
 
-	removeClient((char*)a->arg_val, *(int*)a->next->arg_val);
+	if (removeClient((char*)a->arg_val, *(int*)a->next->arg_val) == -1) {
+		printf("removeClient failed\n");
+	}
 
 	#ifdef _DEBUG_1_
 	printMountedUsers();
 	#endif
 
-	int zero = 0;
-	r.return_val  = (void *)&zero;
-	r.return_size = sizeof(int);
+	r.return_val  = NULL;
+	r.return_size = 0;
 	return r;
 }
 
@@ -202,28 +203,43 @@ int addNewClient(char* folderAilias, int folderNameSize) {
 
 int removeClient(char* folderAilias, int id) {
 	
-	mounted_user *itr = users;
-	for (; itr != NULL; itr = itr->next) {
+	mounted_user **itr = &users;
+	for (; *itr != NULL; *itr = (*itr)->next) {
 		// check if at tail and desred user
-		if (itr->next == NULL && *itr->id == id && strcmp(itr->folderAilias, folderAilias) == 0) {
-			free(itr);
-			itr = NULL;
+		if ((*itr)->next == NULL && *(*itr)->id == id && strcmp((*itr)->folderAilias, folderAilias) == 0) {
+			free((*itr)->id);
+			free((*itr)->folderAilias);
+			if ((*itr)->dirStream != NULL) {
+				free((*itr)->dirStream);
+			}
+			free((*itr));
+			(*itr) = NULL;
 			return 0;
-		} else if (*itr->next->id == id && strcmp(itr->folderAilias, folderAilias) == 0) {
-			if (itr->next->next == NULL) {
-				free(itr->next);
-				itr->next = NULL;
+		} else if (*(*itr)->next->id == id && strcmp((*itr)->folderAilias, folderAilias) == 0) {
+			if ((*itr)->next->next == NULL) {
+
+				free((*itr)->next);
+				free((*itr)->next->id);
+				free((*itr)->next->folderAilias);
+				if ((*itr)->next->dirStream != NULL) {
+					free((*itr)->next->dirStream);
+				}
+				(*itr)->next = NULL;
 				return 0;
 			} else {
-				mounted_user *temp = itr->next;
-				itr->next = itr->next->next;
+				mounted_user *temp = (*itr)->next;
+				(*itr)->next = (*itr)->next->next;
+				free(temp->id);
+				free(temp->folderAilias);
+				if (temp->dirStream != NULL) {
+					free(temp->dirStream);
+				}
 				free(temp);
 				temp = NULL;
 				return 0;
 			}
 		}
 	}
-
 	return -1;
 }
 
@@ -268,7 +284,7 @@ int main(int argc, char const *argv[]) {
 	printf("\n");
 
 	register_procedure("fsMount",   1, fsMount);
-	register_procedure("fsUnmount", 1, fsUnmount);
+	register_procedure("fsUnmount", 2, fsUnmount);
 	register_procedure("fsOpenDir", 1, fsOpenDir);
 	printRegisteredProcedures();
 
