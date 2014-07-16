@@ -11,12 +11,11 @@
 // linked list of users that have been mounted
 typedef struct MountedUser {
 	int *id;
-	struct MountedUser *next;
+	char *folderAilias;
 	DIR *dirStream;
+	struct MountedUser *next;
 } mounted_user;
 
-int id_counter = 0; // used to give a unique ID to each user
-mounted_user *users = NULL;
 
 ////////////////////////////////////////////////////////////////////////////////
 ///                          Helper Functions Definitions
@@ -28,15 +27,18 @@ mounted_user *users = NULL;
 int giveID();
 /**
  * Adds a client to the users linked list of mounted users
+ * @param      folderAilias   - local folder of client to be ailiased to server (mounted) directory
+ * @param      folderNameSize - size in bytes of the folder name
  * @return     0 on success, -1 on failure
  */
-int* addNewClient();
+int addNewClient(char*, int);
 /**
  * Removes client reference from the users linked list
- * @param  int id - ID of the client to be deleted
- * @return     1 if success 0 if failure
+ * @param      id           - ID of the client to be deleted
+ * @param      folderAilias - folder ailias paried with given id
+ * @return     0 on success -1 on failure
  */
-int removeClientByID(int);
+int removeClient(char*, int);
 /**
  * Finds the client in the users linked list that matches the id provided
  * @param  int [id] id of the desired client
@@ -52,12 +54,22 @@ void printMountedUsers();
 /// Start of implementation
 ////////////////////////////////////////////////////////////////////////////////
 return_type r;
+int id_counter = 0; // used to give a unique ID to each user
+mounted_user *users = NULL;
 
 return_type fsMount(const int nparams, arg_type* a) {
 	#ifdef _DEBUG_1_
 	printf("in fsMount\n");
 	#endif
-	int *clientID = addNewClient();
+
+	if (nparams != 1) {
+		r.return_val  = NULL;
+		r.return_size = 0;
+		return r;
+	}
+
+	int *clientID = malloc(sizeof(int));
+	*clientID = addNewClient(a->arg_val, a->arg_size);
 
 	#ifdef _DEBUG_1_
 	printMountedUsers();
@@ -82,14 +94,17 @@ return_type fsUnmount(const int nparams, arg_type* a) {
 	printf("in fsUnmount (server side)\n");
 	#endif
 
-	if (nparams != 1) {
+	if (nparams == 2) {
 		r.return_val  = NULL;
 		r.return_size = 0;
 		return r;
 	}
 
-	int clientID = *(int*)a->arg_val;
-	removeClientByID(clientID);
+	removeClient((char*)a->arg_val, *(int*)a->next->arg_val);
+
+	#ifdef _DEBUG_1_
+	printMountedUsers();
+	#endif
 
 	int zero = 0;
 	r.return_val  = (void *)&zero;
@@ -146,15 +161,19 @@ int giveID() {
 	return newID;
 }
 
-int* addNewClient() {
+int addNewClient(char* folderAilias, int folderNameSize) {
 	
 	mounted_user *newmounted_user = malloc(sizeof(mounted_user));
-	newmounted_user->id  = malloc(sizeof(int));
+	newmounted_user->id           = malloc(sizeof(int));
+	newmounted_user->folderAilias = malloc(folderNameSize);
+
 	*newmounted_user->id = giveID();
+	strcpy(newmounted_user->folderAilias, folderAilias);
+
 	newmounted_user->next = NULL;
 
 	#ifdef _DEBUG_1_
-	printf("New user created with id: %d\nAdding to linked list\n", *newmounted_user->id);
+	printf("New user created with id: %d and folder ailias: %s\nAdding to linked list\n", *newmounted_user->id, newmounted_user->folderAilias);
 	#endif
 
 	if (users == NULL) {
@@ -162,7 +181,7 @@ int* addNewClient() {
 		#ifdef _DEBUG_1_
 		printf("List was empty. New user added to head of list\n");
 		#endif
-		return newmounted_user->id;
+		return *newmounted_user->id;
 	}
 
 	mounted_user *itr = users;
@@ -178,30 +197,34 @@ int* addNewClient() {
 	printf("Added new client to end of list\n");
 	#endif
 
-	return newmounted_user->id;
+	return *newmounted_user->id;
 }
 
-int removeClientByID(int id) {
+int removeClient(char* folderAilias, int id) {
 	
 	mounted_user *itr = users;
 	for (; itr != NULL; itr = itr->next) {
-		if (*itr->id == id && itr->next == NULL) {
+		// check if at tail and desred user
+		if (itr->next == NULL && *itr->id == id && strcmp(itr->folderAilias, folderAilias) == 0) {
 			free(itr);
 			itr = NULL;
-		} else if(*itr->next->id == id) {
+			return 0;
+		} else if (*itr->next->id == id && strcmp(itr->folderAilias, folderAilias) == 0) {
 			if (itr->next->next == NULL) {
 				free(itr->next);
 				itr->next = NULL;
+				return 0;
 			} else {
 				mounted_user *temp = itr->next;
 				itr->next = itr->next->next;
 				free(temp);
 				temp = NULL;
+				return 0;
 			}
 		}
 	}
 
-	return 0;
+	return -1;
 }
 
 mounted_user* findClientById(int id) {
@@ -217,10 +240,10 @@ mounted_user* findClientById(int id) {
 }
 
 void printMountedUsers() {
-	printf("Printing mounted user id's\n");
+	printf("Printing mounted users\n");
 	mounted_user *user = users;
 	for (; user != NULL; user = user->next) {
-		printf("\t%d\n", *user->id);
+		printf("\tID: %d, Folder ailias: %s\n", *user->id, user->folderAilias);
 	}
 	printf("\tEND\n\n");
 }
@@ -244,7 +267,7 @@ int main(int argc, char const *argv[]) {
 	}
 	printf("\n");
 
-	register_procedure("fsMount", 0, fsMount);
+	register_procedure("fsMount",   1, fsMount);
 	register_procedure("fsUnmount", 1, fsUnmount);
 	register_procedure("fsOpenDir", 1, fsOpenDir);
 	printRegisteredProcedures();

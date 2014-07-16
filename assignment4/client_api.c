@@ -7,7 +7,7 @@
 #endif
 
 struct remoteFolderServer {
-	char *name[20];
+	char *name;
 	unsigned int port;
 };
 
@@ -19,6 +19,7 @@ int clientId = -1;
 int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *localFolderName) {
 	// do similar stuff as ass1 client app
 	// save ip address and port number for subsequent remote calls
+	server.name = (char *)malloc(strlen(localFolderName));
 	strcpy(server.name, srvIpOrDomName);	
 	server.port = srvPort;
 	#ifdef _DEBUG_CLI_
@@ -26,12 +27,11 @@ int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *
 	#endif
 	return_type ans = make_remote_call( srvIpOrDomName,
 										(int)srvPort,
-										"fsMount", 0,
-										sizeof(localFolderName), (void *)(localFolderName));
+										"fsMount", 1,
+										strlen(localFolderName), (void *)(localFolderName));
 	int result = *(int*)(ans.return_val);
-	if (result == -1) {
-		return result;
-	} else if (result >= 0) {
+	
+	if (result >= 0) {
 		//save id
 		#ifdef _DEBUG_CLI_
 		printf("Successfully returned, given clientID: %d\n", result);
@@ -39,6 +39,8 @@ int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *
 		clientId = result;
 		return 0;
 	}
+
+	return -1;
 }
 
 int fsUnmount(const char *localFolderName) {
@@ -49,7 +51,7 @@ int fsUnmount(const char *localFolderName) {
 	return_type ans = make_remote_call( server.name,
 										server.port ,
 										"fsUnmount", 2,
-										sizeof(localFolderName), (void *)(localFolderName),
+										strlen(localFolderName), (void *)(localFolderName),
 										sizeof(int), (void *)(&clientId));
 	int result = *(int*)(ans.return_val);
 	return result;
@@ -59,7 +61,7 @@ FSDIR* fsOpenDir(const char *folderName) {
 	return_type ans = make_remote_call( server.name,
 										server.port ,
 										"fsOpenDir", 1,
-										sizeof(folderName), (void *)(folderName));
+										strlen(folderName), (void *)(folderName));
 	if (ans.return_size) {
 		FSDIR *nice = NULL;
 		return nice;
