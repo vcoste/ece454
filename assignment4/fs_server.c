@@ -120,6 +120,7 @@ return_type fsOpenDir(const int nparams, arg_type* a) {
 	int *retVal = malloc(sizeof(int));
 
 	if (nparams != 2 || a->arg_size != sizeof(int)) {
+		printf("Error in fsOpenDir, incorrect arguments reveived");
 		*retVal = EINVAL;
 		r.return_val = retVal;
 		return r;
@@ -127,16 +128,20 @@ return_type fsOpenDir(const int nparams, arg_type* a) {
 
 	mounted_user *user;
 	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
-
+		printf("Error in fsOpenDir, client not found\nID: %d\n", *(int*)a->arg_val);
 		*retVal = EACCES;
 		r.return_val = retVal;
 		return r;
 	} else if ((user->dirStream = opendir((char *)a->next->arg_val)) == NULL) {
-
+		perror("fsOpenDir()");
 		*retVal = errno;
 		r.return_val = retVal;
 		return r;
 	}
+
+	#ifdef _DEBUG_1_
+	printf("successfully opened directory %s\n", a->next->arg_val);
+	#endif
 
 	*retVal = 0;
 	r.return_val = retVal;
