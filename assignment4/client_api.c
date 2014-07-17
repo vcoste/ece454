@@ -59,12 +59,14 @@ int fsUnmount(const char *localFolderName) {
 }
 
 FSDIR* fsOpenDir(const char *folderName) {
+	printf("in fsOpenDir\n");
 	return_type ans = make_remote_call( server.name,
 										server.port ,
 										"fsOpenDir", 2,
 										sizeof(int), (void *)(&clientId),
 										strlen(folderName), (void *)(folderName));
-	printf("return_size: %s\n", ans.return_size);
+	printf("return_size: %d\n", ans.return_size);
+	printf("return_val: %d\n", *(int*)(ans.return_val));
 	if (ans.return_size == 0) {
 		#ifdef _DEBUG_CLI_
 		printf("return_size zero: %d\n", ans.return_size);
@@ -73,7 +75,7 @@ FSDIR* fsOpenDir(const char *folderName) {
 		//set errno before returning using a generic error
 		errno = EBADMSG;
 		return nice;
-	} else if (ans.return_val != 0) {
+	} else if (*(int*)(ans.return_val) != 0) {
 		#ifdef _DEBUG_CLI_
 		printf("return_val not zero: %d\n", *(int*)(ans.return_val));
 		#endif
@@ -83,7 +85,7 @@ FSDIR* fsOpenDir(const char *folderName) {
 		return nice;
 	} else {
 		#ifdef _DEBUG_CLI_
-		printf("checking return_val: %d\n", ans.return_val);
+		printf("checking return_val: %d\n", *(int*)(ans.return_val));
 		#endif
 		FSDIR* result;
 		result->id = clientId;

@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     FSDIR *fd = fsOpenDir(dirname);
     if(fd == NULL) {
         printf("yo!\n");
-	   perror("fsOpenDir"); exit(1);
+        perror("fsOpenDir"); exit(1);
     } else {
         printf("no errors printed so far\n");
     }
