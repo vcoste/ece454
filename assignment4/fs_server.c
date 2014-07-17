@@ -108,15 +108,17 @@ return_type fsUnmount(const int nparams, arg_type* a) {
 	printMountedUsers();
 	#endif
 
-	r.return_val  = NULL;
-	r.return_size = 0;
+	int *ret_int = (int *)malloc(sizeof(int));
+	*ret_int = 0;
+	r.return_val  = ret_int;
+	r.return_size = sizeof(int);
 	return r;
 }
 
 return_type fsOpenDir(const int nparams, arg_type* a) {
 	int retVal = 0;
 
-	if (nparams != 2) {
+	if (nparams != 2 || a->arg_size != sizeof(int)) {
 		retVal = -1;
 	}
 
