@@ -62,8 +62,8 @@ FSDIR* fsOpenDir(const char *folderName) {
 	return_type ans = make_remote_call( server.name,
 										server.port ,
 										"fsOpenDir", 2,
-										strlen(folderName), (void *)(folderName),
-										sizeof(int), (void *)(&clientId));
+										sizeof(int), (void *)(&clientId),
+										strlen(folderName), (void *)(folderName));
 	printf("return_size: %s\n", ans.return_size);
 	if (ans.return_size == 0) {
 		#ifdef _DEBUG_CLI_
