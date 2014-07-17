@@ -56,6 +56,7 @@ void printMountedUsers();
 ////////////////////////////////////////////////////////////////////////////////
 return_type r;
 int id_counter = 0; // used to give a unique ID to each user
+char* workingDirectoryName;
 mounted_user *users = NULL;
 
 return_type fsMount(const int nparams, arg_type* a) {
@@ -133,7 +134,15 @@ return_type fsOpenDir(const int nparams, arg_type* a) {
 		*retVal = EACCES;
 		r.return_val = retVal;
 		return r;
-	} else if ((user->dirStream = opendir((char *)a->next->arg_val)) == NULL) {
+	}
+
+	if (strcmp(a->next->arg_val, user->folderAilias) == 0) {
+		free(a->next->arg_val);
+		a->next->arg_val = malloc(strlen(workingDirectoryName));
+		strcpy(a->next->arg_val, workingDirectoryName);
+	}
+
+	if ((user->dirStream = opendir((char *)a->next->arg_val)) == NULL) {
 		perror("fsOpenDir()");
 		*retVal = errno;
 		r.return_val = retVal;
@@ -282,7 +291,6 @@ void printMountedUsers() {
 int main(int argc, char const *argv[]) {
 
 	DIR *workingDir;
-	struct dirent *directoryEntry;
 
 	if (argc != 2) {
 		perror("Server requires local folder to be served as argument only"); exit(1);
@@ -290,17 +298,16 @@ int main(int argc, char const *argv[]) {
 		if ((workingDir = opendir(argv[1])) == NULL) {
 			perror("Cannot open directory"); exit(1);
 		}
-		printf("Opened directory\nPrinting directory\n");
-	}
+		closedir(workingDir);
+		printf("Opened directory successfully\n");
 
-	while ((directoryEntry = readdir(workingDir)) != NULL) {
-		printf("\t%s\n", directoryEntry->d_name);
+		workingDirectoryName = malloc(strlen(argv[1]));
+		strcpy(workingDirectoryName, argv[1]);
 	}
-	printf("\n");
 
 	register_procedure("fsMount",   1, fsMount);
 	register_procedure("fsUnmount", 2, fsUnmount);
-	register_procedure("fsOpenDir", 1, fsOpenDir);
+	register_procedure("fsOpenDir", 2, fsOpenDir);
 	printRegisteredProcedures();
 
     launch_server();
