@@ -212,7 +212,7 @@ int removeClient(char* folderAilias, int id) {
 			if ((*itr)->dirStream != NULL) {
 				free((*itr)->dirStream);
 			}
-			free((*itr));
+			free(*itr);
 			(*itr) = NULL;
 			return 0;
 		} else if (*(*itr)->next->id == id && strcmp((*itr)->folderAilias, folderAilias) == 0) {
@@ -227,14 +227,14 @@ int removeClient(char* folderAilias, int id) {
 				(*itr)->next = NULL;
 				return 0;
 			} else {
-				mounted_user *temp = (*itr)->next;
+				mounted_user **temp = &(*itr)->next;
 				(*itr)->next = (*itr)->next->next;
-				free(temp->id);
-				free(temp->folderAilias);
-				if (temp->dirStream != NULL) {
-					free(temp->dirStream);
+				free((*temp)->id);
+				free((*temp)->folderAilias);
+				if ((*temp)->dirStream != NULL) {
+					free((*temp)->dirStream);
 				}
-				free(temp);
+				free(*temp);
 				temp = NULL;
 				return 0;
 			}
