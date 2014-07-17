@@ -166,7 +166,7 @@ return_type fsCloseDir(const int nparams, arg_type* a) {
 	int *retVal = malloc(sizeof(int));
 	r.return_size = sizeof(int);
 
-	if (nparams != 2 || a->arg_size != sizeof(int)) {
+	if (nparams != 1 || a->arg_size != sizeof(int)) {
 		printf("Error in fsOpenDir, incorrect arguments reveived");
 		*retVal = EINVAL;
 		r.return_val = retVal;
@@ -179,17 +179,6 @@ return_type fsCloseDir(const int nparams, arg_type* a) {
 		*retVal = EACCES;
 		r.return_val = retVal;
 		return r;
-	}
-
-	if (strcmp(a->next->arg_val, user->folderAilias) == 0) {
-		free(a->next->arg_val);
-		
-		a->next->arg_val = malloc(strlen(workingDirectoryName));
-		strcpy(a->next->arg_val, workingDirectoryName);
-
-		#ifdef _DEBUG_1_
-		printf("Folder ailias given, replaced ailias to: %s\n", a->next->arg_val);
-		#endif
 	}
 
 	if (user->dirStream != NULL || closedir(user->dirStream) == -1) {
