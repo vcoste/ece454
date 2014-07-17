@@ -140,6 +140,9 @@ return_type fsOpenDir(const int nparams, arg_type* a) {
 		free(a->next->arg_val);
 		a->next->arg_val = malloc(strlen(workingDirectoryName));
 		strcpy(a->next->arg_val, workingDirectoryName);
+		#ifdef _DEBUG_1_
+		printf("Folder ailias given, replaced ailias to: %s\n", a->next->arg_val);
+		#endif
 	}
 
 	if ((user->dirStream = opendir((char *)a->next->arg_val)) == NULL) {
