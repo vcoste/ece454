@@ -118,6 +118,7 @@ return_type fsUnmount(const int nparams, arg_type* a) {
 
 return_type fsOpenDir(const int nparams, arg_type* a) {
 	int *retVal = malloc(sizeof(int));
+	r.return_size = sizeof(int);
 
 	if (nparams != 2 || a->arg_size != sizeof(int)) {
 		printf("Error in fsOpenDir, incorrect arguments reveived");
