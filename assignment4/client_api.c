@@ -64,11 +64,17 @@ FSDIR* fsOpenDir(const char *folderName) {
 										"fsOpenDir", 1,
 										strlen(folderName), (void *)(folderName));
 	if (ans.return_size == 0) {
+		#ifdef _DEBUG_CLI_
+		printf("return_size zero: %d\n", ans.return_size);
+		#endif
 		FSDIR *nice = NULL;
 		//set errno before returning using a generic error
 		errno = EBADMSG;
 		return nice;
 	} else if (ans.return_val != 0) {
+		#ifdef _DEBUG_CLI_
+		printf("return_val not zero: %d\n", *(int*)(ans.return_val));
+		#endif
 		FSDIR *nice = NULL;
 		errno = *(int*)(ans.return_val);
 		//set errno before returning using return_val as errno
@@ -80,9 +86,8 @@ FSDIR* fsOpenDir(const char *folderName) {
 		FSDIR* result;
 		result->id = clientId;
 		result->status = *(int*)(ans.return_val);
-    	return result;	
+    	return result;
 	}
-	
 }
 
 int fsCloseDir(FSDIR *folder) {
