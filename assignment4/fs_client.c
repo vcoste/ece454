@@ -41,8 +41,8 @@ int main(int argc, char *argv[]) {
     }
     printf("dirname: %s\n", dirname);
     printf("fsMount(): %d\n", fsMount(argv[1], atoi(argv[2]), dirname));
-    printf("fsUnmount(): %d\n", fsUnmount(dirname));
-    // FSDIR *fd = fsOpenDir(dirname);
+    // printf("fsUnmount(): %d\n", fsUnmount(dirname));
+    FSDIR *fd = fsOpenDir("f1");
     // if(fd == NULL) {
     //     printf("yo!\n");
 	   // perror("fsOpenDir"); exit(1);
