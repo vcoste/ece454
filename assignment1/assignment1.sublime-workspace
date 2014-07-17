@@ -48,10 +48,32 @@
 			}
 		},
 		{
+			"file": "serverapp.c",
+			"settings":
+			{
+				"buffer_size": 2766,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "#include <stdio.h>\n#include <string.h>\n#include <stdlib.h>\n#include <arpa/inet.h>\n#include <netinet/in.h>\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <netdb.h>\n#include <unistd.h>\n#include <stdarg.h>\n#include \"ece454rpc_types.h\"\n\n#define BUF_SIZE 65507\n\n/**\n * This is used by the client application program to invoke a remote method. \n * @param  char *   name or IP address of the server to connect to\n * @param  int      port number to connect to on the server\n * @param  char *   name of the procedure to call\n * @param  int      number of parameters sent to the remote method\n * @param  ...      For each of the nparams parameters, we have two arguments:\n *                  <size of the argument,(void *) to the argument>\n * @return          the return value of the remote procedure call with the \n *                  correct type\n */\nreturn_type make_remote_call(   const char *servernameorip,\n                                const int serverportnumber,\n                                const char *procedure_name,\n                                const int nparams,\n                                ...) {\n    // setup UDP connection here\n    struct sockaddr_in server;\n    socklen_t len = sizeof(struct sockaddr_in);\n    char buf[BUF_SIZE];\n    struct hostent *host;\n    int n, s;\n\n    host = gethostbyname(servernameorip);\n    if(host == NULL) {\n        // Hostname not found\n        perror(\"gethostbyname\");\n        return_type *return_error = malloc(sizeof(*return_error));\n        int zero_size = 0;\n        memcpy(&(return_error->return_size), &zero_size, sizeof(zero_size));\n        return_error->return_val = malloc(return_error->return_size);\n        memcpy( return_error->return_val, \n                NULL, \n                return_error->return_size);\n        return *return_error;\n    }\n\n    // initialize socket\n    if((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {\n        // Error with socket\n        perror(\"socket\");\n        return_type *return_error = malloc(sizeof(*return_error));\n        int zero_size = 0;\n        memcpy(&(return_error->return_size), &zero_size, sizeof(zero_size));\n        return_error->return_val = malloc(return_error->return_size);\n        memcpy( return_error->return_val, \n                NULL, \n                return_error->return_size);\n        close(s);\n        return *return_error;\n    }\n\n    //initialize server addr\n    memset((char *) &server, 0, sizeof(struct sockaddr_in));\n    server.sin_family = AF_INET;\n    server.sin_port = htons(serverportnumber);\n    server.sin_addr = *((struct in_addr*) host->h_addr);\n\n    // construct procedure_call buffer\n    char procedure_call[BUF_SIZE];\n    void * index = procedure_call;\n\n    // copy name of the procedure into procedure_call\n    strcpy(index, procedure_name);\n    index += strlen(procedure_name)+1;\n\n    // copy number of params into procedure_call\n    memcpy((void *)(index), (void *)&nparams, sizeof(int));\n    index += sizeof(int);\n\n    // populating list of arguments into procedure_call\n    va_list arguments;\n    va_start(arguments, nparams);\n    int i;\n    for(i = 0; i < nparams; ++i) {\n        int arg_size = va_arg(arguments, int); \n        memcpy((void *)(index), (void *)&arg_size, sizeof(int));\n        index += sizeof(int);\n\n        void * arg = va_arg(arguments, void *); \n        memcpy((void *)(index), (void *)arg, arg_size);\n        index += arg_size;\n    }\n    \n    // send message\n    if(sendto(  s,\n                procedure_call,\n                sizeof(procedure_call),\n                0,\n                (struct sockaddr *) &server,\n                len) == -1) {\n        perror(\"sendto()\");\n        return_type *return_error = malloc(sizeof(*return_error));\n        int zero_size = 0;\n        memcpy(&(return_error->return_size), &zero_size, sizeof(zero_size));\n        return_error->return_val = malloc(return_error->return_size);\n        memcpy( return_error->return_val, \n                NULL, \n                return_error->return_size);\n        close(s);\n        return *return_error;\n    }\n\n    // receive response.\n    if((n = recvfrom(  s,\n                       buf,\n                       BUF_SIZE,\n                       0,\n                       (struct sockaddr *) &server,\n                       &len)) != -1) {\n        printf(\"In received response (client_stub)\\n\");\n        // received something\n        fflush(stdout);\n\n        if(len>BUF_SIZE) {\n            printf(\"zero size buf (client_stub)\\n\");\n            // Error, BUF_SIZE is too small\n            return_type *return_error = malloc(sizeof(*return_error));\n            int zero_size = 0;\n            memcpy(&(return_error->return_size), &zero_size, sizeof(zero_size));\n            return_error->return_val = malloc(return_error->return_size);\n            memcpy( return_error->return_val, \n                    NULL, \n                    return_error->return_size);\n            close(s);\n            return *return_error;\n        } else {\n            printf(\"parsing response (client_stub)\\n\");\n            // parsing response and creating return_type response object\n            return_type *response = malloc(sizeof(*response));\n            memcpy(&(response->return_size), buf, sizeof(int));\n            if(response->return_size == 0) {\n                printf(\"return_size = 0\\n\");\n                response->return_val = NULL;\n            } else {\n                response->return_val = malloc(response->return_size);\n                memcpy( response->return_val, \n                    (buf + sizeof(int)), \n                    response->return_size);\n            }\n            \n            close(s);\n            return *response;\n        }\n    } else {\n        printf(\"Did NOT receive response (client_stub)\\n\");\n        // nothing received from server, idk if this is used\n\n        return_type *return_error = malloc(sizeof(*return_error));\n        int zero_size = 0;\n        memcpy(&(return_error->return_size), &zero_size, sizeof(zero_size));\n        return_error->return_val = malloc(return_error->return_size);\n        memcpy( return_error->return_val, \n                NULL, \n                return_error->return_size);\n        close(s);\n        return *return_error;\n    }    \n}\n",
 			"file": "client_stub.c",
+			"file_size": 6216,
+			"file_write_time": 130483752520000000,
 			"settings":
 			{
 				"buffer_size": 6216,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "#include <stdio.h>\n#include <stdlib.h>\n#include \"ece454rpc_types.h\"\n\nint main(int argc, char **argv)\n{\n	char *arg1Str = \"ab\";\n	char *arg2Str = \"cd\";\n	char *arg3Str = \"ef\";\n\n	int arg1Int = 4;\n	int arg2Int = 8;\n	int arg3Int = 5;\n	int arg4Int = 5;\n	int arg5Int = 5;\n\n\n	if (argc == 3){\n\n		printf(\"Sending arg1: %s, arg2: %s\\n\", arg1Str, arg2Str);\n		return_type ans = make_remote_call( argv[1],\n											atoi(argv[2]),\n											\"concattwo\", 2,\n											sizeof(arg1Str), (void *)(arg1Str),\n											sizeof(arg2Str), (void *)(arg2Str));\n		char *result = (char *)ans.return_val;\n		printf(\"Concat, client, got result: %s\\n\", result);\n\n		return_type ans2 = make_remote_call(	argv[1],\n												atoi(argv[2]),\n												\"addtwo\", 2,\n												sizeof(arg1Int), (void *)(&arg1Int),\n												sizeof(arg2Int), (void *)(&arg2Int));\n		int result2 = *(int*)ans2.return_val;\n		printf(\"Add, client got result: %d\\n\", result2);\n\n		return_type ans3 = make_remote_call(	argv[1],\n												atoi(argv[2]),\n												\"addthree\", 5,\n												sizeof(arg1Int), (void *)(&arg1Int),\n												sizeof(arg2Int), (void *)(&arg2Int),\n												sizeof(arg3Int), (void *)(&arg3Int),\n												sizeof(arg4Int), (void *)(&arg4Int),\n												sizeof(arg5Int), (void *)(&arg5Int));\n		int result3 = *(int*)ans3.return_val;\n		printf(\"Add, client got result: %d\\n\", result3);\n	} else {\n		printf(\"Not enough args\\nUseage: <ip address> <port>\\n\");\n	}\n	return 0;\n}",
+			"file": "clientapp.c",
+			"file_size": 1449,
+			"file_write_time": 130457826580000000,
+			"settings":
+			{
+				"buffer_size": 1449,
 				"line_ending": "Unix"
 			}
 		},
@@ -229,7 +251,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 3,
 			"sheets":
 			[
 				{
@@ -245,8 +267,8 @@
 						"selection":
 						[
 							[
-								1510,
-								1516
+								891,
+								891
 							]
 						],
 						"settings":
@@ -254,14 +276,43 @@
 							"syntax": "Packages/C++/C++.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 646.0,
+						"translation.y": 3295.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
+					"file": "serverapp.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2766,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2226,
+								2226
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1225.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
 					"file": "client_stub.c",
 					"semi_transient": false,
 					"settings":
@@ -273,8 +324,8 @@
 						"selection":
 						[
 							[
-								3006,
-								3013
+								38,
+								38
 							]
 						],
 						"settings":
@@ -284,14 +335,43 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1249.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 3,
+					"file": "clientapp.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1449,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1066,
+								1073
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
 					"file": "resources.txt",
 					"semi_transient": false,
 					"settings":

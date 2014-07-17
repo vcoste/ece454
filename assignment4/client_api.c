@@ -1,6 +1,7 @@
 #include "ece454_fs.h"
 #include <string.h>
 #include <stdlib.h>
+#include <errno.h>
 
 #if 1
 #define _DEBUG_CLI_
@@ -62,11 +63,26 @@ FSDIR* fsOpenDir(const char *folderName) {
 										server.port ,
 										"fsOpenDir", 1,
 										strlen(folderName), (void *)(folderName));
-	if (ans.return_size) {
+	if (ans.return_size == 0) {
 		FSDIR *nice = NULL;
+		//set errno before returning using a generic error
+		errno = EBADMSG;
 		return nice;
+	} else if (ans.return_val != 0) {
+		FSDIR *nice = NULL;
+		errno = *(int*)(ans.return_val);
+		//set errno before returning using return_val as errno
+		return nice;
+	} else {
+		#ifdef _DEBUG_CLI_
+		printf("checking return_val: %d\n", ans.return_val);
+		#endif
+		FSDIR* result;
+		result->id = clientId;
+		result->status = *(int*)(ans.return_val);
+    	return result;	
 	}
-    return NULL; // TODO return FSDIR new implementation
+	
 }
 
 int fsCloseDir(FSDIR *folder) {
