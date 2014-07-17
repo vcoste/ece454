@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #include "fsOtherIncludes.h"
 
@@ -116,23 +117,29 @@ return_type fsUnmount(const int nparams, arg_type* a) {
 }
 
 return_type fsOpenDir(const int nparams, arg_type* a) {
-	int retVal = 0;
+	int *retVal = malloc(sizeof(int));
 
 	if (nparams != 2 || a->arg_size != sizeof(int)) {
-		retVal = -1;
+		*retVal = EINVAL;
+		r.return_val = retVal;
+		return r;
 	}
 
 	mounted_user *user;
 	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
 
-		retVal = -1;
+		*retVal = EACCES;
+		r.return_val = retVal;
+		return r;
 	} else if ((user->dirStream = opendir((char *)a->next->arg_val)) == NULL) {
 
-		perror("fsOpenDir()"); 
-		retVal = -1;
+		*retVal = errno;
+		r.return_val = retVal;
+		return r;
 	}
 
-	r.return_size = sizeof(int);
+	*retVal = 0;
+	r.return_val = retVal;
 	return r;
 }
 
