@@ -163,23 +163,50 @@ return_type fsOpenDir(const int nparams, arg_type* a) {
 
 return_type fsCloseDir(const int nparams, arg_type* a) {
 
-	int retVal = 0;
+	int *retVal = malloc(sizeof(int));
+	r.return_size = sizeof(int);
 
-	if (nparams != 2) {
-		retVal = -1;
+	if (nparams != 2 || a->arg_size != sizeof(int)) {
+		printf("Error in fsOpenDir, incorrect arguments reveived");
+		*retVal = EINVAL;
+		r.return_val = retVal;
+		return r;
 	}
 
 	mounted_user *user;
 	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
 
-		retVal = -1;
-	} else if (user->dirStream != NULL || closedir(user->dirStream) == -1) {
-
-		perror("fsCloseDir()"); 
-		retVal = -1;
+		*retVal = EACCES;
+		r.return_val = retVal;
+		return r;
 	}
 
-	r.return_size = sizeof(int);
+	if (strcmp(a->next->arg_val, user->folderAilias) == 0) {
+		free(a->next->arg_val);
+		
+		a->next->arg_val = malloc(strlen(workingDirectoryName));
+		strcpy(a->next->arg_val, workingDirectoryName);
+
+		#ifdef _DEBUG_1_
+		printf("Folder ailias given, replaced ailias to: %s\n", a->next->arg_val);
+		#endif
+	}
+
+	if (user->dirStream != NULL || closedir(user->dirStream) == -1) {
+
+		perror("fsCloseDir()"); 
+		*retVal = errno;
+		r.return_val = retVal;
+		return r;
+	}
+
+	*retVal = 0;
+	r.return_val = retVal;
+	return r;
+}
+
+return_type fsReadDir(const int nparams, arg_type* a) {
+
 	return r;
 }
 
