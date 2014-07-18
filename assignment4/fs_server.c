@@ -122,6 +122,18 @@ return_type fsOpenDir(const int nparams, arg_type* a) {
 	int *retVal = malloc(sizeof(int));
 	r.return_size = sizeof(int);
 
+	#ifdef _DEBUG_1_
+	printf("In fsOpenDir, %d arugments:\n", nparams);
+	if (nparams > 0) {
+		printf("Size of arg1: %d\n", a->arg_size);
+		printf("Value arg1: %d\n", a->arg_val);
+	}
+	if (nparams > 1) {
+		printf("Size of arg2: %d\n", a->arg_size);
+		printf("Value arg2: %d\n", a->arg_val);
+	}
+	#endif
+
 	if (nparams != 2 || a->arg_size != sizeof(int)) {
 		printf("Error in fsOpenDir, incorrect arguments reveived\n");
 		*retVal = EINVAL;
