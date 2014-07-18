@@ -61,7 +61,7 @@ int fsUnmount(const char *localFolderName) {
 FSDIR* fsOpenDir(const char *folderName) {
 	printf("in fsOpenDir, clientId: %d, folderName: %s\n", clientId, folderName);
 	return_type ans = make_remote_call( server.name,
-										server.port ,
+										server.port,
 										"fsOpenDir", 2,
 										sizeof(int), (void *)(&clientId),
 										strlen(folderName), (void *)(folderName));
@@ -132,7 +132,7 @@ struct fsDirent *fsReadDir(FSDIR *folder) {
 	return_type ans = make_remote_call( server.name,
 										server.port ,
 										"fsReadDir", 1,
-										sizeof(int), (void *)((folder->id)));
+										sizeof(int), (void *)(&clientId));
 
 	
 	if (ans.return_size == 0) {
