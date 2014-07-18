@@ -177,25 +177,35 @@ int fsOpen(const char *fname, int mode) {
 		#endif
 		errno = EBADMSG;
 		return -1;
-	}
-
-	int fd = *(int*)(ans.return_val);
-	if (fd >= 0) {
-		#ifdef _DEBUG_CLI_
-		printf("positive fd: %d\n", fd);
-		#endif
-		return fd;
 	} else {
-		#ifdef _DEBUG_CLI_
-		printf("negative fd: %d, errno: %s\n", fd, strerror(fd));
-		#endif
-		errno = fd;
-		return -1;
+		int *status = (int*)malloc(sizeof(int));
+		memcpy( status, 
+                ans.return_val, 
+                sizeof(int));
+		char * index = (char*)(ans.return_val);
+		index += sizeof(int);
+		printf("status: %d\n", status);
+		int *val = (int*)malloc(sizeof(int));
+		memcpy( val, 
+        	    index, 
+            	sizeof(int));
+		if (status == 0){
+			#ifdef _DEBUG_CLI_
+			printf("positive val: %d\n", *val);
+			#endif
+			return *val;
+		} else {
+			errno = *val;
+			#ifdef _DEBUG_CLI_
+			printf("negative val: %d, errno: %s\n", *val, strerror(errno));
+			#endif
+			return -1;
+		}
 	}
-	
 }
 
 int fsClose(int fd) {
+
     return(close(fd));
 }
 
