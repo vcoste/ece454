@@ -320,7 +320,7 @@ return_type fsOpen(const int nparams, arg_type* a) {
 	if (*(int*)a->next->next->arg_val == 0) {
 		openFlags = O_RDONLY | O_NONBLOCK;
 	} else if (*(int*)a->next->next->arg_val == 1) {
-		openFlags = O_WRONLY | O_CREAT;
+		openFlags = O_WRONLY | O_CREAT | O_NONBLOCK;
 	} else {
 		printf("Unrecognized value for open mode\n");
 		errorDescriptor = -1;
