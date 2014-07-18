@@ -161,16 +161,38 @@ struct fsDirent *fsReadDir(FSDIR *folder) {
 }
 
 int fsOpen(const char *fname, int mode) {
-    int flags = -1;
+	#ifdef _DEBUG_CLI_
+	printf("in fsOpen\n");
+	#endif
+	return_type ans = make_remote_call( server.name,
+										server.port ,
+										"fsOpen", 3,
+										sizeof(int), (void *)(&clientId),
+										strlen(fname), (void *)(fname),
+										sizeof(int), (void *)(&mode));
+	if (ans.return_size == 0) {
+		//error set errno
+		#ifdef _DEBUG_CLI_
+		printf("return_size zero: %d\n", ans.return_size);
+		#endif
+		errno = EBADMSG;
+		return -1;
+	}
 
-    if(mode == 0) {
-	flags = O_RDONLY;
-    }
-    else if(mode == 1) {
-	flags = O_WRONLY | O_CREAT;
-    }
-
-    return(open(fname, flags, S_IRWXU));
+	int fd = *(int*)(ans.return_val);
+	if (fd >= 0) {
+		#ifdef _DEBUG_CLI_
+		printf("positive fd: %d\n", fd);
+		#endif
+		return fd;
+	} else {
+		#ifdef _DEBUG_CLI_
+		printf("negative fd: %d, errno: %s\n", fd, strerror(fd));
+		#endif
+		errno = fd;
+		return -1;
+	}
+	
 }
 
 int fsClose(int fd) {
