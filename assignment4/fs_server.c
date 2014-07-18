@@ -3,6 +3,7 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 
 #include "fsOtherIncludes.h"
 
@@ -10,11 +11,17 @@
 #define _DEBUG_1_
 #endif
 
+typedef struct FileDescriptor {
+	int value;
+	struct FileDescriptor *next;
+} file_descriptor;
+
 // linked list of users that have been mounted
 typedef struct MountedUser {
 	int *id;
 	char *folderAilias;
 	DIR *dirStream;
+	file_descriptor *fd;
 	struct MountedUser *next;
 } mounted_user;
 
@@ -273,6 +280,74 @@ return_type fsReadDir(const int nparams, arg_type* a) {
 	printf("Returning buffer of size: %d\n", r.return_size);
 	#endif
 
+	return r;
+}
+
+return_type fsOpen(const int nparams, arg_type* a) {
+
+	char *retBuffer = malloc(2*sizeof(int));
+	int errorDescriptor = 0;
+	int returnValue = 0;
+
+	if (nparams != 3 || a->arg_size != sizeof(int)) {
+		printf("Error in fsReadDir, incorrect arguments reveived\n");
+		errorDescriptor = -1;
+		returnValue = EINVAL;
+		memcpy(retBuffer, &errorDescriptor, sizeof(int));
+		memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
+
+		r.return_val = retBuffer;
+		r.return_size = 2*sizeof(int);
+		return r;
+	}
+
+	mounted_user *user;
+	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
+		printf("Error in fsReadDir, clientID not found: %d\n", *(int*)a->arg_val);
+		errorDescriptor = -1;
+		returnValue = EACCES;
+		memcpy(retBuffer, &errorDescriptor, sizeof(int));
+		memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
+
+		r.return_val = retBuffer;
+		r.return_size = 2*sizeof(int);
+		return r;
+	}
+
+	file_descriptor *newFd = malloc(sizeof(file_descriptor));
+	newFd->next = NULL;
+
+	if ((newFd->value = open(a->next->arg_val, *(int*)a->next->next->arg_val)) == -1) {
+		perror("fsOpen");
+		// error
+		errorDescriptor = -1;
+		returnValue = errno;
+		memcpy(retBuffer, &errorDescriptor, sizeof(int));
+		memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
+
+		r.return_val = retBuffer;
+		r.return_size = 2*sizeof(int);
+		return r;
+	}
+
+	if (users->fd == NULL) {
+		users->fd = newFd;
+	} else {
+		file_descriptor *itr = users->fd;
+		for(; itr != NULL; itr = itr->next) {
+			if (itr->next == NULL) {
+				itr->next = newFd;
+				break;
+			}
+		}
+	}
+
+	returnValue = newFd->value;
+	memcpy(retBuffer, &errorDescriptor, sizeof(int));
+	memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
+
+	r.return_val = retBuffer;
+	r.return_size = 2*sizeof(int);
 	return r;
 }
 
