@@ -268,7 +268,7 @@ return_type fsReadDir(const int nparams, arg_type* a) {
 	r.return_size = sizeof(int)+strlen(currentDirent->d_name);
 
 	#ifdef _DEBUG_1_
-	printf("Read fileName: %s, with strlen: %d\n", currentDirent->d_name, strlen(currentDirent->d_name));
+	printf("Read fileName: %s, with strlen: %lu\n", currentDirent->d_name, strlen(currentDirent->d_name));
 	printf("Returning buffer of size: %d\n", r.return_size);
 	#endif
 
@@ -482,6 +482,10 @@ char* transformPath(char* folderAilias, char* pathGiven) {
 	int indexOfFileName = 0; // looks for the start of alpha character, the path can potentially start with slashes and/or periods
 	char* transformedPath;
 
+	#ifdef _DEBUG_1_
+	printf("\tIn transformPath, folderAilias: %s, pathGiven: %s\n", folderAilias, pathGiven);
+	#endif
+
 	while (foundFolderAilias == 0) {
 		if (pathGiven[indexOfFileName] == '/' || pathGiven[indexOfFileName] == '.') {
 			indexOfFileName++;
@@ -492,16 +496,28 @@ char* transformPath(char* folderAilias, char* pathGiven) {
 	// indexOfFileName now starts at where the filename acutally starts
 	// compare with folderAilias to see if it needs to be replaced
 	if (strncmp(&pathGiven[indexOfFileName], folderAilias, strlen(folderAilias)) == 0 && pathGiven[indexOfFileName+strlen(folderAilias)] == '/') {
+
+		#ifdef _DEBUG_1_
+		printf("\tFolder ailias in path given\n");
+		#endif
+
 		transformedPath = (char*)malloc(strlen(workingDirectoryName)+strlen(pathGiven)-strlen(folderAilias)-1);
 
 		memcpy(transformedPath, pathGiven, indexOfFileName);
 		memcpy(transformedPath+indexOfFileName, workingDirectoryName, strlen(workingDirectoryName)-1);
 		strcpy(transformedPath+indexOfFileName+strlen(workingDirectoryName)-1, &pathGiven[indexOfFileName+strlen(folderAilias)]);
 	} else {
+		#ifdef _DEBUG_1_
+		printf("\tNo folder ailias in path given, just appending workingDirectoryName\n");
+		#endif
 		transformedPath = (char*)malloc(strlen(workingDirectoryName)+strlen(pathGiven));
 		memcpy(transformedPath, workingDirectoryName, strlen(workingDirectoryName));
 		memcpy(transformedPath+strlen(workingDirectoryName), pathGiven, strlen(pathGiven));
 	}
+
+	#ifdef _DEBUG_1_
+	printf("\tPath transformed: %s\n", transformedPath);
+	#endif
 
 	return transformedPath;
 }
