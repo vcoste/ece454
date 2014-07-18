@@ -184,7 +184,7 @@ int fsOpen(const char *fname, int mode) {
                 sizeof(int));
 		char * index = (char*)(ans.return_val);
 		index += sizeof(int);
-		printf("status: %d\n", status);
+		printf("status: %d\n", *status);
 		int *val = (int*)malloc(sizeof(int));
 		memcpy( val, 
         	    index, 
