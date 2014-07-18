@@ -59,35 +59,20 @@ int main(int argc, char *argv[]) {
     // for(fdent = fsReadDir(fd); fdent != NULL; fdent = fsReadDir(fd)) {
     //    printf("\t %s, %d\n", fdent->entName, (int)(fdent->entType));
     // }
+    
+    char fname[256];
+    sprintf(fname, "%s/", 'abc');
+
+    int ff = fsOpen(fname, 1);
+    if(ff < 0) {
+    perror("fsOpen(write)"); exit(1);
+    }
+
+    printf("fsOpen had no errors\n");
 
     // printf("fsCloseDir(): %d\n", fsCloseDir(fd));
 
     return 0;
-
-    // char *dirname = NULL;
-
-    // if(argc > 1) dirname = argv[1];
-    // else {
-    // dirname = (char *)calloc(strlen(".")+1, sizeof(char));
-    // strcpy(dirname, ".");
-    // }
-
-    // printf("fsMount(): %d\n", fsMount(NULL, 0, dirname));
-    // FSDIR *fd = fsOpenDir(dirname);
-    // if(fd == NULL) {
-    // perror("fsOpenDir"); exit(1);
-    // }
-
-    // struct fsDirent *fdent = NULL;
-    // for(fdent = fsReadDir(fd); fdent != NULL; fdent = fsReadDir(fd)) {
-    // printf("\t %s, %d\n", fdent->entName, (int)(fdent->entType));
-    // }
-
-    // if(errno != 0) {
-    // perror("fsReadDir");
-    // }
-
-    // printf("fsCloseDir(): %d\n", fsCloseDir(fd));
 
     // int ff = open("/dev/urandom", 0);
     // if(ff < 0) {

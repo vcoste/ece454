@@ -481,6 +481,7 @@ int main(int argc, char const *argv[]) {
 	register_procedure("fsOpenDir", 2, fsOpenDir);
 	register_procedure("fsCloseDir", 1, fsCloseDir);
 	register_procedure("fsReadDir", 1, fsReadDir);
+	register_procedure("fsOpen", 3, fsOpen);
 	printRegisteredProcedures();
 
     launch_server();
