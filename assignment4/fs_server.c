@@ -112,7 +112,7 @@ return_type fsUnmount(const int nparams, arg_type* a) {
 	}
 
 	if (removeClient((char*)a->arg_val, *(int*)a->next->arg_val) == -1) {
-		printf("removeClient failed\n");
+		printf("\tremoveClient failed\n");
 	}
 
 	#ifdef _DEBUG_1_
@@ -133,17 +133,17 @@ return_type fsOpenDir(const int nparams, arg_type* a) {
 	#ifdef _DEBUG_1_
 	printf("In fsOpenDir, %d arugments:\n", nparams);
 	if (nparams > 0) {
-		printf("Size of arg1: %d\n", a->arg_size);
-		printf("Value arg1: %d\n", *(int*)(a->arg_val));
+		printf("\tSize of arg1: %d\n", a->arg_size);
+		printf("\tValue arg1: %d\n", *(int*)(a->arg_val));
 	}
 	if (nparams > 1) {
-		printf("Size of arg2: %d\n", a->next->arg_size);
-		printf("Value arg2: %s\n", a->next->arg_val);
+		printf("\tSize of arg2: %d\n", a->next->arg_size);
+		printf("\tValue arg2: %s\n", a->next->arg_val);
 	}
 	#endif
 
 	if (nparams != 2 || a->arg_size != sizeof(int)) {
-		printf("Error in fsOpenDir, incorrect arguments reveived\n");
+		printf("\tError in fsOpenDir, incorrect arguments reveived\n");
 		*retVal = EINVAL;
 		r.return_val = retVal;
 		return r;
@@ -151,21 +151,21 @@ return_type fsOpenDir(const int nparams, arg_type* a) {
 
 	mounted_user *user;
 	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
-		printf("Error in fsOpenDir, client not found\nID: %d\n", *(int*)a->arg_val);
+		printf("\tError in fsOpenDir, client not found\nID: %d\n", *(int*)a->arg_val);
 		*retVal = EACCES;
 		r.return_val = retVal;
 		return r;
 	}
-	printf("transform: %s\n", transformPath(user->folderAilias, (char *)a->next->arg_val));
+	printf("\ttransform: %s\n", transformPath(user->folderAilias, (char *)a->next->arg_val));
 	if ((user->dirStream = opendir(transformPath(user->folderAilias, (char *)a->next->arg_val))) == NULL) {
-		perror("fsOpenDir()");
+		perror("\tfsOpenDir()");
 		*retVal = errno;
 		r.return_val = retVal;
 		return r;
 	}
 
 	#ifdef _DEBUG_1_
-	printf("successfully opened directory %s\n", a->next->arg_val);
+	printf("\tsuccessfully opened directory %s\n", a->next->arg_val);
 	#endif
 
 	*retVal = 0;
@@ -179,7 +179,7 @@ return_type fsCloseDir(const int nparams, arg_type* a) {
 	r.return_size = sizeof(int);
 
 	if (nparams != 1 || a->arg_size != sizeof(int)) {
-		printf("Error in fsCLoseDir, incorrect arguments reveived\n");
+		printf("\tError in fsCLoseDir, incorrect arguments reveived\n");
 		*retVal = EINVAL;
 		r.return_val = retVal;
 		return r;
@@ -195,7 +195,7 @@ return_type fsCloseDir(const int nparams, arg_type* a) {
 
 	if (user->dirStream != NULL || closedir(user->dirStream) == -1) {
 
-		perror("fsCloseDir()"); 
+		perror("\tfsCloseDir()"); 
 		*retVal = errno;
 		r.return_val = retVal;
 		return r;
@@ -212,7 +212,7 @@ return_type fsReadDir(const int nparams, arg_type* a) {
 	struct stat st;
 
 	if (nparams != 1 || a->arg_size != sizeof(int)) {
-		printf("Error in fsReadDir, incorrect arguments reveived\n");
+		printf("\tError in fsReadDir, incorrect arguments reveived\n");
 		retVal = malloc(sizeof(int));
 		*retVal = EINVAL;
 		r.return_val = retVal;
@@ -222,7 +222,7 @@ return_type fsReadDir(const int nparams, arg_type* a) {
 
 	mounted_user *user;
 	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
-		printf("Error in fsReadDir, clientID not found: %d\n", *(int*)a->arg_val);
+		printf("\tError in fsReadDir, clientID not found: %d\n", *(int*)a->arg_val);
 		retVal = malloc(sizeof(int));
 		*retVal = EACCES;
 		r.return_val = retVal;
@@ -235,7 +235,7 @@ return_type fsReadDir(const int nparams, arg_type* a) {
 	if ((currentDirent = readdir(user->dirStream)) == NULL) {
 		// either at end of entries or error
 		if (errno != 0) {
-			perror("fsReadDir");
+			perror("\tfsReadDir");
 			// error
 			retVal = malloc(sizeof(int));
 			*retVal = errno;
@@ -243,7 +243,7 @@ return_type fsReadDir(const int nparams, arg_type* a) {
 			r.return_size = sizeof(int);
 			return r;
 		}
-		printf("At end of folder\n");
+		printf("\tAt end of folder\n");
 		
 		r.return_val = NULL;
 		r.return_size = 0;
@@ -268,8 +268,8 @@ return_type fsReadDir(const int nparams, arg_type* a) {
 	r.return_size = sizeof(int)+strlen(currentDirent->d_name);
 
 	#ifdef _DEBUG_1_
-	printf("Read fileName: %s, with strlen: %lu\n", currentDirent->d_name, strlen(currentDirent->d_name));
-	printf("Returning buffer of size: %d\n", r.return_size);
+	printf("\tRead fileName: %s, with strlen: %lu\n", currentDirent->d_name, strlen(currentDirent->d_name));
+	printf("\tReturning buffer of size: %d\n", r.return_size);
 	#endif
 
 	return r;
@@ -283,7 +283,7 @@ return_type fsOpen(const int nparams, arg_type* a) {
 	int openFlags;
 
 	if (nparams != 3 || a->arg_size != sizeof(int)) {
-		printf("Error in fsReadDir, incorrect arguments reveived\n");
+		printf("\tError in fsReadDir, incorrect arguments reveived\n");
 		errorDescriptor = -1;
 		returnValue = EINVAL;
 		memcpy(retBuffer, &errorDescriptor, sizeof(int));
@@ -296,7 +296,7 @@ return_type fsOpen(const int nparams, arg_type* a) {
 
 	mounted_user *user;
 	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
-		printf("Error in fsReadDir, clientID not found: %d\n", *(int*)a->arg_val);
+		printf("\tError in fsReadDir, clientID not found: %d\n", *(int*)a->arg_val);
 		errorDescriptor = -1;
 		returnValue = EACCES;
 		memcpy(retBuffer, &errorDescriptor, sizeof(int));
@@ -311,16 +311,16 @@ return_type fsOpen(const int nparams, arg_type* a) {
 	newFd->next = NULL;
 	if (*(int*)a->next->next->arg_val == 0) {
 		#ifdef _DEBUG_1_
-		printf("In fsOpen, read call\n");
+		printf("\tIn fsOpen, read call\n");
 		#endif
 		openFlags = O_RDONLY | O_NONBLOCK;
 	} else if (*(int*)a->next->next->arg_val == 1) {
 		#ifdef _DEBUG_1_
-		printf("In fsOpen, write call\n");
+		printf("\tIn fsOpen, write call\n");
 		#endif
 		openFlags = O_WRONLY | O_CREAT | O_NONBLOCK;
 	} else {
-		printf("Unrecognized value for open mode\n");
+		printf("\tUnrecognized value for open mode\n");
 		errorDescriptor = -1;
 		returnValue = EINVAL;
 		memcpy(retBuffer, &errorDescriptor, sizeof(int));
@@ -332,11 +332,11 @@ return_type fsOpen(const int nparams, arg_type* a) {
 	}
 
 	#ifdef _DEBUG_1_
-	printf("calling system open call, file name: %s, mode: %d, flags generated: %d\n", a->next->arg_val, *(int*)a->next->next->arg_val, openFlags);
+	printf("\tcalling system open call, file name: %s, mode: %d, flags generated: %d\n", a->next->arg_val, *(int*)a->next->next->arg_val, openFlags);
 	#endif
 
 	if ((newFd->value = open(transformPath(user->folderAilias, a->next->arg_val), openFlags)) == -1) {
-		perror("fsOpen");
+		perror("\tfsOpen");
 		// error
 		errorDescriptor = -1;
 		returnValue = errno;
@@ -349,7 +349,7 @@ return_type fsOpen(const int nparams, arg_type* a) {
 	}
 
 	#ifdef _DEBUG_1_
-	printf("success from open, fd: %d\n", newFd->value);
+	printf("\tsuccess from open, fd: %d\n", newFd->value);
 	#endif
 
 	if (users->fd == NULL) {
@@ -398,12 +398,12 @@ int addNewClient(char* folderAilias, int folderNameSize) {
 
 	*newmounted_user->id = giveID();
 	memcpy(newmounted_user->folderAilias, folderAilias, folderNameSize);
-	newmounted_user->folderAilias[folderNameSize-1] = '\0';
+	newmounted_user->folderAilias[folderNameSize] = '\0';
 
 	newmounted_user->next = NULL;
 
 	#ifdef _DEBUG_1_
-	printf("\tNew user created with id: %d and folder ailias: %s\n\tAdding to linked list\n", *newmounted_user->id, newmounted_user->folderAilias);
+	printf("\tNew user created with id: %d and folder ailias: %s\n\tAdding to linked list...\n", *newmounted_user->id, newmounted_user->folderAilias);
 	#endif
 
 	if (users == NULL) {
