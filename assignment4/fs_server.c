@@ -384,14 +384,14 @@ int addNewClient(char* folderAilias, int folderNameSize) {
 	mounted_user *newmounted_user = malloc(sizeof(mounted_user));
 	newmounted_user->id           = malloc(sizeof(int));
 
-	if (newmounted_user->folderAilias[folderNameSize-1] == '/') {
+	if (folderAilias[folderNameSize-1] == '/') {
 		folderNameSize--;
 	}
 	newmounted_user->folderAilias = malloc(folderNameSize);
 
 	*newmounted_user->id = giveID();
 	strncpy(newmounted_user->folderAilias, folderAilias, folderNameSize-1);
-	newmounted_user->folderAilias[folderNameSize-2] = '\0';
+	newmounted_user->folderAilias[folderNameSize-1] = '\0';
 
 	newmounted_user->next = NULL;
 
