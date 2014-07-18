@@ -33,7 +33,7 @@ void printBuf(char *buf, int size) {
 int main(int argc, char *argv[]) {
     char *dirname = NULL;
 
-    if(argc > 1) 
+    if(argc > 3) 
         dirname = argv[3];
     else {
         dirname = (char *)calloc(strlen(".")+1, sizeof(char));
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
     // }
     
     char fname[256];
-    sprintf(fname, "%s/", "abc");
+    sprintf(fname, "%s", "abc");
 
     int ff = fsOpen(fname, 1);
     if(ff < 0) {

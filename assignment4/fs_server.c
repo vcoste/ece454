@@ -54,6 +54,7 @@ int removeClient(char*, int);
  * @return     [mounted_user] NULL if not found
  */
 mounted_user* findClientById(int);
+char* transformPath(char*, char*);
 /**
  * Prints the ids in the mounted_users linked list
  */
@@ -156,16 +157,7 @@ return_type fsOpenDir(const int nparams, arg_type* a) {
 		return r;
 	}
 
-	if (strcmp(a->next->arg_val, user->folderAilias) == 0) {
-		free(a->next->arg_val);
-		a->next->arg_val = malloc(strlen(workingDirectoryName));
-		strcpy(a->next->arg_val, workingDirectoryName);
-		#ifdef _DEBUG_1_
-		printf("Folder ailias given, replaced ailias to: %s\n", a->next->arg_val);
-		#endif
-	}
-
-	if ((user->dirStream = opendir((char *)a->next->arg_val)) == NULL) {
+	if ((user->dirStream = opendir(transformPath(user->folderAilias, (char *)a->next->arg_val))) == NULL) {
 		perror("fsOpenDir()");
 		*retVal = errno;
 		r.return_val = retVal;
@@ -318,8 +310,14 @@ return_type fsOpen(const int nparams, arg_type* a) {
 	file_descriptor *newFd = malloc(sizeof(file_descriptor));
 	newFd->next = NULL;
 	if (*(int*)a->next->next->arg_val == 0) {
+		#ifdef _DEBUG_1_
+		printf("In fsOpen, read call\n");
+		#endif
 		openFlags = O_RDONLY | O_NONBLOCK;
 	} else if (*(int*)a->next->next->arg_val == 1) {
+		#ifdef _DEBUG_1_
+		printf("In fsOpen, write call\n");
+		#endif
 		openFlags = O_WRONLY | O_CREAT | O_NONBLOCK;
 	} else {
 		printf("Unrecognized value for open mode\n");
@@ -333,7 +331,11 @@ return_type fsOpen(const int nparams, arg_type* a) {
 		return r;
 	}
 
-	if ((newFd->value = open(a->next->arg_val, openFlags)) == -1) {
+	#ifdef _DEBUG_1_
+	printf("calling system open call, file name: %s, mode: %d, flags generated: %d\n", a->next->arg_val, *(int*)a->next->next->arg_val, openFlags);
+	#endif
+
+	if ((newFd->value = open(transformPath(user->folderAilias, a->next->arg_val), openFlags)) == -1) {
 		perror("fsOpen");
 		// error
 		errorDescriptor = -1;
@@ -345,6 +347,10 @@ return_type fsOpen(const int nparams, arg_type* a) {
 		r.return_size = 2*sizeof(int);
 		return r;
 	}
+
+	#ifdef _DEBUG_1_
+	printf("success from open, fd: %d\n", newFd->value);
+	#endif
 
 	if (users->fd == NULL) {
 		users->fd = newFd;
@@ -466,6 +472,35 @@ mounted_user* findClientById(int id) {
 	return NULL;
 }
 
+char* transformPath(char* folderAilias, char* pathGiven) {
+	int foundFolderAilias = 0;
+	int indexOfFileName = 0; // looks for the start of alpha character, the path can potentially start with slashes and/or periods
+	char* transformedPath;
+
+	while (foundFolderAilias == 0) {
+		if (pathGiven[indexOfFileName] == '/' || pathGiven[indexOfFileName] == '.') {
+			indexOfFileName++;
+		} else {
+			foundFolderAilias = 1;
+		}
+	}
+	// indexOfFileName now starts at where the filename acutally starts
+	// compare with folderAilias to see if it needs to be replaced
+	if (strncmp(&pathGiven[indexOfFileName], folderAilias, strlen(folderAilias)) == 0 && pathGiven[indexOfFileName+strlen(folderAilias)] == '/') {
+		transformedPath = (char*)malloc(strlen(workingDirectoryName)+strlen(pathGiven)-strlen(folderAilias)-1);
+
+		memcpy(transformedPath, pathGiven, indexOfFileName);
+		memcpy(transformedPath+indexOfFileName, workingDirectoryName, strlen(workingDirectoryName)-1);
+		strcpy(transformedPath+indexOfFileName+strlen(workingDirectoryName)-1, &pathGiven[indexOfFileName+strlen(folderAilias)]);
+	} else {
+		transformedPath = (char*)malloc(strlen(workingDirectoryName)+strlen(pathGiven));
+		memcpy(transformedPath, workingDirectoryName, strlen(workingDirectoryName));
+		memcpy(transformedPath+strlen(workingDirectoryName), pathGiven, strlen(pathGiven));
+	}
+
+	return transformedPath;
+}
+
 void printMountedUsers() {
 	printf("Printing mounted users\n");
 	mounted_user *user = users;
@@ -490,16 +525,22 @@ int main(int argc, char const *argv[]) {
 
 		workingDirectoryName = malloc(strlen(argv[1]));
 		strcpy(workingDirectoryName, argv[1]);
+
+		if (workingDirectoryName[strlen(workingDirectoryName)] != '/') {
+			workingDirectoryName = malloc(strlen(workingDirectoryName)+1);
+			strcpy(workingDirectoryName, argv[1]);
+			workingDirectoryName[strlen(argv[1])] = '/';
+		}
 	}
 
-	register_procedure("fsMount",   1, fsMount);
-	register_procedure("fsUnmount", 2, fsUnmount);
-	register_procedure("fsOpenDir", 2, fsOpenDir);
-	register_procedure("fsCloseDir", 1, fsCloseDir);
-	register_procedure("fsReadDir", 1, fsReadDir);
-	register_procedure("fsOpen", 3, fsOpen);
-	printRegisteredProcedures();
+	// register_procedure("fsMount",   1, fsMount);
+	// register_procedure("fsUnmount", 2, fsUnmount);
+	// register_procedure("fsOpenDir", 2, fsOpenDir);
+	// register_procedure("fsCloseDir", 1, fsCloseDir);
+	// register_procedure("fsReadDir", 1, fsReadDir);
+	// register_procedure("fsOpen", 3, fsOpen);
+	// printRegisteredProcedures();
 
-    launch_server();
+ //    launch_server();
     return 0;
 }
