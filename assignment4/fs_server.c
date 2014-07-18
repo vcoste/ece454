@@ -600,6 +600,7 @@ int main(int argc, char const *argv[]) {
 	register_procedure("fsCloseDir", 1, fsCloseDir);
 	register_procedure("fsReadDir", 1, fsReadDir);
 	register_procedure("fsOpen", 3, fsOpen);
+	register_procedure("fsClose", 2, fsClose);
 	printRegisteredProcedures();
 
     launch_server();

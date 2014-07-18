@@ -236,7 +236,16 @@ int fsClose(int fd) {
 }
 
 int fsRead(int fd, void *buf, const unsigned int count) {
-    return(read(fd, buf, (size_t)count));
+	#ifdef _DEBUG_CLI_
+	printf("in fsRead\n");
+	#endif
+	return_type ans = make_remote_call( server.name,
+										server.port ,
+										"fsRead", 2,
+										sizeof(int), (void *)(&clientId),
+										sizeof(int), (void *)(&fd),
+										sizeof(unsigned int), (void *)(&count));
+    return 0;
 }
 
 int fsWrite(int fd, const void *buf, const unsigned int count) {
