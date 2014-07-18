@@ -392,12 +392,16 @@ return_type fsClose(const int nparams, arg_type* a) {
 	}
 
 	if (close(*(int*)a->next->arg_val) == -1) {
+		perror("fsClose()");
 		*retVal = errno;
 
 		r.return_val = retVal;
 		r.return_size = sizeof(int);
 		return r;
 	}
+	*retVal = 0;
+	r.return_val = retVal;
+	r.return_size = sizeof(int);
 
 	return r;
 }
