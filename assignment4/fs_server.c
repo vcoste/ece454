@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/stat.h>
 
 #include "fsOtherIncludes.h"
 
@@ -167,7 +168,7 @@ return_type fsCloseDir(const int nparams, arg_type* a) {
 	r.return_size = sizeof(int);
 
 	if (nparams != 1 || a->arg_size != sizeof(int)) {
-		printf("Error in fsOpenDir, incorrect arguments reveived");
+		printf("Error in fsOpenDir, incorrect arguments reveived\n");
 		*retVal = EINVAL;
 		r.return_val = retVal;
 		return r;
@@ -195,7 +196,65 @@ return_type fsCloseDir(const int nparams, arg_type* a) {
 }
 
 return_type fsReadDir(const int nparams, arg_type* a) {
+	char *retVal;
+	int fileType;
+	struct stat st;
 
+	if (nparams != 1 || a->arg_size != sizeof(int)) {
+		printf("Error in fsReadDir, incorrect arguments reveived\n");
+		retVal = malloc(sizeof(int));
+		*retVal = EINVAL;
+		r.return_val = retVal;
+		r.return_size = sizeof(int);
+		return r;
+	}
+
+	mounted_user *user;
+	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
+		printf("Error in fsReadDir, clientID not found: %d\n", *(int*)a->arg_val);
+		retVal = malloc(sizeof(int));
+		*retVal = EACCES;
+		r.return_val = retVal;
+		r.return_size = sizeof(int);
+		return r;
+	}
+
+	errno = 0;
+	struct dirent *currentDirent;
+	if ((currentDirent = readdir(user->dirStream)) == NULL) {
+		// either at end of entries or error
+		if (errno != 0) {
+			perror("fsReadDir");
+			// error
+			retVal = malloc(sizeof(int));
+			*retVal = errno;
+			r.return_val = retVal;
+			r.return_size = sizeof(int);
+			return r;
+		}
+		printf("At end of folder\n");
+		
+		r.return_val = NULL;
+		r.return_size = 0;
+		return r;
+	}
+
+	retVal = malloc(sizeof(int)+strlen(currentDirent->d_name));
+
+	lstat(currentDirent->d_name, &st);
+	if (S_ISDIR(st.st_mode)) {
+		fileType = 1;
+	} else if (S_ISREG(st.st_mode)) {
+		fileType = 0;
+	} else {
+		fileType = -1;
+	}
+
+	memcpy(retVal, &fileType, sizeof(int));
+	memcpy(retVal+sizeof(int), currentDirent->d_name, strlen(currentDirent->d_name));
+
+	r.return_val = retVal;
+	r.return_size = sizeof(sizeof(int)+strlen(currentDirent->d_name));
 	return r;
 }
 
