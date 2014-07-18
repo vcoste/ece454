@@ -133,24 +133,29 @@ struct fsDirent *fsReadDir(FSDIR *folder) {
 										server.port ,
 										"fsReadDir", 1,
 										sizeof(int), (void *)(&clientId));
-
 	
 	if (ans.return_size == 0) {
 		return NULL;
 	} else if (ans.return_size == sizeof(int)) {
 		//set errno and return null
+		errno = ans.return_size;
 		return NULL;
 	} else {
 		//read entType and entName
-		struct fsDirent *dir;
-		memcpy( dir->entType, 
+		#ifdef _DEBUG_CLI_
+			printf("return_size: %d\n", ans.return_size);
+		#endif
+	
+		struct fsDirent *dir = (struct fsDirent *)malloc(sizeof(struct fsDirent));
+		int *type = (int*)malloc(sizeof(int));
+		memcpy( type, 
                 ans.return_val, 
                 sizeof(int));
-		void * index = ans.return_val;
+		dir->entType = (unsigned char)(*type);
+		char * index = (char*)(ans.return_val);
 		index += sizeof(int);
-		memcpy( dir->entName,
-                (void*)index, 
-                ans.return_size - sizeof(int));
+		printf("return_size: %d, size of unsigned char: %d\n", ans.return_size, sizeof(unsigned char));
+		strcpy( dir->entName, (char*)index);
 		return dir;
 	}
 }
