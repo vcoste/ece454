@@ -85,7 +85,7 @@ FSDIR* fsOpenDir(const char *folderName) {
 		return nice;
 	} else {
 		#ifdef _DEBUG_CLI_
-		printf("return_val should be zero: %d\n", *(int*)(ans.return_val));
+		printf("return_val should be zero: %d\n", (int*)(ans.return_val));
 		#endif
 		FSDIR* result;
 		result->id = clientId;

@@ -134,7 +134,7 @@ return_type fsOpenDir(const int nparams, arg_type* a) {
 	printf("In fsOpenDir, %d arugments:\n", nparams);
 	if (nparams > 0) {
 		printf("Size of arg1: %d\n", a->arg_size);
-		printf("Value arg1: %d\n", a->arg_val);
+		printf("Value arg1: %d\n", *(int*)(a->arg_val));
 	}
 	if (nparams > 1) {
 		printf("Size of arg2: %d\n", a->next->arg_size);
@@ -156,7 +156,7 @@ return_type fsOpenDir(const int nparams, arg_type* a) {
 		r.return_val = retVal;
 		return r;
 	}
-
+	printf("transform: %s\n", transformPath(user->folderAilias, (char *)a->next->arg_val));
 	if ((user->dirStream = opendir(transformPath(user->folderAilias, (char *)a->next->arg_val))) == NULL) {
 		perror("fsOpenDir()");
 		*retVal = errno;
