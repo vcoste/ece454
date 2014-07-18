@@ -533,14 +533,14 @@ int main(int argc, char const *argv[]) {
 		}
 	}
 
-	// register_procedure("fsMount",   1, fsMount);
-	// register_procedure("fsUnmount", 2, fsUnmount);
-	// register_procedure("fsOpenDir", 2, fsOpenDir);
-	// register_procedure("fsCloseDir", 1, fsCloseDir);
-	// register_procedure("fsReadDir", 1, fsReadDir);
-	// register_procedure("fsOpen", 3, fsOpen);
-	// printRegisteredProcedures();
+	register_procedure("fsMount",   1, fsMount);
+	register_procedure("fsUnmount", 2, fsUnmount);
+	register_procedure("fsOpenDir", 2, fsOpenDir);
+	register_procedure("fsCloseDir", 1, fsCloseDir);
+	register_procedure("fsReadDir", 1, fsReadDir);
+	register_procedure("fsOpen", 3, fsOpen);
+	printRegisteredProcedures();
 
- //    launch_server();
+    launch_server();
     return 0;
 }
