@@ -14,8 +14,6 @@
 #include <netinet/ip.h>
 #include "ece454rpc_types.h"
 
-#define MSG_NOSIGNAL 0
-
 #if 0
 #define _DEBUG_1_
 #endif
@@ -50,6 +48,7 @@ uint32_t getPublicIPAddr() {
     return 0;
 }
 
+#if 0
 void printBuf(char *buf, int size) {
     /* Should match the output from od -x */
     int i;
@@ -75,6 +74,7 @@ void printBuf(char *buf, int size) {
 	i += j;
     }
 }
+#endif
 
 void recvbytes(int s, void *buf, ssize_t count) {
     /* Recv until we hit count bytes */
@@ -99,6 +99,9 @@ void recvbytes(int s, void *buf, ssize_t count) {
 
 void sendbytes(int s, void *buf, ssize_t count) {
     int stilltosend;
+#ifndef MSG_NOSIGNAL
+#define MSG_NOSIGNAL 0
+#endif
     for(stilltosend = count; stilltosend > 0; ) {
 	ssize_t sentsize =
 	    send(s, (void *)(((unsigned char *)buf) + count - stilltosend), stilltosend, MSG_NOSIGNAL);
