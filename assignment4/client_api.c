@@ -189,7 +189,7 @@ int fsOpen(const char *fname, int mode) {
 		memcpy( val, 
         	    index, 
             	sizeof(int));
-		if (status == 0){
+		if (*status == 0){
 			#ifdef _DEBUG_CLI_
 			printf("positive val: %d\n", *val);
 			#endif
@@ -205,8 +205,34 @@ int fsOpen(const char *fname, int mode) {
 }
 
 int fsClose(int fd) {
-
-    return(close(fd));
+	#ifdef _DEBUG_CLI_
+	printf("in fsClose\n");
+	#endif
+	return_type ans = make_remote_call( server.name,
+										server.port ,
+										"fsClose", 2,
+										sizeof(int), (void *)(&clientId),
+										sizeof(int), (void *)(&fd));
+	if (ans.return_size == 0) {
+		//error set errno
+		#ifdef _DEBUG_CLI_
+		printf("return_size zero: %d\n", ans.return_size);
+		#endif
+		errno = EBADMSG;
+		return -1;
+	} else if (*(int*)(ans.return_val) != 0) {
+		#ifdef _DEBUG_CLI_
+		printf("return_val not zero: %s\n", strerror(*(int*)(ans.return_val)));
+		#endif
+		errno = *(int*)(ans.return_val);
+		//set errno before returning using return_val as errno
+		return -1;
+	} else {
+		#ifdef _DEBUG_CLI_
+		printf("return_val should be zero: %d\n", *(int*)(ans.return_val));
+		#endif
+    	return 0;
+	}
 }
 
 int fsRead(int fd, void *buf, const unsigned int count) {

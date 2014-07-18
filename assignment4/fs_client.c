@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
     // }
     
     char fname[256];
-    sprintf(fname, "%s/", "abc");
+    sprintf(fname, "%s", "abcd");
 
     int ff = fsOpen(fname, 1);
     if(ff < 0) {
