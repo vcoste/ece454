@@ -386,6 +386,7 @@ int main(int argc, char const *argv[]) {
 	register_procedure("fsMount",   1, fsMount);
 	register_procedure("fsUnmount", 2, fsUnmount);
 	register_procedure("fsOpenDir", 2, fsOpenDir);
+	register_procedure("fsCloseDir", 1, fsOpenDir);
 	printRegisteredProcedures();
 
     launch_server();
