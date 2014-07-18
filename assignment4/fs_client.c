@@ -73,10 +73,15 @@ int main(int argc, char *argv[]) {
 
     int ff = fsOpen(fname, 1);
     if(ff < 0) {
-    perror("fsOpen(write)"); exit(1);
+        perror("fsOpen(write)"); exit(1);
     }
+    
+    printf("fsClose(ff): %d\n", fsClose(ff));
+    // if(fsClose(ff) < 0) {
+    //     perror("fsClose"); exit(1);
+    // }
 
-    printf("fsOpen had no errors\n");
+    printf("Reached the end without errors\n");
 
     // printf("fsCloseDir(): %d\n", fsCloseDir(fd));
 
