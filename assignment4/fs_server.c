@@ -266,7 +266,7 @@ return_type fsReadDir(const int nparams, arg_type* a) {
 	memcpy(retVal+sizeof(int), currentDirent->d_name, strlen(currentDirent->d_name));
 
 	r.return_val = retVal;
-	r.return_size = sizeof(sizeof(int)+strlen(currentDirent->d_name));
+	r.return_size = sizeof(int)+strlen(currentDirent->d_name);
 
 	#ifdef _DEBUG_1_
 	printf("Read fileName: %s, with strlen: %d\n", currentDirent->d_name, strlen(currentDirent->d_name));
