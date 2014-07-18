@@ -50,6 +50,8 @@ int main(int argc, char *argv[]) {
         printf("no errors printed so far\n");
     }
 
+    printf("fsCloseDir(): %d\n", fsCloseDir(fd));
+
     return 0;
     // struct fsDirent *fdent = NULL;
     // for(fdent = fsReadDir(fd); fdent != NULL; fdent = fsReadDir(fd)) {

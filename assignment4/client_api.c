@@ -59,7 +59,7 @@ int fsUnmount(const char *localFolderName) {
 }
 
 FSDIR* fsOpenDir(const char *folderName) {
-	printf("in fsOpenDir\n");
+	printf("in fsOpenDir, clientId: %d, folderName: %s\n", clientId, folderName);
 	return_type ans = make_remote_call( server.name,
 										server.port ,
 										"fsOpenDir", 2,
@@ -77,15 +77,15 @@ FSDIR* fsOpenDir(const char *folderName) {
 		return nice;
 	} else if (*(int*)(ans.return_val) != 0) {
 		#ifdef _DEBUG_CLI_
-		printf("return_val not zero: %d\n", *(int*)(ans.return_val));
+		printf("return_val not zero: %d\n", strerror(*(int*)(ans.return_val)));
 		#endif
+		//set errno before returning using return_val as errno
 		FSDIR *nice = NULL;
 		errno = *(int*)(ans.return_val);
-		//set errno before returning using return_val as errno
 		return nice;
 	} else {
 		#ifdef _DEBUG_CLI_
-		printf("checking return_val: %d\n", *(int*)(ans.return_val));
+		printf("return_val should be zero: %d\n", *(int*)(ans.return_val));
 		#endif
 		FSDIR* result;
 		result->id = clientId;
@@ -95,11 +95,11 @@ FSDIR* fsOpenDir(const char *folderName) {
 }
 
 int fsCloseDir(FSDIR *folder) {
-	printf("in fsCloseDir\n");
+	printf("in fsCloseDir, clientId: %d\n", clientId);
 	return_type ans = make_remote_call( server.name,
 										server.port ,
 										"fsCloseDir", 1,
-										sizeof(int), (void *)((folder->id)));
+										sizeof(int), (void *)(&clientId));
 	printf("return_size: %d\n", ans.return_size);
 	printf("return_val: %d\n", *(int*)(ans.return_val));
 	if (ans.return_size == 0) {
@@ -111,40 +111,48 @@ int fsCloseDir(FSDIR *folder) {
 		return -1;
 	} else if (*(int*)(ans.return_val) != 0) {
 		#ifdef _DEBUG_CLI_
-		printf("return_val not zero: %d\n", *(int*)(ans.return_val));
+		printf("return_val not zero: %s\n", strerror(*(int*)(ans.return_val)));
 		#endif
 		errno = *(int*)(ans.return_val);
 		//set errno before returning using return_val as errno
 		return -1;
 	} else {
 		#ifdef _DEBUG_CLI_
-		printf("checking return_val: %d\n", *(int*)(ans.return_val));
+
+		printf("return_val should be zero: %d\n", *(int*)(ans.return_val));
 		#endif
     	return 0;
 	}
 }
 
 struct fsDirent *fsReadDir(FSDIR *folder) {
-    const int initErrno = errno;
-    struct dirent *d = readdir(folder);
+	#ifdef _DEBUG_CLI_
+	printf("in fsReadDir\n");
+	#endif
+	return_type ans = make_remote_call( server.name,
+										server.port ,
+										"fsReadDir", 1,
+										sizeof(int), (void *)((folder->id)));
 
-    if(d == NULL) {
-	if(errno == initErrno) errno = 0;
-	return NULL;
-    }
-
-    if(d->d_type == DT_DIR) {
-	dent.entType = 1;
-    }
-    else if(d->d_type == DT_REG) {
-	dent.entType = 0;
-    }
-    else {
-	dent.entType = -1;
-    }
-
-    memcpy(&(dent.entName), &(d->d_name), 256);
-    return &dent;
+	
+	if (ans.return_size == 0) {
+		return NULL;
+	} else if (ans.return_size == sizeof(int)) {
+		//set errno and return null
+		return NULL;
+	} else {
+		//read entType and entName
+		struct fsDirent *dir;
+		memcpy( dir->entType, 
+                ans.return_val, 
+                sizeof(int));
+		void * index = ans.return_val;
+		index += sizeof(int);
+		memcpy( dir->entName,
+                (void*)index, 
+                ans.return_size - sizeof(int));
+		return dir;
+	}
 }
 
 int fsOpen(const char *fname, int mode) {
