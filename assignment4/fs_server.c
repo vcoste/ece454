@@ -283,7 +283,7 @@ return_type fsOpen(const int nparams, arg_type* a) {
 	int openFlags;
 
 	if (nparams != 3 || a->arg_size != sizeof(int)) {
-		printf("\tError in fsReadDir, incorrect arguments reveived\n");
+		printf("\tError in fsOpen, incorrect arguments reveived\n");
 		errorDescriptor = -1;
 		returnValue = EINVAL;
 		memcpy(retBuffer, &errorDescriptor, sizeof(int));
@@ -347,6 +347,18 @@ return_type fsOpen(const int nparams, arg_type* a) {
 		r.return_size = 2*sizeof(int);
 		return r;
 	}
+	if (fchmod(newFd->value, S_IRWXU | S_IRWXG | S_IRWXO) == -1) {
+		perror("\tfsOpen");
+		// error
+		errorDescriptor = -1;
+		returnValue = errno;
+		memcpy(retBuffer, &errorDescriptor, sizeof(int));
+		memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
+
+		r.return_val = retBuffer;
+		r.return_size = 2*sizeof(int);
+		return r;
+	}
 
 	#ifdef _DEBUG_1_
 	printf("\tsuccess from open, fd: %d\n", newFd->value);
@@ -370,6 +382,25 @@ return_type fsOpen(const int nparams, arg_type* a) {
 
 	r.return_val = retBuffer;
 	r.return_size = 2*sizeof(int);
+	return r;
+}
+
+return_type fsClose(const int nparams, arg_type* a) {
+
+	int *retVal;
+
+	// if (nparams != 2 || a->arg_size != sizeof(int)) {
+	// 	printf("\tError in fsClose, incorrect arguments reveived\n");
+	// 	errorDescriptor = -1;
+	// 	returnValue = EINVAL;
+	// 	memcpy(retBuffer, &errorDescriptor, sizeof(int));
+	// 	memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
+
+	// 	r.return_val = retBuffer;
+	// 	r.return_size = 2*sizeof(int);
+	// 	return r;
+	// }
+
 	return r;
 }
 
