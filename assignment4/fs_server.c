@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #include "fsOtherIncludes.h"
 
@@ -11,17 +12,11 @@
 #define _DEBUG_1_
 #endif
 
-typedef struct FileDescriptor {
-	int value;
-	struct FileDescriptor *next;
-} file_descriptor;
-
 // linked list of users that have been mounted
 typedef struct MountedUser {
 	int *id;
 	char *folderAilias;
 	DIR *dirStream;
-	file_descriptor *fd;
 	struct MountedUser *next;
 } mounted_user;
 
@@ -278,6 +273,7 @@ return_type fsReadDir(const int nparams, arg_type* a) {
 return_type fsOpen(const int nparams, arg_type* a) {
 
 	char *retBuffer = malloc(2*sizeof(int));
+	int fd;
 	int errorDescriptor = 0;
 	int returnValue = 0;
 	int openFlags;
@@ -296,7 +292,7 @@ return_type fsOpen(const int nparams, arg_type* a) {
 
 	mounted_user *user;
 	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
-		printf("\tError in fsReadDir, clientID not found: %d\n", *(int*)a->arg_val);
+		printf("\tError in fsOpen, clientID not found: %d\n", *(int*)a->arg_val);
 		errorDescriptor = -1;
 		returnValue = EACCES;
 		memcpy(retBuffer, &errorDescriptor, sizeof(int));
@@ -307,8 +303,6 @@ return_type fsOpen(const int nparams, arg_type* a) {
 		return r;
 	}
 
-	file_descriptor *newFd = malloc(sizeof(file_descriptor));
-	newFd->next = NULL;
 	if (*(int*)a->next->next->arg_val == 0) {
 		#ifdef _DEBUG_1_
 		printf("\tIn fsOpen, read call\n");
@@ -335,7 +329,7 @@ return_type fsOpen(const int nparams, arg_type* a) {
 	printf("\tcalling system open call, file name: %s, mode: %d, flags generated: %d\n", a->next->arg_val, *(int*)a->next->next->arg_val, openFlags);
 	#endif
 
-	if ((newFd->value = open(transformPath(user->folderAilias, a->next->arg_val), openFlags)) == -1) {
+	if ((fd = open(transformPath(user->folderAilias, a->next->arg_val), openFlags)) == -1) {
 		perror("\tfsOpen");
 		// error
 		errorDescriptor = -1;
@@ -347,7 +341,7 @@ return_type fsOpen(const int nparams, arg_type* a) {
 		r.return_size = 2*sizeof(int);
 		return r;
 	}
-	if (fchmod(newFd->value, S_IRWXU | S_IRWXG | S_IRWXO) == -1) {
+	if (fchmod(fd, S_IRWXU | S_IRWXG | S_IRWXO) == -1) {
 		perror("\tfsOpen");
 		// error
 		errorDescriptor = -1;
@@ -361,22 +355,11 @@ return_type fsOpen(const int nparams, arg_type* a) {
 	}
 
 	#ifdef _DEBUG_1_
-	printf("\tsuccess from open, fd: %d\n", newFd->value);
+	printf("\tsuccess from open, fd: %d\n", fd);
 	#endif
 
-	if (users->fd == NULL) {
-		users->fd = newFd;
-	} else {
-		file_descriptor *itr = users->fd;
-		for(; itr != NULL; itr = itr->next) {
-			if (itr->next == NULL) {
-				itr->next = newFd;
-				break;
-			}
-		}
-	}
-
-	returnValue = newFd->value;
+	
+	returnValue = fd;
 	memcpy(retBuffer, &errorDescriptor, sizeof(int));
 	memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
 
@@ -387,19 +370,34 @@ return_type fsOpen(const int nparams, arg_type* a) {
 
 return_type fsClose(const int nparams, arg_type* a) {
 
-	int *retVal;
+	int *retVal = malloc(sizeof(int));
 
-	// if (nparams != 2 || a->arg_size != sizeof(int)) {
-	// 	printf("\tError in fsClose, incorrect arguments reveived\n");
-	// 	errorDescriptor = -1;
-	// 	returnValue = EINVAL;
-	// 	memcpy(retBuffer, &errorDescriptor, sizeof(int));
-	// 	memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
+	if (nparams != 2 || a->arg_size != sizeof(int)) {
+		printf("\tError in fsClose, incorrect arguments reveived\n");
+		*retVal = EINVAL;
 
-	// 	r.return_val = retBuffer;
-	// 	r.return_size = 2*sizeof(int);
-	// 	return r;
-	// }
+		r.return_val = retVal;
+		r.return_size = sizeof(int);
+		return r;
+	}
+
+	mounted_user *user;
+	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
+		printf("\tError in fsClose, clientID not found: %d\n", *(int*)a->arg_val);
+		*retVal = EACCES;
+
+		r.return_val = retVal;
+		r.return_size = sizeof(int);
+		return r;
+	}
+
+	if (close(*(int*)a->next->arg_val) == -1) {
+		*retVal = errno;
+
+		r.return_val = retVal;
+		r.return_size = sizeof(int);
+		return r;
+	}
 
 	return r;
 }
