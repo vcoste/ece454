@@ -533,6 +533,8 @@ int main(int argc, char const *argv[]) {
 		}
 	}
 
+	printf("Server running in directory: %s\n", workingDirectoryName);
+
 	register_procedure("fsMount",   1, fsMount);
 	register_procedure("fsUnmount", 2, fsUnmount);
 	register_procedure("fsOpenDir", 2, fsOpenDir);
