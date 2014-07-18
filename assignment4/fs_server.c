@@ -531,7 +531,7 @@ int main(int argc, char const *argv[]) {
 		workingDirectoryName = malloc(strlen(argv[1]));
 		strcpy(workingDirectoryName, argv[1]);
 
-		if (workingDirectoryName[strlen(workingDirectoryName)] != '/') {
+		if (workingDirectoryName[strlen(workingDirectoryName)-1] != '/') {
 			workingDirectoryName = malloc(strlen(workingDirectoryName)+1);
 			strcpy(workingDirectoryName, argv[1]);
 			workingDirectoryName[strlen(argv[1])] = '/';
