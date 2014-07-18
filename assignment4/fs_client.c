@@ -50,14 +50,23 @@ int main(int argc, char *argv[]) {
     }
     struct fsDirent *fdent = NULL;
     fdent = fsReadDir(fd);
-    printf("\t %s, %d\n", fdent->entName, (int)(fdent->entType));
+    if (fdent != NULL) {
+        printf("\t %s, %d\n", fdent->entName, (int)(fdent->entType));
+    } else {
+        printf("\tReached end of folder \n");
+    }
     fdent = fsReadDir(fd);
-    printf("\t %s, %d\n", fdent->entName, (int)(fdent->entType));
+    if (fdent != NULL) {
+        printf("\t %s, %d\n", fdent->entName, (int)(fdent->entType));
+    } else {
+        printf("\tReached end of folder \n");
+    }
     fdent = fsReadDir(fd);
-    printf("\t %s, %d\n", fdent->entName, (int)(fdent->entType));
-    // for(fdent = fsReadDir(fd); fdent != NULL; fdent = fsReadDir(fd)) {
-    //    printf("\t %s, %d\n", fdent->entName, (int)(fdent->entType));
-    // }
+    if (fdent != NULL) {
+        printf("\t %s, %d\n", fdent->entName, (int)(fdent->entType));
+    } else {
+        printf("\tReached end of folder \n");
+    }
     
     char fname[256];
     sprintf(fname, "%s", "asdf");
