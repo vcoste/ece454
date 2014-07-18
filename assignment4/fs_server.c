@@ -384,25 +384,32 @@ int addNewClient(char* folderAilias, int folderNameSize) {
 	mounted_user *newmounted_user = malloc(sizeof(mounted_user));
 	newmounted_user->id           = malloc(sizeof(int));
 
+	#ifdef _DEBUG_1_
+	printf("\tAdding new client with folder ailias: %s, string length: %d\n", folderAilias, folderNameSize-1);
+	#endif
+
 	if (folderAilias[folderNameSize-1] == '/') {
+		#ifdef _DEBUG_1_
+		printf("\tSlash present in name, removing\n");
+		#endif
 		folderNameSize--;
 	}
 	newmounted_user->folderAilias = malloc(folderNameSize);
 
 	*newmounted_user->id = giveID();
-	strncpy(newmounted_user->folderAilias, folderAilias, folderNameSize-1);
+	memcpy(newmounted_user->folderAilias, folderAilias, folderNameSize);
 	newmounted_user->folderAilias[folderNameSize-1] = '\0';
 
 	newmounted_user->next = NULL;
 
 	#ifdef _DEBUG_1_
-	printf("New user created with id: %d and folder ailias: %s\nAdding to linked list\n", *newmounted_user->id, newmounted_user->folderAilias);
+	printf("\tNew user created with id: %d and folder ailias: %s\n\tAdding to linked list\n", *newmounted_user->id, newmounted_user->folderAilias);
 	#endif
 
 	if (users == NULL) {
 		users = newmounted_user;
 		#ifdef _DEBUG_1_
-		printf("List was empty. New user added to head of list\n");
+		printf("\tList was empty. New user added to head of list\n");
 		#endif
 		return *newmounted_user->id;
 	}
@@ -417,7 +424,7 @@ int addNewClient(char* folderAilias, int folderNameSize) {
 	}
 
 	#ifdef _DEBUG_1_
-	printf("Added new client to end of list\n");
+	printf("\tAdded new client to end of list\n");
 	#endif
 
 	return *newmounted_user->id;
