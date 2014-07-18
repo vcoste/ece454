@@ -123,7 +123,7 @@ return_type fsOpenDir(const int nparams, arg_type* a) {
 	r.return_size = sizeof(int);
 
 	if (nparams != 2 || a->arg_size != sizeof(int)) {
-		printf("Error in fsOpenDir, incorrect arguments reveived");
+		printf("Error in fsOpenDir, incorrect arguments reveived\n");
 		*retVal = EINVAL;
 		r.return_val = retVal;
 		return r;
@@ -168,7 +168,7 @@ return_type fsCloseDir(const int nparams, arg_type* a) {
 	r.return_size = sizeof(int);
 
 	if (nparams != 1 || a->arg_size != sizeof(int)) {
-		printf("Error in fsOpenDir, incorrect arguments reveived\n");
+		printf("Error in fsCLoseDir, incorrect arguments reveived\n");
 		*retVal = EINVAL;
 		r.return_val = retVal;
 		return r;
