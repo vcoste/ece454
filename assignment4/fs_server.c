@@ -288,6 +288,7 @@ return_type fsOpen(const int nparams, arg_type* a) {
 	char *retBuffer = malloc(2*sizeof(int));
 	int errorDescriptor = 0;
 	int returnValue = 0;
+	int openFlags;
 
 	if (nparams != 3 || a->arg_size != sizeof(int)) {
 		printf("Error in fsReadDir, incorrect arguments reveived\n");
@@ -316,8 +317,23 @@ return_type fsOpen(const int nparams, arg_type* a) {
 
 	file_descriptor *newFd = malloc(sizeof(file_descriptor));
 	newFd->next = NULL;
+	if (*(int*)a->next->next->arg_val == 0) {
+		openFlags = O_RDONLY | O_NONBLOCK;
+	} else if (*(int*)a->next->next->arg_val == 1) {
+		openFlags = O_WRONLY | O_CREAT | O_NONBLOCK;
+	} else {
+		printf("Unrecognized value for open mode\n");
+		errorDescriptor = -1;
+		returnValue = EINVAL;
+		memcpy(retBuffer, &errorDescriptor, sizeof(int));
+		memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
 
-	if ((newFd->value = open(a->next->arg_val, *(int*)a->next->next->arg_val)) == -1) {
+		r.return_val = retBuffer;
+		r.return_size = 2*sizeof(int);
+		return r;
+	}
+
+	if ((newFd->value = open(a->next->arg_val, openFlags)) == -1) {
 		perror("fsOpen");
 		// error
 		errorDescriptor = -1;
