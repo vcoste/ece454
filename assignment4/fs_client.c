@@ -77,10 +77,12 @@ int main(int argc, char *argv[]) {
     }
 
     char buf[256];
-    sprintf(buf, "Wrote this sweet deal");
+    sprintf(buf, "Wrote this sweet deal with more text");
     if(fsWrite(ff, buf, 256) < 256) {
         fprintf(stderr, "fsWrite() wrote fewer than 256\n");
     }
+
+    // printf("fsWrite(ff, buf, 256): %d\n", fsWrite(ff, buf, 256));
     
     printf("fsClose(ff): %d\n", fsClose(ff));
     // if(fsClose(ff) < 0) {
