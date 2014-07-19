@@ -249,7 +249,39 @@ int fsRead(int fd, void *buf, const unsigned int count) {
 }
 
 int fsWrite(int fd, const void *buf, const unsigned int count) {
-    return(write(fd, buf, (size_t)count)); 
+	#ifdef _DEBUG_CLI_
+	printf("in fsWrite\n");
+	#endif
+	return_type ans = make_remote_call( server.name,
+										server.port,
+										"fsWrite", 2,
+										sizeof(int), (void*)(&fd),
+										count, buf);
+	int errorDescriptor;
+	int returnedValue;
+
+	if (ans.return_size == 0) {
+		//error set errno
+		#ifdef _DEBUG_CLI_
+		printf("return_size zero: %d\n", ans.return_size);
+		#endif
+		errno = EBADMSG;
+		return -1;
+	} else if (ans.return_size == 2*sizeof(int)) {
+		
+		memcpy(&errorDescriptor, ans.return_val, sizeof(int));
+		memcpy(&returnedValue, ans.return_val+sizeof(int), sizeof(int));
+	} else {
+		printf("Unrecognized return value from server\n");
+		return -1;
+	}
+
+	if (errorDescriptor == -1) {
+		errno = returnedValue;
+		return -1;
+	}
+
+	return returnedValue;
 }
 
 int fsRemove(const char *name) {
