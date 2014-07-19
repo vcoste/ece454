@@ -406,6 +406,43 @@ return_type fsClose(const int nparams, arg_type* a) {
 	return r;
 }
 
+return_type fsWrite(const int nparams, arg_type* a) {
+	// should get 2 params
+	char *retBuffer = (char *)malloc(2*sizeof(int));
+	int returnValue = 0;
+	int errorDescriptor = 0;
+
+	if (nparams != 2 || a->arg_size != sizeof(int)) {
+		printf("\tError in fsOpen, incorrect arguments reveived\n");
+		errorDescriptor = -1;
+		returnValue = EINVAL;
+		memcpy(retBuffer, &errorDescriptor, sizeof(int));
+		memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
+
+		r.return_val = retBuffer;
+		r.return_size = 2*sizeof(int);
+		return r;
+	}
+
+	int fd = 0;
+	fd = *(int*)a->arg_val;
+	
+	if (a->next->arg_size != 0) {
+		returnValue = write(fd, a->next->arg_val, a->next->arg_size);
+	}
+	if (returnValue == -1) {
+		errorDescriptor = -1;
+		returnValue = errno;
+	} 
+
+	memcpy(retBuffer, &errorDescriptor, sizeof(int));
+	memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
+
+	r.return_val = retBuffer;
+	r.return_size = 2*sizeof(int);
+	return r;	
+}
+
 int giveID() {
 	int newID = id_counter;
 	id_counter++;
@@ -603,6 +640,8 @@ int main(int argc, char const *argv[]) {
 	register_procedure("fsReadDir", 1, fsReadDir);
 	register_procedure("fsOpen", 3, fsOpen);
 	register_procedure("fsClose", 2, fsClose);
+	register_procedure("fsWrite", 2, fsWrite);
+	
 	printRegisteredProcedures();
 
     launch_server();
