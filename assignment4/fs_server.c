@@ -413,7 +413,7 @@ return_type fsWrite(const int nparams, arg_type* a) {
 	int errorDescriptor = 0;
 
 	if (nparams != 2 || a->arg_size != sizeof(int)) {
-		printf("\tError in fsOpen, incorrect arguments reveived\n");
+		printf("\tError in fsWrite, incorrect arguments reveived\n");
 		errorDescriptor = -1;
 		returnValue = EINVAL;
 		memcpy(retBuffer, &errorDescriptor, sizeof(int));
@@ -441,6 +441,60 @@ return_type fsWrite(const int nparams, arg_type* a) {
 	r.return_val = retBuffer;
 	r.return_size = 2*sizeof(int);
 	return r;	
+}
+
+return_type fsRead(const int nparams, arg_type* a) {
+	// should get 2 params: fd and count
+	
+	int returnValue = 0;
+	int errorDescriptor = 0;
+
+	if (nparams != 2 || a->arg_size != sizeof(int) || a->next->arg_size != sizeof(int)) {
+		printf("\tError in fsRead, incorrect arguments reveived\n");
+		char *retBuffer = (char *)malloc(2*sizeof(int));
+		errorDescriptor = -1;
+		returnValue = EINVAL;
+		memcpy(retBuffer, &errorDescriptor, sizeof(int));
+		memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
+
+		r.return_val = retBuffer;
+		r.return_size = 2*sizeof(int);
+		return r;
+	}
+
+	int fd = 0;
+	if (a->arg_size != 0) {
+		fd = *(int*)a->arg_val;	
+	}
+	int count = 0;
+	void *buf;
+	if (a->next->arg_size != 0) {
+		count = *(int*)a->next->arg_val;
+		buf = (void*)malloc(count);
+	}	
+	
+	returnValue = read(fd, buf, count);
+	
+	if (returnValue == -1) {
+		char *retBuffer = (char *)malloc(2*sizeof(int));
+		errorDescriptor = -1;
+		returnValue = errno;
+		memcpy(retBuffer, &errorDescriptor, sizeof(int));
+		memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
+
+		r.return_val = retBuffer;
+		r.return_size = 2*sizeof(int);
+		return r;
+	} else {
+		char *retBuffer = (char *)malloc(2*sizeof(int)+returnValue);
+		memcpy(retBuffer, &errorDescriptor, sizeof(int));
+		memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
+		memcpy(retBuffer+2*sizeof(int), buf, returnValue);
+
+		r.return_val = retBuffer;
+		r.return_size = 2*sizeof(int)+returnValue;
+		return r;
+	}
 }
 
 int giveID() {
