@@ -75,6 +75,12 @@ int main(int argc, char *argv[]) {
     if(ff < 0) {
         perror("fsOpen(write)"); exit(1);
     }
+
+    char buf[256];
+    sprintf(buf, "Wrote this sweet deal");
+    if(fsWrite(ff, buf, 256) < 256) {
+        fprintf(stderr, "fsWrite() wrote fewer than 256\n");
+    }
     
     printf("fsClose(ff): %d\n", fsClose(ff));
     // if(fsClose(ff) < 0) {
