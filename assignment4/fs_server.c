@@ -413,7 +413,7 @@ return_type fsWrite(const int nparams, arg_type* a) {
 	int errorDescriptor = 0;
 
 	if (nparams != 2 || a->arg_size != sizeof(int)) {
-		printf("\tError in fsOpen, incorrect arguments reveived\n");
+		printf("\tError in fsWrite, incorrect arguments reveived\n");
 		errorDescriptor = -1;
 		returnValue = EINVAL;
 		memcpy(retBuffer, &errorDescriptor, sizeof(int));
