@@ -505,6 +505,36 @@ return_type fsRead(const int nparams, arg_type* a) {
 	}
 }
 
+return_type fsRemove(const int nparams, arg_type* a) {
+
+	int *retVal = malloc(sizeof(int));
+
+	*retVal = 0;
+	r.return_size = sizeof(int);
+
+	if (nparams != 1) {
+		printf("\tError in fsRemove, incorrect arguments reveived\n");
+		*retVal = EINVAL;
+
+		r.return_val = retVal;
+		return r;
+	}
+
+	#ifdef _DEBUG_1_
+	printf("\tIn fsRemove, parameter: fname: %s|\n", (char*)a->arg_val);
+	#endif
+
+	if ((*retVal = remove((char*)a->arg_val)) != 0) {
+		perror("fsRemove()");
+		*retVal = errno;
+	}
+
+	r.return_val = retVal;
+	return r;
+
+	return r;
+}
+
 int giveID() {
 	int newID = id_counter;
 	id_counter++;
@@ -709,6 +739,7 @@ int main(int argc, char const *argv[]) {
 	register_procedure("fsClose", 2, fsClose);
 	register_procedure("fsWrite", 2, fsWrite);
 	register_procedure("fsRead", 2, fsRead);
+	register_procedure("fsRemove", 1, fsRemove);
 	
 	printRegisteredProcedures();
 

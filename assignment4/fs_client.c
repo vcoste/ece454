@@ -81,7 +81,14 @@ int main(int argc, char *argv[]) {
     if(fsWrite(ff, buf, 256) < 256) {
         fprintf(stderr, "fsWrite() wrote fewer than 256\n");
     }
+
     printf("fsClose(ff): %d\n", fsClose(ff));
+    
+    if (fsRemove(fname) != 0) {
+        perror("tried to fsRemove");
+    } else {
+        printf("\tSuccessfully removed %s\n", fname);
+    }
 
 
     ff = fsOpen(fname, 0);

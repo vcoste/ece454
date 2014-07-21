@@ -315,7 +315,7 @@ int fsWrite(int fd, const void *buf, const unsigned int count) {
 		memcpy(&errorDescriptor, ans.return_val, sizeof(int));
 		memcpy(&returnedValue, ans.return_val+sizeof(int), sizeof(int));
 	} else {
-		printf("Unrecognized return value from server\n");
+		printf("\tUnrecognized return value from server\n");
 		return -1;
 	}
 
@@ -328,5 +328,30 @@ int fsWrite(int fd, const void *buf, const unsigned int count) {
 }
 
 int fsRemove(const char *name) {
-    return(remove(name));
+    #ifdef _DEBUG_CLI_
+	printf("in fsRead\n");
+	#endif
+
+	return_type ans = make_remote_call( server.name,
+										server.port,
+										"fsRemove", 1,
+										strlen(name), name);
+
+	if (ans.return_size != sizeof(int)) {
+		#ifdef _DEBUG_CLI_
+		printf("\treturn_size bad: %d\n", ans.return_size);
+		#endif
+		errno = EBADMSG;
+		return -1;
+	} else if (*(int*)ans.return_val != 0) {
+		#ifdef _DEBUG_CLI_
+		printf("\tError when deleting file\n");
+		#endif
+
+		errno = *(int*)ans.return_val;
+		perror("fsRemove");
+		return -1;
+	}
+
+	return 0;
 }
