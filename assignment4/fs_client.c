@@ -81,6 +81,21 @@ int main(int argc, char *argv[]) {
     if(fsWrite(ff, buf, 256) < 256) {
         fprintf(stderr, "fsWrite() wrote fewer than 256\n");
     }
+    printf("fsClose(ff): %d\n", fsClose(ff));
+
+
+    ff = fsOpen(fname, 0);
+    if(ff < 0) {
+        perror("fsOpen(read)"); exit(1);
+    }
+
+    char rdBuf[256];
+    if(fsRead(ff, rdBuf, 256) < 256) {
+        fprintf(stderr, "fsRead() read fewer than 256: %s\n", rdBuf);
+    } else {
+        printf("Successfully read: %s\n", rdBuf);
+    }
+
 
     // printf("fsWrite(ff, buf, 256): %d\n", fsWrite(ff, buf, 256));
     

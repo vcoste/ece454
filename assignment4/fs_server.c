@@ -423,6 +423,9 @@ return_type fsWrite(const int nparams, arg_type* a) {
 		r.return_size = 2*sizeof(int);
 		return r;
 	}
+	#ifdef _DEBUG_1_
+	printf("\tIn fsRead, parameter: fd: %d\n", *(int*)a->arg_val);
+	#endif
 
 	int fd = 0;
 	fd = *(int*)a->arg_val;
@@ -462,20 +465,24 @@ return_type fsRead(const int nparams, arg_type* a) {
 		return r;
 	}
 
+	#ifdef _DEBUG_1_
+	printf("\tIn fsRead, parameters: fd: %d, count: %d\n", *(int*)a->arg_val, *(int*)a->next->arg_val);
+	#endif
+
 	int fd = 0;
 	if (a->arg_size != 0) {
-		fd = *(int*)a->arg_val;	
+		fd = *(int*)a->arg_val;
 	}
 	int count = 0;
 	void *buf;
-	if (a->next->arg_size != 0) {
-		count = *(int*)a->next->arg_val;
-		buf = (void*)malloc(count);
-	}	
+
+	count = *(int*)a->next->arg_val;
+	buf = (void*)malloc(count);
 	
 	returnValue = read(fd, buf, count);
 	
 	if (returnValue == -1) {
+		perror("fsRead()");
 		char *retBuffer = (char *)malloc(2*sizeof(int));
 		errorDescriptor = -1;
 		returnValue = errno;
@@ -486,6 +493,7 @@ return_type fsRead(const int nparams, arg_type* a) {
 		r.return_size = 2*sizeof(int);
 		return r;
 	} else {
+		printf("\tSuccessfully read fd: %d, %s\n", fd, buf);
 		char *retBuffer = (char *)malloc(2*sizeof(int)+returnValue);
 		memcpy(retBuffer, &errorDescriptor, sizeof(int));
 		memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
@@ -626,17 +634,22 @@ char* transformPath(char* folderAilias, char* pathGiven) {
 	}
 	// indexOfFileName now starts at where the filename acutally starts
 	// compare with folderAilias to see if it needs to be replaced
-	if (strncmp(&pathGiven[indexOfFileName], folderAilias, strlen(folderAilias)) == 0 && pathGiven[indexOfFileName+strlen(folderAilias)] == '/') {
+	if (strncmp(&pathGiven[indexOfFileName], folderAilias, strlen(folderAilias)) == 0) {
+
+		int slashOffset = 0;
+		if (pathGiven[indexOfFileName+strlen(folderAilias)] == '/') {
+			slashOffset = 1;
+		}
 
 		#ifdef _DEBUG_1_
 		printf("\tFolder ailias in path given\n");
 		#endif
 
-		transformedPath = (char*)malloc(strlen(workingDirectoryName)+strlen(pathGiven)-strlen(folderAilias)-1);
+		transformedPath = (char*)malloc(strlen(workingDirectoryName)+strlen(pathGiven)-strlen(folderAilias)-slashOffset);
 
 		memcpy(transformedPath, pathGiven, indexOfFileName);
-		memcpy(transformedPath+indexOfFileName, workingDirectoryName, strlen(workingDirectoryName)-1);
-		strcpy(transformedPath+indexOfFileName+strlen(workingDirectoryName)-1, &pathGiven[indexOfFileName+strlen(folderAilias)]);
+		memcpy(transformedPath+indexOfFileName, workingDirectoryName, strlen(workingDirectoryName)-slashOffset);
+		strcpy(transformedPath+indexOfFileName+strlen(workingDirectoryName)-slashOffset, &pathGiven[indexOfFileName+strlen(folderAilias)]);
 	} else {
 		#ifdef _DEBUG_1_
 		printf("\tNo folder ailias in path given, just appending workingDirectoryName\n");
@@ -695,6 +708,7 @@ int main(int argc, char const *argv[]) {
 	register_procedure("fsOpen", 3, fsOpen);
 	register_procedure("fsClose", 2, fsClose);
 	register_procedure("fsWrite", 2, fsWrite);
+	register_procedure("fsRead", 2, fsRead);
 	
 	printRegisteredProcedures();
 

@@ -4,6 +4,130 @@
 		"selected_items":
 		[
 			[
+				"retVal",
+				"return_val"
+			],
+			[
+				"filedescrip",
+				"file_descriptor"
+			],
+			[
+				"retva",
+				"retVal"
+			],
+			[
+				"reval",
+				"retVal"
+			],
+			[
+				"trans",
+				"transformPath"
+			],
+			[
+				"workd",
+				"workingDirectoryName"
+			],
+			[
+				"path",
+				"pathGiven"
+			],
+			[
+				"E",
+				"EINVAL"
+			],
+			[
+				"eac",
+				"EACCES"
+			],
+			[
+				"er",
+				"errorDescriptor"
+			],
+			[
+				"new",
+				"newFd"
+			],
+			[
+				"curr",
+				"currentDirent"
+			],
+			[
+				"client",
+				"clientID"
+			],
+			[
+				"cur",
+				"currentDirent"
+			],
+			[
+				"succes",
+				"successfully"
+			],
+			[
+				"retu",
+				"return_val"
+			],
+			[
+				"retv",
+				"retVal"
+			],
+			[
+				"cli",
+				"client"
+			],
+			[
+				"Mounted",
+				"mounted_user"
+			],
+			[
+				"pr",
+				"printf	printf …"
+			],
+			[
+				"ai",
+				"ailias"
+			],
+			[
+				"folder",
+				"folderAilias"
+			],
+			[
+				"int",
+				"int"
+			],
+			[
+				"prnt",
+				"printMountedUsers"
+			],
+			[
+				"clie",
+				"clientID"
+			],
+			[
+				"add",
+				"addClientID"
+			],
+			[
+				"cla",
+				"client_api"
+			],
+			[
+				"moun",
+				"mounted_user"
+			],
+			[
+				"nu",
+				"NULL"
+			],
+			[
+				"n",
+				"nparams"
+			],
+			[
+				"fs",
+				"fs_client"
+			],
+			[
 				"if",
 				"ifmain	if __name__ == '__main__'"
 			],
@@ -52,18 +176,26 @@
 	"buffers":
 	[
 		{
-			"file": "/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+			"file": "fs_server.c",
 			"settings":
 			{
-				"buffer_size": 352,
+				"buffer_size": 18338,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "fsOtherIncludes.h",
+			"file": "simplified_rpc/ece454rpc_types.h",
 			"settings":
 			{
-				"buffer_size": 292,
+				"buffer_size": 2388,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "client_api.c",
+			"settings":
+			{
+				"buffer_size": 9022,
 				"line_ending": "Unix"
 			}
 		},
@@ -71,15 +203,7 @@
 			"file": "fs_client.c",
 			"settings":
 			{
-				"buffer_size": 2060,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "ece454_fs.h",
-			"settings":
-			{
-				"buffer_size": 1046,
+				"buffer_size": 3720,
 				"line_ending": "Unix"
 			}
 		}
@@ -87,9 +211,25 @@
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 107.0,
+		"height": 287.0,
 		"selected_items":
 		[
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"update",
+				"Package Control: Upgrade/Overwrite All Packages"
+			],
+			[
+				"list",
+				"Package Control: List Packages"
+			],
+			[
+				"pack",
+				"Package Control: List Packages"
+			],
 			[
 				"install",
 				"Package Control: Install Package"
@@ -105,10 +245,6 @@
 			[
 				"upd",
 				"Package Control: Upgrade Package"
-			],
-			[
-				"update",
-				"Package Control: Upgrade/Overwrite All Packages"
 			],
 			[
 				"package con",
@@ -140,9 +276,27 @@
 	},
 	"file_history":
 	[
-		"/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
-		"/Users/justinwilliams/Documents/eeg/emokit-master/python/emokit/emotiv.py",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/simplified_rpc/server_stub.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/fs_dummy.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/ece454_fs.h",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/fsOtherIncludes.h",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/Makefile",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/simplified_rpc/client_stub.c",
 		"/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/SublimeLinter/Default (OSX).sublime-keymap",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/simplified_rpc/sample_server_app.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/client_api.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/assignment4.sublime-project",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/server.out",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/client.out",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/simplified_rpc/ece454rpc_types.h",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/simplified_rpc/Makefile",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/fs_client.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/simplified_rpc/sample_client_app.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/simplified_rpc/fsServer.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/simplified_rpc/helper.c",
+		"/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/justinwilliams/Documents/eeg/emokit-master/python/emokit/emotiv.py",
 		"/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/User/Default (OSX).sublime-keymap",
 		"/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/SublimeLinter/SublimeLinter.sublime-settings",
 		"/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/User/SublimeLinter.sublime-settings",
@@ -156,7 +310,6 @@
 		"/Users/justinwilliams/Dropbox/4A/ECE458 - Computer Security/Project458/ece458-voting-system/db.py",
 		"/Users/justinwilliams/Dropbox/4A/ECE458 - Computer Security/Project458/ece458-voting-system/generate_tables.sql",
 		"/Users/justinwilliams/Dropbox/4A/ECE458 - Computer Security/Project458/ece458-voting-system/ece458Proj.sublime-project",
-		"/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
 		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/assignment1.sublime-project",
 		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/.gitignore",
 		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment1/README",
@@ -227,6 +380,32 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"1",
+			"isError",
+			"In fs",
+			"ret_int =",
+			"retVal",
+			"itr",
+			"free",
+			"printf(\"removing",
+			"itr",
+			"removeClientByFolderAiliasAndId",
+			"removeClientByIdAndFolderAilias",
+			"addClientID",
+			"itr",
+			"struct mounted_user",
+			"removeByID",
+			"dirent",
+			"printBuf",
+			"Buf(buf,",
+			"printBuf",
+			"getPublicIPAddr",
+			"fn",
+			"	\n",
+			"add",
+			"}\n",
+			"pdf",
+			"\"\n",
 			"sock",
 			"self",
 			"arg",
@@ -272,25 +451,52 @@
 			[
 				{
 					"buffer": 0,
-					"file": "/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+					"file": "fs_server.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 352,
+						"buffer_size": 18338,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								141,
-								141
+								12060,
+								12060
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JSON.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/C++/C.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1757.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "simplified_rpc/ece454rpc_types.h",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 2388,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -300,58 +506,28 @@
 					"type": "text"
 				},
 				{
-					"buffer": 1,
-					"file": "fsOtherIncludes.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 292,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
 					"buffer": 2,
-					"file": "fs_client.c",
+					"file": "client_api.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2060,
+						"buffer_size": 9022,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								6914,
+								6919
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/C++/C.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 559.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
@@ -359,27 +535,29 @@
 				},
 				{
 					"buffer": 3,
-					"file": "ece454_fs.h",
+					"file": "fs_client.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1046,
+						"buffer_size": 3720,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								272,
-								272
+								1839,
+								1839
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C++.tmLanguage"
+							"syntax": "Packages/C++/C.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 875.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -434,6 +612,38 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"fscl",
+				"fs_client.c"
+			],
+			[
+				"clienta",
+				"client_api.c"
+			],
+			[
+				"clientap",
+				"client_api.c"
+			],
+			[
+				"cliets",
+				"simplified_rpc/client_stub.c"
+			],
+			[
+				"simplese",
+				"simplified_rpc/sample_server_app.c"
+			],
+			[
+				"sampleser",
+				"simplified_rpc/sample_server_app.c"
+			],
+			[
+				"hel",
+				"simplified_rpc/helper.c"
+			],
+			[
+				"helper",
+				"simplified_rpc/helper.c"
+			],
 			[
 				".gi",
 				".gitignore"
