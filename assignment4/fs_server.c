@@ -20,17 +20,16 @@ typedef struct MountedUser {
 	struct MountedUser *next;
 } mounted_user;
 
-typedef struct FileDescriptors {
-	int fd;
-	int mode;
-	struct FileDescriptors *next;
-} file_descriptors;
-
 typedef struct OpenedFiles {
 	char *fileName;
-	file_descriptors *fds;
+	int fd;
+	int mode;
 	struct OpenedFiles *next;
 } opened_file;
+
+// when opening a file --> add to openedFiles list if it is not already there, otherewise just add fd to that list
+// we should keep track of rights
+// when closing search 
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -74,6 +73,7 @@ return_type r;
 int id_counter = 0; // used to give a unique ID to each user
 char* workingDirectoryName;
 mounted_user *users = NULL;
+opened_file *openedFiles = NULL;
 
 return_type fsMount(const int nparams, arg_type* a) {
 	#ifdef _DEBUG_1_
@@ -302,6 +302,11 @@ return_type fsOpen(const int nparams, arg_type* a) {
 		return r;
 	}
 
+	// TODO:
+	// check if there any other writes for the corresponding file
+	// if there is another write, ask the client to try again soon
+	// otherwise add it to the list if all other checks do not fail
+
 	mounted_user *user;
 	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
 		printf("\tError in fsOpen, clientID not found: %d\n", *(int*)a->arg_val);
@@ -340,8 +345,8 @@ return_type fsOpen(const int nparams, arg_type* a) {
 	#ifdef _DEBUG_1_
 	printf("\tcalling system open call, file name: %s, mode: %d, flags generated: %d\n", a->next->arg_val, *(int*)a->next->next->arg_val, openFlags);
 	#endif
-
-	if ((fd = open(transformPath(user->folderAilias, a->next->arg_val), openFlags)) == -1) {
+	char* fullFileName = transformPath(user->folderAilias, a->next->arg_val);
+	if ((fd = open(fullFileName, openFlags)) == -1) {
 		perror("\tfsOpen");
 		// error
 		errorDescriptor = -1;
@@ -370,11 +375,28 @@ return_type fsOpen(const int nparams, arg_type* a) {
 	printf("\tsuccess from open, fd: %d\n", fd);
 	#endif
 
-	
+	opened_file *newFileNode = (opened_file*)malloc(sizeof(opened_file));
+	newFileNode->fd = fd;
+	newFileNode->fileName = (char*)malloc(strlen(fullFileName));
+	strcpy(newFileNode->fileName, fullFileName);
+	newFileNode->mode = *(int*)a->next->next->arg_val;
+	newFileNode->next = NULL;
+
+	if(openedFiles == NULL) {
+		openedFiles = newFileNode;
+	} else {
+		opened_file *itr = openedFiles;
+		for (; itr != NULL; itr=itr->next) {
+			if(itr->next == NULL) {
+				itr->next = newFileNode;
+				break;
+			}
+		}
+	}
+
 	returnValue = fd;
 	memcpy(retBuffer, &errorDescriptor, sizeof(int));
 	memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
-
 	r.return_val = retBuffer;
 	r.return_size = 2*sizeof(int);
 	return r;
@@ -392,6 +414,8 @@ return_type fsClose(const int nparams, arg_type* a) {
 		r.return_size = sizeof(int);
 		return r;
 	}
+
+
 
 	mounted_user *user;
 	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
@@ -411,6 +435,9 @@ return_type fsClose(const int nparams, arg_type* a) {
 		r.return_size = sizeof(int);
 		return r;
 	}
+
+	// when close is successful remove opened_file node
+	
 	*retVal = 0;
 	r.return_val = retVal;
 	r.return_size = sizeof(int);
@@ -532,6 +559,10 @@ return_type fsRemove(const int nparams, arg_type* a) {
 		return r;
 	}
 
+	// check for other file name in  opened_file linked list, 
+	// if it not there remove file, 
+	// otherwise ask client to try again later
+
 	mounted_user *user;
 	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
 		printf("\tError in fsRemove, clientID not found: %d\n", *(int*)a->arg_val);
@@ -553,8 +584,6 @@ return_type fsRemove(const int nparams, arg_type* a) {
 	}
 
 	r.return_val = retVal;
-	return r;
-
 	return r;
 }
 
