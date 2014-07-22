@@ -302,12 +302,33 @@ return_type fsOpen(const int nparams, arg_type* a) {
 		return r;
 	}
 
+	mounted_user *user;
+	char* fullFileName = transformPath(user->folderAilias, a->next->arg_val);
+
 	// TODO:
 	// check if there any other writes for the corresponding file
 	// if there is another write, ask the client to try again soon
 	// otherwise add it to the list if all other checks do not fail
+	
+	if (openedFiles != NULL) {
+		// make iterator
+		opened_file *itr1 = openedFiles;
+		for (; itr1 != NULL; itr1=itr1->next) {
+			if(strcmp(itr1->fileName, fullFileName) == 0 && itr1->mode == 1) {
+				printf("ask client to wait\n");
+				errorDescriptor = -2;
+				returnValue = 100; // TODO: what should we send here? time to wait I guess??
+				memcpy(retBuffer, &errorDescriptor, sizeof(int));
+				memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
 
-	mounted_user *user;
+				r.return_val = retBuffer;
+				r.return_size = 2*sizeof(int);
+				return r;
+			}
+		}
+	}
+
+
 	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
 		printf("\tError in fsOpen, clientID not found: %d\n", *(int*)a->arg_val);
 		errorDescriptor = -1;
@@ -345,7 +366,7 @@ return_type fsOpen(const int nparams, arg_type* a) {
 	#ifdef _DEBUG_1_
 	printf("\tcalling system open call, file name: %s, mode: %d, flags generated: %d\n", a->next->arg_val, *(int*)a->next->next->arg_val, openFlags);
 	#endif
-	char* fullFileName = transformPath(user->folderAilias, a->next->arg_val);
+	
 	if ((fd = open(fullFileName, openFlags)) == -1) {
 		perror("\tfsOpen");
 		// error
@@ -436,8 +457,41 @@ return_type fsClose(const int nparams, arg_type* a) {
 		return r;
 	}
 
+	// TODO:
 	// when close is successful remove opened_file node
-	
+	int fd = *(int*)a->next->arg_val;
+	opened_file **itr = &openedFiles;
+	for (; *itr != NULL; *itr = (*itr)->next) {
+		// check if at tail and desired user
+		if ((*itr)->next == NULL && (*itr)->fd == fd) {
+			free((*itr)->fd);
+			free((*itr)->fileName);
+			free((*itr)->mode);
+			free(*itr);
+			(*itr) = NULL;
+			break;
+		} else if ((*itr)->next->fd == fd) {
+			if ((*itr)->next->next == NULL) {
+
+				free((*itr)->next->fd);
+				free((*itr)->next->fileName);
+				free((*itr)->next->mode);
+				free((*itr)->next);
+				(*itr)->next = NULL;
+				break;
+			} else {
+				opened_file **temp = &(*itr)->next;
+				(*itr)->next = (*itr)->next->next;
+				free((*temp)->fd);
+				free((*temp)->fileName);
+				free((*temp)->mode);
+				free(*temp);
+				temp = NULL;
+				break;
+			}
+		}
+	}
+
 	*retVal = 0;
 	r.return_val = retVal;
 	r.return_size = sizeof(int);
@@ -558,10 +612,23 @@ return_type fsRemove(const int nparams, arg_type* a) {
 		r.return_val = retVal;
 		return r;
 	}
-
+	// TODO:
 	// check for other file name in  opened_file linked list, 
 	// if it not there remove file, 
 	// otherwise ask client to try again later
+
+	if (openedFiles != NULL) {
+		// make iterator
+		opened_file *itr1 = openedFiles;
+		for (; itr1 != NULL; itr1=itr1->next) {
+			if(strcmp(itr1->fileName, (char*)a->next->arg_val) == 0) {
+				printf("ask client to wait\n");
+				*retVal = -2;
+				r.return_val = retVal;
+				return r;
+			}
+		}
+	}
 
 	mounted_user *user;
 	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
@@ -658,15 +725,15 @@ int removeClient(char* folderAilias, int id) {
 			free(*itr);
 			(*itr) = NULL;
 			return 0;
-		} else if (*(*itr)->next->id == id && strcmp((*itr)->folderAilias, folderAilias) == 0) {
+		} else if (*(*itr)->next->id == id && strcmp((*itr)->next->folderAilias, folderAilias) == 0) {
 			if ((*itr)->next->next == NULL) {
 
-				free((*itr)->next);
 				free((*itr)->next->id);
 				free((*itr)->next->folderAilias);
 				if ((*itr)->next->dirStream != NULL) {
 					free((*itr)->next->dirStream);
 				}
+				free((*itr)->next);
 				(*itr)->next = NULL;
 				return 0;
 			} else {
