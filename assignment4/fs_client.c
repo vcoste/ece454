@@ -83,6 +83,8 @@ int main(int argc, char *argv[]) {
     }
 
     printf("fsClose(ff): %d\n", fsClose(ff));
+
+    ff = fsOpen(fname, 0);
     
     if (fsRemove(fname) != 0) {
         perror("tried to fsRemove");
@@ -90,8 +92,6 @@ int main(int argc, char *argv[]) {
         printf("\tSuccessfully removed %s\n", fname);
     }
 
-
-    ff = fsOpen(fname, 0);
     if(ff < 0) {
         perror("fsOpen(read)"); exit(1);
     }

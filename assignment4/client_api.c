@@ -329,12 +329,13 @@ int fsWrite(int fd, const void *buf, const unsigned int count) {
 
 int fsRemove(const char *name) {
     #ifdef _DEBUG_CLI_
-	printf("in fsRead\n");
+	printf("in fsRemove\n");
 	#endif
 
 	return_type ans = make_remote_call( server.name,
 										server.port,
-										"fsRemove", 1,
+										"fsRemove", 2,
+										sizeof(int), (void *)(&clientId),
 										strlen(name), name);
 
 	if (ans.return_size != sizeof(int)) {

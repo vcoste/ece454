@@ -20,6 +20,18 @@ typedef struct MountedUser {
 	struct MountedUser *next;
 } mounted_user;
 
+typedef struct FileDescriptors {
+	int fd;
+	int mode;
+	struct FileDescriptors *next;
+} file_descriptors;
+
+typedef struct OpenedFiles {
+	char *fileName;
+	file_descriptors *fds;
+	struct OpenedFiles *next;
+} opened_file;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ///                          Helper Functions Definitions
@@ -512,7 +524,7 @@ return_type fsRemove(const int nparams, arg_type* a) {
 	*retVal = 0;
 	r.return_size = sizeof(int);
 
-	if (nparams != 1) {
+	if (nparams != 2 || a->arg_size != sizeof(int)) {
 		printf("\tError in fsRemove, incorrect arguments reveived\n");
 		*retVal = EINVAL;
 
@@ -520,11 +532,22 @@ return_type fsRemove(const int nparams, arg_type* a) {
 		return r;
 	}
 
+	mounted_user *user;
+	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
+		printf("\tError in fsRemove, clientID not found: %d\n", *(int*)a->arg_val);
+		*retVal = EACCES;
+
+		r.return_val = retVal;
+		return r;
+	}
+
 	#ifdef _DEBUG_1_
-	printf("\tIn fsRemove, parameter: fname: %s|\n", (char*)a->arg_val);
+	printf("\tIn fsRemove, parameter:clientID: %d fname: %s|\n",*(int*)a->arg_val, (char*)a->next->arg_val);
 	#endif
 
-	if ((*retVal = remove((char*)a->arg_val)) != 0) {
+	char* fullPathName = transformPath(user->folderAilias, (char*)a->next->arg_val);
+	if ((*retVal = remove(fullPathName) != 0)) {
+		printf("\tError when removing file: %s\n", fullPathName);
 		perror("fsRemove()");
 		*retVal = errno;
 	}
@@ -686,7 +709,7 @@ char* transformPath(char* folderAilias, char* pathGiven) {
 		#endif
 		transformedPath = (char*)malloc(strlen(workingDirectoryName)+strlen(pathGiven));
 		memcpy(transformedPath, workingDirectoryName, strlen(workingDirectoryName));
-		memcpy(transformedPath+strlen(workingDirectoryName), pathGiven, strlen(pathGiven));
+		strcpy(transformedPath+strlen(workingDirectoryName), pathGiven);
 	}
 
 	#ifdef _DEBUG_1_
@@ -739,7 +762,7 @@ int main(int argc, char const *argv[]) {
 	register_procedure("fsClose", 2, fsClose);
 	register_procedure("fsWrite", 2, fsWrite);
 	register_procedure("fsRead", 2, fsRead);
-	register_procedure("fsRemove", 1, fsRemove);
+	register_procedure("fsRemove", 2, fsRemove);
 	
 	printRegisteredProcedures();
 
