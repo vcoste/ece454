@@ -7,22 +7,29 @@
 #define _DEBUG_CLI_
 #endif
 
-struct remoteFolderServer {
-	char *name;
-	unsigned int port;
-};
+typedef struct RemoteFolderServer {
+	char *srvIpOrDomName;
+	char *localFolderName;
+	unsigned int srvPort;
+	struct RemoteFolderServer *next;
+} remote_folder_server;
 
-struct remoteFolderServer server;
-// remoteFolderServer *server = malloc(sizeof(struct remoteFolderServer));
+////////////////////////////////////////////////////////////////////////////////
+///                          Helper Functions Definitions
+////////////////////////////////////////////////////////////////////////////////
+int addNewServer(remote_folder_server*);
+remote_folder_server* findServerByFolderName(const char*);
+int removeServerByFolderName(char*);
+
+remote_folder_server *remoteFolderServers = NULL;
 struct fsDirent dent;
 int clientId = -1;
 
 int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *localFolderName) {
 	// do similar stuff as ass1 client app
 	// save ip address and port number for subsequent remote calls
-	server.name = (char *)malloc(strlen(localFolderName));
-	strcpy(server.name, srvIpOrDomName);	
-	server.port = srvPort;
+	remote_folder_server *newServer;
+
 	#ifdef _DEBUG_CLI_
 	printf("Calling fsMount to server\n");
 	#endif
@@ -38,6 +45,18 @@ int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *
 		printf("Successfully returned, given clientID: %d\n", result);
 		#endif
 		clientId = result;
+
+		newServer = (remote_folder_server*)malloc(sizeof(remote_folder_server));
+		newServer->localFolderName = (char *)malloc(strlen(localFolderName));
+		newServer->srvIpOrDomName = (char*)malloc(strlen(srvIpOrDomName));
+		newServer->srvPort = srvPort;
+		newServer->next = NULL;
+
+		strcpy(newServer->localFolderName, localFolderName);
+		strcpy(newServer->srvIpOrDomName, srvIpOrDomName);
+
+		addNewServer(newServer);
+
 		return 0;
 	}
 
@@ -48,9 +67,10 @@ int fsUnmount(const char *localFolderName) {
 	// 	the counterpart of fsMount() 
 	// 	to unmount a remote ﬁlesystem that is referred to locally by localFolderName. 
 	// 	Returns 0 on success, −1 on failure with errno set appropriately
-	printf("serverName: %s, serverPort: %i, clientID: %i\n", server.name, server.port, clientId);
-	return_type ans = make_remote_call( server.name,
-										server.port ,
+	remote_folder_server *serverToUnmount = findServerByFolderName(localFolderName);
+	printf("serverName: %s, serverPort: %i, clientID: %i\n", serverToUnmount->srvIpOrDomName, serverToUnmount->srvPort, clientId);
+	return_type ans = make_remote_call( serverToUnmount->srvIpOrDomName,
+										serverToUnmount->srvPort,
 										"fsUnmount", 2,
 										strlen(localFolderName), (void *)(localFolderName),
 										sizeof(int), (void *)(&clientId));
@@ -355,4 +375,74 @@ int fsRemove(const char *name) {
 	}
 
 	return 0;
+}
+
+int addNewServer(remote_folder_server *newServer) {
+
+	if (remoteFolderServers == NULL) {
+		remoteFolderServers = newServer;
+		return 0;
+	}
+
+	remote_folder_server *itr = remoteFolderServers;
+	for (; itr != NULL; itr = itr->next) {
+		if (itr->next == NULL) {
+			itr->next = newServer;
+			return 0;
+		}
+	}
+	#ifdef _DEBUG_CLI_
+	printf("\tUnable to add new server: %s, %d, %s\n", newServer->srvIpOrDomName, newServer->srvPort, newServer->localFolderName);
+	#endif
+
+	return -1;
+}
+
+remote_folder_server* findServerByFolderName(const char* folderName) {
+
+	remote_folder_server *server = remoteFolderServers;
+	for (; server != NULL; server = server->next) {
+		if (strcmp(server->localFolderName, folderName)) {
+			return server;
+		}
+	}
+
+	return NULL;
+}
+
+int removeServerByFolderName(char* folderName) {
+
+	remote_folder_server **itr = &remoteFolderServers;
+	for (; *itr != NULL; *itr = (*itr)->next) {
+		// check if at tail and desred server
+		if ((*itr)->next == NULL && strcmp((*itr)->localFolderName, folderName) == 0) {
+			free((*itr)->srvIpOrDomName);
+			free((*itr)->localFolderName);
+			
+			free(*itr);
+			(*itr) = NULL;
+			return 0;
+		} else if (strcmp((*itr)->next->localFolderName, folderName) == 0) {
+			if ((*itr)->next->next == NULL) { // deleting the tail
+
+				free((*itr)->next->srvIpOrDomName);
+				free((*itr)->next->localFolderName);
+				free((*itr)->next);
+				
+				(*itr)->next = NULL;
+				return 0;
+			} else { // deleting something in the middle
+				remote_folder_server **temp = &(*itr)->next;
+				(*itr)->next = (*itr)->next->next;
+				free((*temp)->srvIpOrDomName);
+				free((*temp)->localFolderName);
+
+				free(*temp);
+				temp = NULL;
+				return 0;
+			}
+		}
+	}
+
+	return -1;
 }
