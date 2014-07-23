@@ -80,25 +80,46 @@ return_type fsMount(const int nparams, arg_type* a) {
 	printf("in fsMount\n");
 	#endif
 
+	char *retBuffer = malloc(2*sizeof(int));
+	int errorDescriptor;
+	int returnValue;
+
 	if (nparams != 1) {
-		r.return_val  = NULL;
-		r.return_size = 0;
+		errorDescriptor = -1;
+		returnValue = EINVAL;
+
+		memcpy(retBuffer, &errorDescriptor, sizeof(int));
+		memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
+
+		r.return_val  = retBuffer;
+		r.return_size = 2*sizeof(int);
 		return r;
 	}
 
-	int *clientID = malloc(sizeof(int));
-	*clientID = addNewClient(a->arg_val, a->arg_size);
+	int clientID = addNewClient(a->arg_val, a->arg_size);
 
 	#ifdef _DEBUG_1_
 	printMountedUsers();
 	#endif
 
-	if (*clientID >= 0) {
-		r.return_val  = clientID;
-		r.return_size = sizeof(int);
+	if (clientID >= 0) {
+		errorDescriptor = 0;
+		returnValue = clientID;
+
+		memcpy(retBuffer, &errorDescriptor, sizeof(int));
+		memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
+
+		r.return_val  = retBuffer;
+		r.return_size = 2*sizeof(int);
 	} else {
-		r.return_val  = NULL;
-		r.return_size = 0;
+		errorDescriptor = -1;
+		returnValue = EUSERS;
+
+		memcpy(retBuffer, &errorDescriptor, sizeof(int));
+		memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
+
+		r.return_val  = retBuffer;
+		r.return_size = 2*sizeof(int);
 	}
 
 	#ifdef _DEBUG_1_

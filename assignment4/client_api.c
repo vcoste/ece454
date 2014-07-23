@@ -10,6 +10,7 @@
 typedef struct RemoteFolderServer {
 	char *srvIpOrDomName;
 	char *localFolderName;
+	int *clientId;
 	unsigned int srvPort;
 	struct RemoteFolderServer *next;
 } remote_folder_server;
@@ -22,13 +23,10 @@ remote_folder_server* findServerByFolderName(const char*);
 int removeServerByFolderName(char*);
 
 remote_folder_server *remoteFolderServers = NULL;
-struct fsDirent dent;
-int clientId = -1;
 
 int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *localFolderName) {
 	// do similar stuff as ass1 client app
 	// save ip address and port number for subsequent remote calls
-	remote_folder_server *newServer;
 
 	#ifdef _DEBUG_CLI_
 	printf("Calling fsMount to server\n");
@@ -37,19 +35,26 @@ int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *
 										(int)srvPort,
 										"fsMount", 1,
 										strlen(localFolderName), (void *)(localFolderName));
-	int result = *(int*)(ans.return_val);
+	remote_folder_server *newServer;
+	int containsError;
+	int returnedValue;
+
+	memcpy(&containsError, ans.return_val, sizeof(int));
+	memcpy(&returnedValue, ans.return_val+sizeof(int), sizeof(int));
 	
-	if (result >= 0) {
+	if (containsError == 0) {
 		//save id
 		#ifdef _DEBUG_CLI_
-		printf("Successfully returned, given clientID: %d\n", result);
+		printf("Successfully returned, given clientID: %d\n", returnedValue);
 		#endif
-		clientId = result;
-
+		
 		newServer = (remote_folder_server*)malloc(sizeof(remote_folder_server));
-		newServer->localFolderName = (char *)malloc(strlen(localFolderName));
-		newServer->srvIpOrDomName = (char*)malloc(strlen(srvIpOrDomName));
-		newServer->srvPort = srvPort;
+		newServer->localFolderName = (char*)malloc(strlen(localFolderName));
+		newServer->srvIpOrDomName  = (char*)malloc(strlen(srvIpOrDomName));
+		newServer->clientId        = (int*) malloc(sizeof(int));
+
+		*newServer->clientId = returnedValue;
+		newServer->srvPort   = srvPort;
 		newServer->next = NULL;
 
 		strcpy(newServer->localFolderName, localFolderName);
@@ -60,6 +65,8 @@ int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *
 		return 0;
 	}
 
+	errno = returnedValue;
+
 	return -1;
 }
 
@@ -68,22 +75,25 @@ int fsUnmount(const char *localFolderName) {
 	// 	to unmount a remote ﬁlesystem that is referred to locally by localFolderName. 
 	// 	Returns 0 on success, −1 on failure with errno set appropriately
 	remote_folder_server *serverToUnmount = findServerByFolderName(localFolderName);
-	printf("serverName: %s, serverPort: %i, clientID: %i\n", serverToUnmount->srvIpOrDomName, serverToUnmount->srvPort, clientId);
+	printf("serverName: %s, serverPort: %i, clientID: %i\n", serverToUnmount->srvIpOrDomName, serverToUnmount->srvPort, *serverToUnmount->clientId);
 	return_type ans = make_remote_call( serverToUnmount->srvIpOrDomName,
 										serverToUnmount->srvPort,
 										"fsUnmount", 2,
 										strlen(localFolderName), (void *)(localFolderName),
-										sizeof(int), (void *)(&clientId));
+										sizeof(int), (void *)(serverToUnmount->clientId));
 	int result = *(int*)(ans.return_val);
 	return result;
 }
 
 FSDIR* fsOpenDir(const char *folderName) {
-	printf("in fsOpenDir, clientId: %d, folderName: %s\n", clientId, folderName);
-	return_type ans = make_remote_call( server.name,
-										server.port,
+	
+	remote_folder_server *server = findServerByFolderName(folderName);
+	printf("in fsOpenDir, clientId: %d, folderName: %s\n", *server->clientId, folderName);
+
+	return_type ans = make_remote_call( server->srvIpOrDomName,
+										server->srvPort,
 										"fsOpenDir", 2,
-										sizeof(int), (void *)(&clientId),
+										sizeof(int), (void *)(server->clientId),
 										strlen(folderName), (void *)(folderName));
 	printf("return_size: %d\n", ans.return_size);
 	printf("return_val: %d\n", *(int*)(ans.return_val));
@@ -97,62 +107,80 @@ FSDIR* fsOpenDir(const char *folderName) {
 		return nice;
 	} else if (*(int*)(ans.return_val) != 0) {
 		#ifdef _DEBUG_CLI_
-		printf("return_val not zero: %d\n", strerror(*(int*)(ans.return_val)));
+		printf("return_val not zero: %s\n", strerror(*(int*)(ans.return_val)));
 		#endif
 		//set errno before returning using return_val as errno
 		FSDIR *nice = NULL;
 		errno = *(int*)(ans.return_val);
 		return nice;
 	} else {
+		
 		#ifdef _DEBUG_CLI_
-		printf("return_val should be zero: %d\n", (int*)(ans.return_val));
+		printf("return_val should be zero: %d\n", *(int*)(ans.return_val));
 		#endif
-		FSDIR* result;
-		result->id = clientId;
+		
+		FSDIR* result = malloc(sizeof(FSDIR));
+		result->fileName = (char*)malloc(strlen(folderName));
+
+		strcpy(result->fileName, folderName);
+		result->id     = *server->clientId;
 		result->status = *(int*)(ans.return_val);
     	return result;
 	}
 }
 
 int fsCloseDir(FSDIR *folder) {
-	printf("in fsCloseDir, clientId: %d\n", clientId);
-	return_type ans = make_remote_call( server.name,
-										server.port ,
+	remote_folder_server *server = findServerByFolderName(folder->fileName);
+	
+	printf("in fsCloseDir, clientId: %d\n", *server->clientId);
+	
+	return_type ans = make_remote_call( server->srvIpOrDomName,
+										server->srvPort ,
 										"fsCloseDir", 1,
-										sizeof(int), (void *)(&clientId));
+										sizeof(int), (void *)(server->clientId));
+
 	printf("return_size: %d\n", ans.return_size);
 	printf("return_val: %d\n", *(int*)(ans.return_val));
+
 	if (ans.return_size == 0) {
 		#ifdef _DEBUG_CLI_
 		printf("return_size zero: %d\n", ans.return_size);
 		#endif
+	
 		//set errno before returning using a generic error
 		errno = EBADMSG;
 		return -1;
+	
 	} else if (*(int*)(ans.return_val) != 0) {
 		#ifdef _DEBUG_CLI_
 		printf("return_val not zero: %s\n", strerror(*(int*)(ans.return_val)));
 		#endif
+	
 		errno = *(int*)(ans.return_val);
+	
 		//set errno before returning using return_val as errno
 		return -1;
 	} else {
+		
 		#ifdef _DEBUG_CLI_
-
 		printf("return_val should be zero: %d\n", *(int*)(ans.return_val));
 		#endif
+
     	return 0;
 	}
 }
 
 struct fsDirent *fsReadDir(FSDIR *folder) {
+
 	#ifdef _DEBUG_CLI_
 	printf("in fsReadDir\n");
 	#endif
-	return_type ans = make_remote_call( server.name,
-										server.port ,
+	
+	remote_folder_server *server = findServerByFolderName(folder->fileName);
+	return_type ans = make_remote_call( server->srvIpOrDomName,
+										server->srvPort ,
 										"fsReadDir", 1,
-										sizeof(int), (void *)(&clientId));
+										sizeof(int), (void *)(server->clientId));
 	
 	if (ans.return_size == 0) {
 		return NULL;
@@ -418,8 +446,9 @@ int removeServerByFolderName(char* folderName) {
 		if ((*itr)->next == NULL && strcmp((*itr)->localFolderName, folderName) == 0) {
 			free((*itr)->srvIpOrDomName);
 			free((*itr)->localFolderName);
-			
+			free((*itr)->clientId);
 			free(*itr);
+
 			(*itr) = NULL;
 			return 0;
 		} else if (strcmp((*itr)->next->localFolderName, folderName) == 0) {
@@ -427,6 +456,7 @@ int removeServerByFolderName(char* folderName) {
 
 				free((*itr)->next->srvIpOrDomName);
 				free((*itr)->next->localFolderName);
+				free((*itr)->next->clientId);
 				free((*itr)->next);
 				
 				(*itr)->next = NULL;
@@ -436,13 +466,13 @@ int removeServerByFolderName(char* folderName) {
 				(*itr)->next = (*itr)->next->next;
 				free((*temp)->srvIpOrDomName);
 				free((*temp)->localFolderName);
-
+				free((*temp)->clientId);
 				free(*temp);
+
 				temp = NULL;
 				return 0;
 			}
 		}
 	}
-
 	return -1;
 }
