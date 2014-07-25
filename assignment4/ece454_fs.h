@@ -23,13 +23,6 @@ struct fsDirent {
 			      -1 otherwise. */
 };
 
-typedef struct RemoteFolderServer {
-	char *srvIpOrDomName;
-	char *localFolderName;
-	int *clientId;
-	unsigned int srvPort;
-	struct RemoteFolderServer *next;
-} remote_folder_server;
 
 extern int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *localFolderName);
 extern int fsUnmount(const char *localFolderName);

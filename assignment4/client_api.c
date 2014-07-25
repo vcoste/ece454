@@ -15,6 +15,13 @@ typedef struct RemoteFolderServer {
 	struct RemoteFolderServer *next;
 } remote_folder_server;
 
+typedef struct ClientFolderDescriptor {
+	char *localFolderName;
+	int clientFd;
+	int serverFd;
+	struct ClientFolderDescriptor *next;
+} client_fd;
+
 ////////////////////////////////////////////////////////////////////////////////
 ///                          Helper Functions Definitions
 ////////////////////////////////////////////////////////////////////////////////
@@ -23,8 +30,12 @@ remote_folder_server* findServerByFolderName(const char*);
 int removeServerByFolderName(char*);
 
 int createClientFd(char*, int);
+client_fd* getNodeFromClientFd(int);
+int removeClientFd(int);
 
 remote_folder_server *remoteFolderServers = NULL;
+client_fd *clientServerFdMap = NULL;
+int uniqueClientFdCounter = 0;
 
 int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *localFolderName) {
 	// do similar stuff as ass1 client app
@@ -244,6 +255,8 @@ int fsOpen(const char *fname, int mode) {
 			#ifdef _DEBUG_CLI_
 			printf("positive val: %d\n", *val);
 			#endif
+			// TODO:
+			// createClientFd(fname, serverFd);
 			return *val;
 		} else {
 			errno = *val;
@@ -259,10 +272,13 @@ int fsClose(int fd) {
 	#ifdef _DEBUG_CLI_
 	printf("in fsClose\n");
 	#endif
-	return_type ans = make_remote_call( server.name,
-										server.port ,
+
+	client_fd *clientFdNode = getNodeFromClientFd(fd);
+	remote_folder_server *server = findServerByFolderName(clientFdNode->localFolderName);
+	return_type ans = make_remote_call( server->srvIpOrDomName,
+										server->srvPort,
 										"fsClose", 2,
-										sizeof(int), (void *)(&clientId),
+										sizeof(int), (void *)(server->clientId),
 										sizeof(int), (void *)(&fd));
 	if (ans.return_size == 0) {
 		//error set errno
@@ -282,7 +298,15 @@ int fsClose(int fd) {
 		#ifdef _DEBUG_CLI_
 		printf("return_val should be zero: %d\n", *(int*)(ans.return_val));
 		#endif
-    	return 0;
+		if (removeClientFd(server->clientId) == 0) {
+    		return 0;
+		} else {
+			#ifdef _DEBUG_CLI_
+			printf("did not removeClientFd, return_size zero: %d\n", ans.return_size);
+			#endif
+			errno = EBADMSG;
+			return -1;
+		}
 	}
 }
 
@@ -290,10 +314,12 @@ int fsRead(int fd, void *buf, const unsigned int count) {
 	#ifdef _DEBUG_CLI_
 	printf("in fsRead\n");
 	#endif
-	return_type ans = make_remote_call( server.name,
-										server.port ,
+	client_fd *clientFdNode = getNodeFromClientFd(fd);
+	remote_folder_server *server = findServerByFolderName(clientFdNode->localFolderName);
+	return_type ans = make_remote_call( server->srvIpOrDomName,
+										server->srvPort,
 										"fsRead", 2,
-										sizeof(int), (void *)(&fd),
+										sizeof(int), (void *)(&(clientFdNode->serverFd)),
 										sizeof(unsigned int), (void *)(&count));
     
     int errorDescriptor;
@@ -346,10 +372,12 @@ int fsWrite(int fd, const void *buf, const unsigned int count) {
 	#ifdef _DEBUG_CLI_
 	printf("in fsWrite\n");
 	#endif
-	return_type ans = make_remote_call( server.name,
-										server.port,
+	client_fd *clientFdNode = getNodeFromClientFd(fd);
+	remote_folder_server *server = findServerByFolderName(clientFdNode->localFolderName);
+	return_type ans = make_remote_call( server->srvIpOrDomName,
+										server->srvPort,
 										"fsWrite", 2,
-										sizeof(int), (void*)(&fd),
+										sizeof(int), (void*)(&(clientFdNode->serverFd)),
 										count, buf);
 	int errorDescriptor;
 	int returnedValue;
@@ -382,11 +410,11 @@ int fsRemove(const char *name) {
     #ifdef _DEBUG_CLI_
 	printf("in fsRemove\n");
 	#endif
-
-	return_type ans = make_remote_call( server.name,
-										server.port,
+	remote_folder_server *server = findServerByFolderName(name);
+	return_type ans = make_remote_call( server->srvIpOrDomName,
+										server->srvPort,
 										"fsRemove", 2,
-										sizeof(int), (void *)(&clientId),
+										sizeof(int), (void *)(server->clientId),
 										strlen(name), name);
 
 	if (ans.return_size != sizeof(int)) {
@@ -446,13 +474,6 @@ remote_folder_server* findServerByFolderName(const char* folderName) {
 	return NULL;
 }
 
-remote_folder_server* findServerByFolderName(int fd) {
-
-	
-
-	return NULL;
-}
-
 int removeServerByFolderName(char* folderName) {
 
 	remote_folder_server **itr = &remoteFolderServers;
@@ -492,7 +513,82 @@ int removeServerByFolderName(char* folderName) {
 	return -1;
 }
 
-int createClientFd(char* mountedFolderName, int fd) {
+int createClientFd(char* mountedFolderName, int serverFd) {
+	// TODO:
+	// make unique fd for the client
+	// map serverFd to clientFd
+	
+	client_fd *newClientFd;
 
-	return 0;
+	newClientFd = (client_fd*)malloc(sizeof(client_fd));
+	newClientFd->localFolderName = (char*)malloc(strlen(mountedFolderName));
+
+	strcpy(newClientFd->localFolderName, mountedFolderName);
+	newClientFd->clientFd = uniqueClientFdCounter;
+	newClientFd->serverFd = serverFd;
+	newClientFd->next = NULL;
+
+	uniqueClientFdCounter++;
+
+	if (clientServerFdMap == NULL) {
+		clientServerFdMap = newClientFd;
+	} else {
+		client_fd *itr = clientServerFdMap;
+		for (; itr != NULL; itr = itr->next) {
+			if (itr->next == NULL) {
+				itr->next = newClientFd;
+			}
+		}
+	}
+	return newClientFd->clientFd;
 }
+
+client_fd* getNodeFromClientFd(int clientFd) {
+	client_fd *itr = clientServerFdMap;
+	for (; itr != NULL; itr = itr->next) {
+		if (itr->clientFd == clientFd) {
+			return itr;
+		}
+	}
+	return NULL;
+}
+
+int removeClientFd(int clientFd) {
+
+	client_fd **itr = &clientServerFdMap;
+	for (; *itr != NULL; *itr = (*itr)->next) {
+		// check if at tail and desired clientFd
+		if ((*itr)->next == NULL && (*itr)->clientFd == clientFd) {
+			// free((*itr)->clientFd);
+			// free((*itr)->serverFd);
+			free((*itr)->localFolderName);
+			free(*itr);
+
+			(*itr) = NULL;
+			return 0;
+		} else if ((*itr)->next->clientFd == clientFd) {
+			if ((*itr)->next->next == NULL) { // deleting the tail
+
+				// free((*itr)->next->serverFd);
+				// free((*itr)->next->clientFd);
+				free((*itr)->next->localFolderName);
+				free((*itr)->next);
+				
+				(*itr)->next = NULL;
+				return 0;
+			} else { // deleting something in the middle
+				client_fd **temp = &(*itr)->next;
+				(*itr)->next = (*itr)->next->next;
+				// free((*temp)->serverFd);
+				// free((*temp)->clientFd);
+				free((*temp)->localFolderName);
+				free(*temp);
+
+				temp = NULL;
+				return 0;
+			}
+		}
+	}
+	return -1;
+}
+
