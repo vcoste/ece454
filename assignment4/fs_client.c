@@ -30,7 +30,7 @@ void printBuf(char *buf, int size) {
     }
 }
 
-int main(int argc, char *argv[]) {
+void test1(int argc, char *argv[]) {
     char *dirname = NULL;
 
     if(argc > 3) 
@@ -112,8 +112,12 @@ int main(int argc, char *argv[]) {
     // }
 
     printf("Reached the end without errors\n");
+}
 
-    // printf("fsCloseDir(): %d\n", fsCloseDir(fd));
+int main(int argc, char *argv[]) {
+    
+
+    test1(argc, argv);
 
     return 0;
 

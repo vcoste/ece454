@@ -22,6 +22,8 @@ int addNewServer(remote_folder_server*);
 remote_folder_server* findServerByFolderName(const char*);
 int removeServerByFolderName(char*);
 
+int createClientFd(char*, int);
+
 remote_folder_server *remoteFolderServers = NULL;
 
 int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *localFolderName) {
@@ -212,10 +214,11 @@ int fsOpen(const char *fname, int mode) {
 	#ifdef _DEBUG_CLI_
 	printf("in fsOpen\n");
 	#endif
-	return_type ans = make_remote_call( server.name,
-										server.port ,
+	remote_folder_server *server = findServerByFolderName(fname);
+	return_type ans = make_remote_call( server->srvIpOrDomName,
+										server->srvPort,
 										"fsOpen", 3,
-										sizeof(int), (void *)(&clientId),
+										sizeof(int), (void *)(server->clientId),
 										strlen(fname), (void *)(fname),
 										sizeof(int), (void *)(&mode));
 	if (ans.return_size == 0) {
@@ -428,12 +431,24 @@ int addNewServer(remote_folder_server *newServer) {
 
 remote_folder_server* findServerByFolderName(const char* folderName) {
 
+	int startIndexOfFolderName = 0;
+	char* slash = "/";
+
+	startIndexOfFolderName = strcspn(folderName, slash);
+
 	remote_folder_server *server = remoteFolderServers;
 	for (; server != NULL; server = server->next) {
-		if (strcmp(server->localFolderName, folderName)) {
+		if (strncmp(server->localFolderName, &folderName[startIndexOfFolderName], strlen(server->localFolderName))) {
 			return server;
 		}
 	}
+
+	return NULL;
+}
+
+remote_folder_server* findServerByFolderName(int fd) {
+
+	
 
 	return NULL;
 }
@@ -475,4 +490,9 @@ int removeServerByFolderName(char* folderName) {
 		}
 	}
 	return -1;
+}
+
+int createClientFd(char* mountedFolderName, int fd) {
+
+	return 0;
 }
