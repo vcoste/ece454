@@ -85,15 +85,40 @@ void test1(int argc, char *argv[]) {
     printf("fsClose(ff): %d\n", fsClose(ff));
 
     ff = fsOpen(fname, 0);
-    
+    if(ff < 0) {
+        perror("fsOpen(read)"); exit(1);
+    }
+
     if (fsRemove(fname) != 0) {
         perror("tried to fsRemove");
+        printf("tried to fsRemove\n");
     } else {
         printf("\tSuccessfully removed %s\n", fname);
     }
-
-    if(ff < 0) {
-        perror("fsOpen(read)"); exit(1);
+    fd = fsOpenDir(dirname);
+    fdent = fsReadDir(fd);
+    if (fdent != NULL) {
+        printf("\t %s, %d\n", fdent->entName, (int)(fdent->entType));
+    } else {
+        printf("\tReached end of folder \n");
+    }
+    fdent = fsReadDir(fd);
+    if (fdent != NULL) {
+        printf("\t %s, %d\n", fdent->entName, (int)(fdent->entType));
+    } else {
+        printf("\tReached end of folder \n");
+    }
+    fdent = fsReadDir(fd);
+    if (fdent != NULL) {
+        printf("\t %s, %d\n", fdent->entName, (int)(fdent->entType));
+    } else {
+        printf("\tReached end of folder \n");
+    }
+    fdent = fsReadDir(fd);
+    if (fdent != NULL) {
+        printf("\t %s, %d\n", fdent->entName, (int)(fdent->entType));
+    } else {
+        printf("\tReached end of folder \n");
     }
 
     char rdBuf[256];

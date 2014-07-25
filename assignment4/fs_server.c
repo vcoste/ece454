@@ -304,7 +304,7 @@ return_type fsReadDir(const int nparams, arg_type* a) {
 }
 
 return_type fsOpen(const int nparams, arg_type* a) {
-
+	printf("in fsOpen\n");
 	char *retBuffer = malloc(2*sizeof(int));
 	int fd;
 	int errorDescriptor = 0;
@@ -323,10 +323,24 @@ return_type fsOpen(const int nparams, arg_type* a) {
 		return r;
 	}
 
+
+
 	mounted_user *user;
+	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
+		printf("\tError in fsOpen, clientID not found: %d\n", *(int*)a->arg_val);
+		errorDescriptor = -1;
+		returnValue = EACCES;
+		memcpy(retBuffer, &errorDescriptor, sizeof(int));
+		memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
+
+		r.return_val = retBuffer;
+		r.return_size = 2*sizeof(int);
+		return r;
+	}
+
+	// printf("user->folderAilias: %s, a->next->arg_val:%s\n", user->folderAilias, a->next->arg_val);
 	char* fullFileName = transformPath(user->folderAilias, a->next->arg_val);
 
-	// TODO:
 	// check if there any other writes for the corresponding file
 	// if there is another write, ask the client to try again soon
 	// otherwise add it to the list if all other checks do not fail
@@ -347,19 +361,6 @@ return_type fsOpen(const int nparams, arg_type* a) {
 				return r;
 			}
 		}
-	}
-
-
-	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
-		printf("\tError in fsOpen, clientID not found: %d\n", *(int*)a->arg_val);
-		errorDescriptor = -1;
-		returnValue = EACCES;
-		memcpy(retBuffer, &errorDescriptor, sizeof(int));
-		memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
-
-		r.return_val = retBuffer;
-		r.return_size = 2*sizeof(int);
-		return r;
 	}
 
 	if (*(int*)a->next->next->arg_val == 0) {
@@ -445,7 +446,6 @@ return_type fsOpen(const int nparams, arg_type* a) {
 }
 
 return_type fsClose(const int nparams, arg_type* a) {
-
 	int *retVal = malloc(sizeof(int));
 
 	if (nparams != 2 || a->arg_size != sizeof(int)) {
@@ -457,8 +457,6 @@ return_type fsClose(const int nparams, arg_type* a) {
 		return r;
 	}
 
-
-
 	mounted_user *user;
 	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
 		printf("\tError in fsClose, clientID not found: %d\n", *(int*)a->arg_val);
@@ -469,6 +467,7 @@ return_type fsClose(const int nparams, arg_type* a) {
 		return r;
 	}
 
+
 	if (close(*(int*)a->next->arg_val) == -1) {
 		perror("fsClose()");
 		*retVal = errno;
@@ -477,42 +476,43 @@ return_type fsClose(const int nparams, arg_type* a) {
 		r.return_size = sizeof(int);
 		return r;
 	}
-
-	// TODO:
 	// when close is successful remove opened_file node
 	int fd = *(int*)a->next->arg_val;
+	printf("\nin fsClose, looking for fd: %d\n", fd);
 	opened_file **itr = &openedFiles;
 	for (; *itr != NULL; *itr = (*itr)->next) {
+		printf("\tcomparing to :%d\n", (*itr)->fd);
 		// check if at tail and desired user
 		if ((*itr)->next == NULL && (*itr)->fd == fd) {
-			free((*itr)->fd);
+			printf("case 1\n");
+			// free((*itr)->fd);
+			// free((*itr)->mode);
 			free((*itr)->fileName);
-			free((*itr)->mode);
 			free(*itr);
 			(*itr) = NULL;
 			break;
 		} else if ((*itr)->next->fd == fd) {
+			printf("case 2\n");
 			if ((*itr)->next->next == NULL) {
 
-				free((*itr)->next->fd);
+				// free((*itr)->next->fd);
+				// free((*itr)->next->mode);
 				free((*itr)->next->fileName);
-				free((*itr)->next->mode);
 				free((*itr)->next);
 				(*itr)->next = NULL;
 				break;
 			} else {
 				opened_file **temp = &(*itr)->next;
 				(*itr)->next = (*itr)->next->next;
-				free((*temp)->fd);
+				// free((*temp)->fd);
+				// free((*temp)->mode);
 				free((*temp)->fileName);
-				free((*temp)->mode);
 				free(*temp);
 				temp = NULL;
 				break;
 			}
 		}
 	}
-
 	*retVal = 0;
 	r.return_val = retVal;
 	r.return_size = sizeof(int);
@@ -787,13 +787,13 @@ mounted_user* findClientById(int id) {
 }
 
 char* transformPath(char* folderAilias, char* pathGiven) {
+	#ifdef _DEBUG_1_
+	printf("\tIn transformPath, folderAilias: %s, pathGiven: %s\n", folderAilias, pathGiven);
+	#endif
 	int foundFolderAilias = 0;
 	int indexOfFileName = 0; // looks for the start of alpha character, the path can potentially start with slashes and/or periods
 	char* transformedPath;
 
-	#ifdef _DEBUG_1_
-	printf("\tIn transformPath, folderAilias: %s, pathGiven: %s\n", folderAilias, pathGiven);
-	#endif
 
 	while (foundFolderAilias == 0) {
 		if (pathGiven[indexOfFileName] == '/' || pathGiven[indexOfFileName] == '.') {
