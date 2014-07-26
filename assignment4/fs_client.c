@@ -153,6 +153,74 @@ void testUnmounting(char* path) {
     printf("\tfsUnmount(): %d\n", fsUnmount(path));
 }
 
+void testRemove(int argc, char *argv[]) {
+    char *dirname = NULL;
+
+    if(argc > 3) 
+        dirname = argv[3];
+    else {
+        dirname = (char *)calloc(strlen(".")+1, sizeof(char));
+        strcpy(dirname, ".");
+    }
+    printf("dirname: %s\n", dirname);
+    printf("fsMount(): %d\n", fsMount(argv[1], atoi(argv[2]), dirname));
+    // printf("fsUnmount(): %d\n", fsUnmount(dirname));
+    FSDIR *fd = fsOpenDir(dirname);
+    if(fd == NULL) {
+        perror("fsOpenDir"); exit(1);
+    } else {
+        printf("no errors printed so far\n");
+    }
+
+    char fname[256];
+    sprintf(fname, "%s", "asdf");
+
+    int ff = fsOpen(fname, 1);
+    if(ff < 0) {
+        perror("fsOpen(write)"); exit(1);
+    }
+
+    if (fsRemove(fname) != 0) {
+        perror("tried to fsRemove");
+        printf("tried to fsRemove\n");
+    } else {
+        printf("\tSuccessfully removed %s\n", fname);
+    }
+}
+
+void testOpen(int argc, char *argv[]) {
+    char *dirname = NULL;
+
+    if(argc > 3) 
+        dirname = argv[3];
+    else {
+        dirname = (char *)calloc(strlen(".")+1, sizeof(char));
+        strcpy(dirname, ".");
+    }
+    printf("dirname: %s\n", dirname);
+    printf("fsMount(): %d\n", fsMount(argv[1], atoi(argv[2]), dirname));
+    // printf("fsUnmount(): %d\n", fsUnmount(dirname));
+    FSDIR *fd = fsOpenDir(dirname);
+    if(fd == NULL) {
+        perror("fsOpenDir"); exit(1);
+    } else {
+        printf("no errors printed so far\n");
+    }
+
+    char fname[256];
+    sprintf(fname, "%s", "zxcv");
+
+    int ff = fsOpen(fname, 1);
+    if(ff < 0) {
+        perror("fsOpen(write)"); exit(1);
+    }
+
+    ff = fsOpen(fname, 1);
+    if(ff < 0) {
+        perror("fsOpen(write)"); exit(1);
+    }
+}
+
 int main(int argc, char *argv[]) {
     
     int option;
@@ -213,6 +281,5 @@ int main(int argc, char *argv[]) {
                 break;
         }
     }
-
     return 0;
 }

@@ -352,7 +352,7 @@ return_type fsOpen(const int nparams, arg_type* a) {
 			if(strcmp(itr1->fileName, fullFileName) == 0 && itr1->mode == 1) {
 				printf("ask client to wait\n");
 				errorDescriptor = -2;
-				returnValue = 100; // TODO: what should we send here? time to wait I guess??
+				returnValue = -2; // TODO: what should we send here? time to wait I guess??
 				memcpy(retBuffer, &errorDescriptor, sizeof(int));
 				memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
 
@@ -606,16 +606,24 @@ return_type fsRemove(const int nparams, arg_type* a) {
 		r.return_val = retVal;
 		return r;
 	}
+	mounted_user *user;
+	user = findClientById(*(int*)a->arg_val);
+
+	char* fullPathName = transformPath(user->folderAilias, (char*)a->next->arg_val);
+
 	// TODO:
-	// check for other file name in  opened_file linked list, 
-	// if it not there remove file, 
+	// check for other file name in opened_file linked list, 
+	// if it is not there remove file, 
 	// otherwise ask client to try again later
 
 	if (openedFiles != NULL) {
 		// make iterator
+		printf("searching thru openedFiles");
 		opened_file *itr1 = openedFiles;
+		printf("looking for :%s\n", fullPathName);
 		for (; itr1 != NULL; itr1=itr1->next) {
-			if(strcmp(itr1->fileName, (char*)a->next->arg_val) == 0) {
+			printf("\tcomparing with :%s\n", itr1->fileName);
+			if(strcmp(itr1->fileName, fullPathName) == 0) {
 				printf("ask client to wait\n");
 				*retVal = -2;
 				r.return_val = retVal;
@@ -623,9 +631,9 @@ return_type fsRemove(const int nparams, arg_type* a) {
 			}
 		}
 	}
-
-	mounted_user *user;
-	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
+	printf("did not return from fsRemove yet, did not ask the client to wait \n");
+	
+	if (user == NULL) {
 		printf("\tError in fsRemove, clientID not found: %d\n", *(int*)a->arg_val);
 		*retVal = EACCES;
 
@@ -637,7 +645,7 @@ return_type fsRemove(const int nparams, arg_type* a) {
 	printf("\tIn fsRemove, parameter:clientID: %d fname: %s|\n",*(int*)a->arg_val, (char*)a->next->arg_val);
 	#endif
 
-	char* fullPathName = transformPath(user->folderAilias, (char*)a->next->arg_val);
+	
 	if ((*retVal = remove(fullPathName) != 0)) {
 		printf("\tError when removing file: %s\n", fullPathName);
 		perror("fsRemove()");

@@ -229,43 +229,48 @@ int fsOpen(const char *fname, int mode) {
 	printf("in fsOpen\n");
 	#endif
 	remote_folder_server *server = findServerByFolderName(fname);
-	return_type ans = make_remote_call( server->srvIpOrDomName,
-										server->srvPort,
-										"fsOpen", 3,
-										sizeof(int), (void *)(server->clientId),
-										strlen(fname), (void *)(fname),
-										sizeof(int), (void *)(&mode));
-	if (ans.return_size == 0) {
-		//error set errno
-		#ifdef _DEBUG_CLI_
-		printf("return_size zero: %d\n", ans.return_size);
-		#endif
-		errno = EBADMSG;
-		return -1;
-	} else {
-		int *status = (int*)malloc(sizeof(int));
-		memcpy( status, 
-                ans.return_val, 
-                sizeof(int));
-		char * index = (char*)(ans.return_val);
-		index += sizeof(int);
-		printf("status: %d\n", *status);
-		int *val = (int*)malloc(sizeof(int));
-		memcpy( val, 
-        	    index, 
-            	sizeof(int));
-		if (*status == 0){
+	while(1) {
+		return_type ans = make_remote_call( server->srvIpOrDomName,
+											server->srvPort,
+											"fsOpen", 3,
+											sizeof(int), (void *)(server->clientId),
+											strlen(fname), (void *)(fname),
+											sizeof(int), (void *)(&mode));
+		if (ans.return_size == 0) {
+			//error set errno
 			#ifdef _DEBUG_CLI_
-			printf("positive val: %d\n", *val);
+			printf("return_size zero: %d\n", ans.return_size);
 			#endif
-			int clientFd = createClientFd(fname, *val);
-			return clientFd;
-		} else {
-			errno = *val;
-			#ifdef _DEBUG_CLI_
-			printf("negative val: %d, errno: %s\n", *val, strerror(errno));
-			#endif
+			errno = EBADMSG;
 			return -1;
+		} else {
+			int *status = (int*)malloc(sizeof(int));
+			memcpy( status, 
+	                ans.return_val, 
+	                sizeof(int));
+			char * index = (char*)(ans.return_val);
+			index += sizeof(int);
+			printf("status: %d\n", *status);
+			int *val = (int*)malloc(sizeof(int));
+			memcpy( val, 
+	        	    index, 
+	            	sizeof(int));
+			if (*status == 0){
+				#ifdef _DEBUG_CLI_
+				printf("positive val: %d\n", *val);
+				#endif
+				int clientFd = createClientFd(fname, *val);
+				return clientFd;
+			} else if(*status == -2) {
+				printf("fsOpen client will start to sleep\n");
+				usleep(100000);
+			} else {
+				errno = *val;
+				#ifdef _DEBUG_CLI_
+				printf("negative val: %d, errno: %s\n", *val, strerror(errno));
+				#endif
+				return -1;
+			}
 		}
 	}
 }
@@ -413,7 +418,7 @@ int fsRemove(const char *name) {
 	printf("in fsRemove\n");
 	#endif
 	remote_folder_server *server = findServerByFolderName(name);
-	while(true) {
+	while(1) {
 		return_type ans = make_remote_call( server->srvIpOrDomName,
 											server->srvPort,
 											"fsRemove", 2,
@@ -427,6 +432,7 @@ int fsRemove(const char *name) {
 			errno = EBADMSG;
 			return -1;
 		} else if (*(int*)ans.return_val == -2) {
+			printf("client will start to sleep\n");
 			usleep(100000);
 		} else if (*(int*)ans.return_val != 0) {
 			#ifdef _DEBUG_CLI_
@@ -629,11 +635,12 @@ int removeClientFd(int clientFd) {
 }
 
 int removeClientFdByName(char *name) {
-	printf("removing clientFd with name: %s\n", name);
+	printf("removing clientFd from linked list with name: %s\n", name);
 	client_fd **itr = &clientServerFdMap;
 	for (; *itr != NULL; *itr = (*itr)->next) {
 		// check if at tail and desired clientFd
 		if ((*itr)->next == NULL && strcmp((*itr)->localFolderName, name)) {
+			printf("removing clientFd: %d serverFd: %d\n", (*itr)->clientFd, (*itr)->serverFd);
 			// free((*itr)->clientFd);
 			// free((*itr)->serverFd);
 			free((*itr)->localFolderName);
@@ -643,7 +650,7 @@ int removeClientFdByName(char *name) {
 			return 0;
 		} else if (strcmp((*itr)->localFolderName, name)) {
 			if ((*itr)->next->next == NULL) { // deleting the tail
-
+				printf("removing clientFd: %d serverFd: %d\n", (*itr)->clientFd, (*itr)->serverFd);
 				// free((*itr)->next->serverFd);
 				// free((*itr)->next->clientFd);
 				free((*itr)->next->localFolderName);
@@ -652,6 +659,7 @@ int removeClientFdByName(char *name) {
 				(*itr)->next = NULL;
 				return 0;
 			} else { // deleting something in the middle
+				printf("removing clientFd: %d serverFd: %d\n", (*itr)->clientFd, (*itr)->serverFd);
 				client_fd **temp = &(*itr)->next;
 				(*itr)->next = (*itr)->next->next;
 				// free((*temp)->serverFd);
