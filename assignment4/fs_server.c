@@ -65,7 +65,7 @@ char* transformPath(char*, char*);
  * Prints the ids in the mounted_users linked list
  */
 void printMountedUsers();
-
+int removeOpenedFile(int);
 ////////////////////////////////////////////////////////////////////////////////
 /// Start of implementation
 ////////////////////////////////////////////////////////////////////////////////
@@ -479,40 +479,13 @@ return_type fsClose(const int nparams, arg_type* a) {
 	// when close is successful remove opened_file node
 	int fd = *(int*)a->next->arg_val;
 	printf("\nin fsClose, looking for fd: %d\n", fd);
-	opened_file **itr = &openedFiles;
-	for (; *itr != NULL; *itr = (*itr)->next) {
-		printf("\tcomparing to :%d\n", (*itr)->fd);
-		// check if at tail and desired user
-		if ((*itr)->next == NULL && (*itr)->fd == fd) {
-			printf("case 1\n");
-			// free((*itr)->fd);
-			// free((*itr)->mode);
-			free((*itr)->fileName);
-			free(*itr);
-			(*itr) = NULL;
-			break;
-		} else if ((*itr)->next->fd == fd) {
-			printf("case 2\n");
-			if ((*itr)->next->next == NULL) {
-
-				// free((*itr)->next->fd);
-				// free((*itr)->next->mode);
-				free((*itr)->next->fileName);
-				free((*itr)->next);
-				(*itr)->next = NULL;
-				break;
-			} else {
-				opened_file **temp = &(*itr)->next;
-				(*itr)->next = (*itr)->next->next;
-				// free((*temp)->fd);
-				// free((*temp)->mode);
-				free((*temp)->fileName);
-				free(*temp);
-				temp = NULL;
-				break;
-			}
-		}
+	
+	if (removeOpenedFile(fd) == 0) {
+		// success
+	} else {
+		// failure
 	}
+
 	*retVal = 0;
 	r.return_val = retVal;
 	r.return_size = sizeof(int);
@@ -685,27 +658,34 @@ int addNewClient(char* folderAilias, int folderNameSize) {
 	
 	mounted_user *newmounted_user = malloc(sizeof(mounted_user));
 	newmounted_user->id           = malloc(sizeof(int));
+	char* slash;
 
 	#ifdef _DEBUG_1_
-	printf("\tAdding new client with folder ailias: %s, string length: %d\n", folderAilias, folderNameSize-1);
+	printf("\tAdding new client with folder ailias: %s, string length: %d\n", folderAilias, folderNameSize);
 	#endif
 
-	if (folderAilias[folderNameSize-1] == '/') {
+	if ((slash = strrchr(folderAilias, '/')) != NULL) {
 		#ifdef _DEBUG_1_
 		printf("\tSlash present in name, removing\n");
 		#endif
-		folderNameSize--;
+		
+		*slash = '\0';
+		
+		#ifdef _DEBUG_1_
+		printf("\tUpdated name: %s\n", folderAilias);
+		#endif
 	}
-	newmounted_user->folderAilias = malloc(folderNameSize);
+	newmounted_user->folderAilias = malloc(strlen(folderAilias));
 
 	*newmounted_user->id = giveID();
-	memcpy(newmounted_user->folderAilias, folderAilias, folderNameSize);
+	strcpy(newmounted_user->folderAilias, folderAilias);
 	newmounted_user->folderAilias[folderNameSize] = '\0';
 
 	newmounted_user->next = NULL;
 
 	#ifdef _DEBUG_1_
-	printf("\tNew user created with id: %d and folder ailias: %s\n\tAdding to linked list...\n", *newmounted_user->id, newmounted_user->folderAilias);
+	printf("\tNew user created with id: %d and folder ailias: %s\n", *newmounted_user->id, newmounted_user->folderAilias);
+	printf("Adding to linked list...\n");
 	#endif
 
 	if (users == NULL) {
@@ -734,43 +714,31 @@ int addNewClient(char* folderAilias, int folderNameSize) {
 
 int removeClient(char* folderAilias, int id) {
 	
-	mounted_user **itr = &users;
-	for (; *itr != NULL; *itr = (*itr)->next) {
-		// check if at tail and desred user
-		if ((*itr)->next == NULL && *(*itr)->id == id && strcmp((*itr)->folderAilias, folderAilias) == 0) {
-			free((*itr)->id);
-			free((*itr)->folderAilias);
-			if ((*itr)->dirStream != NULL) {
-				free((*itr)->dirStream);
-			}
-			free(*itr);
-			(*itr) = NULL;
-			return 0;
-		} else if (*(*itr)->next->id == id && strcmp((*itr)->next->folderAilias, folderAilias) == 0) {
-			if ((*itr)->next->next == NULL) {
+	mounted_user *prev = NULL;
+	mounted_user *itr  = users;
+	mounted_user *temp;
 
-				free((*itr)->next->id);
-				free((*itr)->next->folderAilias);
-				if ((*itr)->next->dirStream != NULL) {
-					free((*itr)->next->dirStream);
-				}
-				free((*itr)->next);
-				(*itr)->next = NULL;
-				return 0;
+	for(; itr != NULL; prev = itr, itr = itr->next) {
+		if (itr->next == NULL && *itr->id == id && strcmp(itr->folderAilias, folderAilias) == 0) {
+			
+			temp = itr;
+			if (prev == NULL) {
+				itr = itr->next;
 			} else {
-				mounted_user **temp = &(*itr)->next;
-				(*itr)->next = (*itr)->next->next;
-				free((*temp)->id);
-				free((*temp)->folderAilias);
-				if ((*temp)->dirStream != NULL) {
-					free((*temp)->dirStream);
-				}
-				free(*temp);
-				temp = NULL;
-				return 0;
+				prev->next = itr->next;
 			}
+
+			free(temp->id);
+			free(temp->folderAilias);
+			if (temp->dirStream != NULL) {
+				free(temp->dirStream);
+			}
+			free(temp);
+			temp = NULL;
+			return 0;
 		}
 	}
+
 	return -1;
 }
 
@@ -784,6 +752,31 @@ mounted_user* findClientById(int id) {
 	}
 
 	return NULL;
+}
+
+int removeOpenedFile(int fd) {
+
+	opened_file *prev = NULL;
+	opened_file *itr  = openedFiles;
+	opened_file *temp;
+
+	for(; itr != NULL; prev = itr, itr = itr->next) {
+		if (itr->next == NULL && itr->fd == fd) {
+			
+			temp = itr;
+			if (prev == NULL) {
+				itr = itr->next;
+			} else {
+				prev->next = itr->next;
+			}
+
+			free(temp->fileName);
+			free(temp);
+			temp = NULL;
+			return 0;
+		}
+	}
+	return -1;
 }
 
 char* transformPath(char* folderAilias, char* pathGiven) {

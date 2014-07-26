@@ -34,6 +34,7 @@ int createClientFd(char*, int);
 client_fd* getNodeFromClientFd(int);
 int removeClientFd(int);
 int removeClientFdByName(char*);
+void printRemoteServers();
 
 remote_folder_server *remoteFolderServers = NULL;
 client_fd *clientServerFdMap = NULL;
@@ -474,13 +475,24 @@ remote_folder_server* findServerByFolderName(const char* folderName) {
 	char* slash = "/";
 
 	startIndexOfFolderName = strcspn(folderName, slash);
+	if (startIndexOfFolderName == strlen(folderName)) { // didnt find any slashes
+		startIndexOfFolderName = 0;
+	}
 
 	remote_folder_server *server = remoteFolderServers;
 	for (; server != NULL; server = server->next) {
-		if (strncmp(server->localFolderName, &folderName[startIndexOfFolderName], strlen(server->localFolderName))) {
+		if (strncmp(server->localFolderName, &folderName[startIndexOfFolderName], strlen(server->localFolderName)) == 0) {
+			#ifdef _DEBUG_CLI_
+			printf("\tFound server:\n\tServerAddress: %s, Port: %d, Folder: %s, clientID: %d\n", server->srvIpOrDomName, server->srvPort, server->localFolderName, *server->clientId);
+			#endif
+
 			return server;
 		}
 	}
+
+	#ifdef _DEBUG_CLI_
+	printf("\tNo server found with foldername: %s", folderName);
+	#endif
 
 	return NULL;
 }
@@ -655,3 +667,11 @@ int removeClientFdByName(char *name) {
 	return -1;
 }
 
+void printRemoteServers() {
+	printf("Printing remote servers\n");
+	remote_folder_server *server = remoteFolderServers;
+	for (; server != NULL; server = server->next) {
+		printf("\tServerAddress: %s, Port: %d, Folder: %s, clientID: %d\n", server->srvIpOrDomName, server->srvPort, server->localFolderName, *server->clientId);
+	}
+	printf("\tEND\n\n");
+}
