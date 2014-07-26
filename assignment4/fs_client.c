@@ -244,8 +244,8 @@ int main(int argc, char *argv[]) {
             
         printf("\nTest cases, yay\n");
         printf("#\tTestName\t\t(Test args)\n");
-        printf("1\ttestMounting\t(ip, port#, dirname)\n");
-        printf("2\ttestUnmounting\t(dirname)\n");
+        printf("1\ttestMounting\t\t(ip, port#, dirname)\n");
+        printf("2\ttestUnmounting\t\t(dirname)\n");
         printf("99\tPrintMountedServers\n");
         printf("0\tEnd Testing Situation\n");
 

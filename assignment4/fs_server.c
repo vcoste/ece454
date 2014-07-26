@@ -133,23 +133,28 @@ return_type fsUnmount(const int nparams, arg_type* a) {
 	printf("in fsUnmount (server side)\n");
 	#endif
 
+	int *retVal = malloc(sizeof(int));
+	r.return_size = sizeof(int);
+
 	if (nparams != 2) {
-		r.return_val  = NULL;
-		r.return_size = 0;
+		*retVal  = EINVAL;
+		r.return_val = retVal;
 		return r;
 	}
 
 	if (removeClient((char*)a->arg_val, *(int*)a->next->arg_val) == -1) {
 		printf("\tremoveClient failed\n");
+		*retVal = ENOENT;
+		r.return_val = retVal;
+		return r;
 	}
 
 	#ifdef _DEBUG_1_
 	printMountedUsers();
 	#endif
 
-	int *ret_int = (int *)malloc(sizeof(int));
-	*ret_int = 0;
-	r.return_val  = ret_int;
+	*retVal = 0;
+	r.return_val  = retVal;
 	r.return_size = sizeof(int);
 	return r;
 }
@@ -727,11 +732,12 @@ int removeClient(char* folderAilias, int id) {
 	mounted_user *temp;
 
 	for(; itr != NULL; prev = itr, itr = itr->next) {
-		if (itr->next == NULL && *itr->id == id && strcmp(itr->folderAilias, folderAilias) == 0) {
+		if (*itr->id == id && strcmp(itr->folderAilias, folderAilias) == 0) {
 			
 			temp = itr;
 			if (prev == NULL) {
 				itr = itr->next;
+				users = itr;
 			} else {
 				prev->next = itr->next;
 			}
@@ -769,7 +775,7 @@ int removeOpenedFile(int fd) {
 	opened_file *temp;
 
 	for(; itr != NULL; prev = itr, itr = itr->next) {
-		if (itr->next == NULL && itr->fd == fd) {
+		if (itr->fd == fd) {
 			
 			temp = itr;
 			if (prev == NULL) {

@@ -28,8 +28,7 @@ typedef struct ClientFolderDescriptor {
 ////////////////////////////////////////////////////////////////////////////////
 int addNewServer(remote_folder_server*);
 remote_folder_server* findServerByFolderName(const char*);
-int removeServerByFolderName(char*);
-
+int removeServerByFolderName(const char*);
 int createClientFd(char*, int);
 client_fd* getNodeFromClientFd(int);
 int removeClientFd(int);
@@ -97,7 +96,18 @@ int fsUnmount(const char *localFolderName) {
 										"fsUnmount", 2,
 										strlen(localFolderName), (void *)(localFolderName),
 										sizeof(int), (void *)(serverToUnmount->clientId));
+	
 	int result = *(int*)(ans.return_val);
+
+	if (result != 0) {
+		errno = result;
+		return -1;
+	}
+
+	if (removeServerByFolderName(localFolderName) == -1) {
+		return -1;
+	}
+
 	return result;
 }
 
@@ -503,40 +513,29 @@ remote_folder_server* findServerByFolderName(const char* folderName) {
 	return NULL;
 }
 
-int removeServerByFolderName(char* folderName) {
+int removeServerByFolderName(const char* folderName) {
 
-	remote_folder_server **itr = &remoteFolderServers;
-	for (; *itr != NULL; *itr = (*itr)->next) {
-		// check if at tail and desred server
-		if ((*itr)->next == NULL && strcmp((*itr)->localFolderName, folderName) == 0) {
-			free((*itr)->srvIpOrDomName);
-			free((*itr)->localFolderName);
-			free((*itr)->clientId);
-			free(*itr);
+	remote_folder_server *prev = NULL;
+	remote_folder_server *itr  = remoteFolderServers;
+	remote_folder_server *temp;
 
-			(*itr) = NULL;
-			return 0;
-		} else if (strcmp((*itr)->next->localFolderName, folderName) == 0) {
-			if ((*itr)->next->next == NULL) { // deleting the tail
-
-				free((*itr)->next->srvIpOrDomName);
-				free((*itr)->next->localFolderName);
-				free((*itr)->next->clientId);
-				free((*itr)->next);
-				
-				(*itr)->next = NULL;
-				return 0;
-			} else { // deleting something in the middle
-				remote_folder_server **temp = &(*itr)->next;
-				(*itr)->next = (*itr)->next->next;
-				free((*temp)->srvIpOrDomName);
-				free((*temp)->localFolderName);
-				free((*temp)->clientId);
-				free(*temp);
-
-				temp = NULL;
-				return 0;
+	for(; itr != NULL; prev = itr, itr = itr->next) {
+		if (strcmp(itr->localFolderName, folderName) == 0) {
+			
+			temp = itr;
+			if (prev == NULL) {
+				itr = itr->next;
+				remoteFolderServers = itr;
+			} else {
+				prev->next = itr->next;
 			}
+
+			free(temp->srvIpOrDomName);
+			free(temp->localFolderName);
+			free(temp->clientId);
+			free(temp);
+			temp = NULL;
+			return 0;
 		}
 	}
 	return -1;
