@@ -4,9 +4,6 @@
 
 #include "ece454_fs.h"
 
-#define MAX_LINE_SIZE 4096
-#define MAX_WORD_SIZE 512
-
 void printBuf(char *buf, int size) {
     /* Should match the output from od -x */
     int i;
@@ -207,37 +204,35 @@ void testRemove(int argc, char *argv[]) {
     }
 }
 
-void testOpen(int argc, char *argv[]) {
-    char *dirname = NULL;
+void testOpen(char* fname, int mode) {
 
-    if(argc > 3) 
-        dirname = argv[3];
-    else {
-        dirname = (char *)calloc(strlen(".")+1, sizeof(char));
-        strcpy(dirname, ".");
-    }
-    printf("dirname: %s\n", dirname);
-    printf("fsMount(): %d\n", fsMount(argv[1], atoi(argv[2]), dirname));
-    // printf("fsUnmount(): %d\n", fsUnmount(dirname));
-    FSDIR *fd = fsOpenDir(dirname);
-    if(fd == NULL) {
-        perror("fsOpenDir"); exit(1);
+    int ff = fsOpen(fname, mode);
+    if(ff < 0) {
+        perror("fsOpen() error");
     } else {
-        printf("no errors printed so far\n");
+        printf("\tfd received: %d\n", ff);
     }
+}
 
-    char fname[256];
-    sprintf(fname, "%s", "zxcv");
-
-    int ff = fsOpen(fname, 1);
-    if(ff < 0) {
-        perror("fsOpen(write)"); exit(1);
+void testClose(int fd) {
+    if (fsClose(fd) == -1) {
+        perror("fsClose() error");
+    } else {
+        printf("\tSuccessfully closed file\n");
     }
+}
 
-    ff = fsOpen(fname, 1);
-    if(ff < 0) {
-        perror("fsOpen(write)"); exit(1);
+void testWrite(int fd, const void* buf) {
+    int count = strlen(buf);
+    int result;
+    printf("\tabout to write %d bytes\n", count);
+    result = fsWrite(fd, buf, count);
+    
+    if (result == -1) {
+        perror("Write failed");
+        return;
     }
+    printf("\twrote: %d bytes\n", result);
 }
 
 int main(int argc, char *argv[]) {
@@ -246,8 +241,9 @@ int main(int argc, char *argv[]) {
     char ip[16];
     int port;
     int mode;
+    int fd;
     char path[80];
-    char line[MAX_LINE_SIZE];
+    char buf[256];
     size_t ln;
 
     int keep_running = 1;
@@ -268,6 +264,9 @@ int main(int argc, char *argv[]) {
         printf("2\ttestUnmounting\t\t(dirname)\n");
         printf("3\ttestOpenDir\t\t(dirname)\n");
         printf("4\ttestOpen\t\t(dirname)\n");
+        printf("5\ttestClose\t\t(fd)\n");
+        printf("6\ttestWrite\t\t(fd, buffer, count)\n");
+        printf("98\tPrintClientFds\n");
         printf("99\tPrintMountedServers\n");
         printf("0\tEnd Testing Situation\n");
 
@@ -304,6 +303,22 @@ int main(int argc, char *argv[]) {
                 printf("File name entered: %s\n", path);
                 printf("Enter mode to open: ");
                 fscanf(stdin, "%d", &mode);
+                testOpen(path, mode);
+                break;
+            case 5:
+                printf("Enter file descriptor to close: ");
+                fscanf(stdin, "%d", &fd);
+                testClose(fd);
+                break;
+            case 6:
+                printf("Enter file descriptor to write to: ");
+                fscanf(stdin, "%d", &fd);
+                printf("Enter text to write to file: ");
+                fscanf(stdin, "%s", buf);
+                testWrite(fd, buf);
+                break;
+            case 98:
+                printClientFds();
                 break;
             case 99:
                 printRemoteServers();

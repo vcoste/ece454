@@ -241,7 +241,13 @@ int fsOpen(const char *fname, int mode) {
 	#ifdef _DEBUG_CLI_
 	printf("in fsOpen\n");
 	#endif
-	remote_folder_server *server = findServerByFolderName(fname);
+
+	remote_folder_server *server;
+	if ((server = findServerByFolderName(fname)) == NULL) {
+		errno = ENOENT;
+		return -1;
+	}
+	
 	while(1) {
 		return_type ans = make_remote_call( server->srvIpOrDomName,
 											server->srvPort,
@@ -293,8 +299,17 @@ int fsClose(int fd) {
 	printf("in fsClose\n");
 	#endif
 
-	client_fd *clientFdNode = getNodeFromClientFd(fd);
-	remote_folder_server *server = findServerByFolderName(clientFdNode->localFolderName);
+	client_fd *clientFdNode;
+	if ((clientFdNode = getNodeFromClientFd(fd)) == NULL) {
+		errno = EBADF;
+		return -1;
+	}
+
+	remote_folder_server *server;
+	if ((server = findServerByFolderName(clientFdNode->localFolderName)) == NULL) {
+		errno = ENOENT;
+		return -1;
+	}
 	return_type ans = make_remote_call( server->srvIpOrDomName,
 										server->srvPort,
 										"fsClose", 2,
@@ -599,38 +614,26 @@ client_fd* getNodeFromClientFd(int clientFd) {
 
 int removeClientFd(int clientFd) {
 	printf("removing clientFd: %d\n", clientFd);
-	client_fd **itr = &clientServerFdMap;
-	for (; *itr != NULL; *itr = (*itr)->next) {
-		// check if at tail and desired clientFd
-		if ((*itr)->next == NULL && (*itr)->clientFd == clientFd) {
-			// free((*itr)->clientFd);
-			// free((*itr)->serverFd);
-			free((*itr)->localFolderName);
-			free(*itr);
 
-			(*itr) = NULL;
-			return 0;
-		} else if ((*itr)->next->clientFd == clientFd) {
-			if ((*itr)->next->next == NULL) { // deleting the tail
+	client_fd *prev = NULL;
+	client_fd *itr  = clientServerFdMap;
+	client_fd *temp;
 
-				// free((*itr)->next->serverFd);
-				// free((*itr)->next->clientFd);
-				free((*itr)->next->localFolderName);
-				free((*itr)->next);
-				
-				(*itr)->next = NULL;
-				return 0;
-			} else { // deleting something in the middle
-				client_fd **temp = &(*itr)->next;
-				(*itr)->next = (*itr)->next->next;
-				// free((*temp)->serverFd);
-				// free((*temp)->clientFd);
-				free((*temp)->localFolderName);
-				free(*temp);
-
-				temp = NULL;
-				return 0;
+	for(; itr != NULL; prev = itr, itr = itr->next) {
+		if (itr->clientFd == clientFd) {
+			
+			temp = itr;
+			if (prev == NULL) {
+				itr = itr->next;
+				clientServerFdMap = itr;
+			} else {
+				prev->next = itr->next;
 			}
+
+			free(temp->localFolderName);
+			free(temp);
+			temp = NULL;
+			return 0;
 		}
 	}
 	return -1;
@@ -638,40 +641,26 @@ int removeClientFd(int clientFd) {
 
 int removeClientFdByName(char *name) {
 	printf("removing clientFd from linked list with name: %s\n", name);
-	client_fd **itr = &clientServerFdMap;
-	for (; *itr != NULL; *itr = (*itr)->next) {
-		// check if at tail and desired clientFd
-		if ((*itr)->next == NULL && strcmp((*itr)->localFolderName, name)) {
-			printf("removing clientFd: %d serverFd: %d\n", (*itr)->clientFd, (*itr)->serverFd);
-			// free((*itr)->clientFd);
-			// free((*itr)->serverFd);
-			free((*itr)->localFolderName);
-			free(*itr);
 
-			(*itr) = NULL;
-			return 0;
-		} else if (strcmp((*itr)->localFolderName, name)) {
-			if ((*itr)->next->next == NULL) { // deleting the tail
-				printf("removing clientFd: %d serverFd: %d\n", (*itr)->clientFd, (*itr)->serverFd);
-				// free((*itr)->next->serverFd);
-				// free((*itr)->next->clientFd);
-				free((*itr)->next->localFolderName);
-				free((*itr)->next);
-				
-				(*itr)->next = NULL;
-				return 0;
-			} else { // deleting something in the middle
-				printf("removing clientFd: %d serverFd: %d\n", (*itr)->clientFd, (*itr)->serverFd);
-				client_fd **temp = &(*itr)->next;
-				(*itr)->next = (*itr)->next->next;
-				// free((*temp)->serverFd);
-				// free((*temp)->clientFd);
-				free((*temp)->localFolderName);
-				free(*temp);
+	client_fd *prev = NULL;
+	client_fd *itr  = clientServerFdMap;
+	client_fd *temp;
 
-				temp = NULL;
-				return 0;
+	for(; itr != NULL; prev = itr, itr = itr->next) {
+		if (strcmp(itr->localFolderName, name) == 0) {
+			
+			temp = itr;
+			if (prev == NULL) {
+				itr = itr->next;
+				clientServerFdMap = itr;
+			} else {
+				prev->next = itr->next;
 			}
+
+			free(temp->localFolderName);
+			free(temp);
+			temp = NULL;
+			return 0;
 		}
 	}
 	return -1;
@@ -682,6 +671,15 @@ void printRemoteServers() {
 	remote_folder_server *server = remoteFolderServers;
 	for (; server != NULL; server = server->next) {
 		printf("\tServerAddress: %s, Port: %d, Folder: %s, clientID: %d\n", server->srvIpOrDomName, server->srvPort, server->localFolderName, *server->clientId);
+	}
+	printf("\tEND\n\n");
+}
+
+void printClientFds() {
+	printf("Printing File descriptors\n");
+	client_fd *itr = clientServerFdMap;
+	for (; itr != NULL; itr = itr->next) {
+		printf("\tFolder name: %s, clientFd: %d, serverFd: %d\n", itr->localFolderName, itr->clientFd, itr->serverFd);
 	}
 	printf("\tEND\n\n");
 }
