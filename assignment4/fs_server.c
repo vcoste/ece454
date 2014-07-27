@@ -328,8 +328,6 @@ return_type fsOpen(const int nparams, arg_type* a) {
 		return r;
 	}
 
-
-
 	mounted_user *user;
 	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
 		printf("\tError in fsOpen, clientID not found: %d\n", *(int*)a->arg_val);
@@ -357,7 +355,7 @@ return_type fsOpen(const int nparams, arg_type* a) {
 			if(strcmp(itr1->fileName, fullFileName) == 0 && itr1->mode == 1) {
 				printf("ask client to wait\n");
 				errorDescriptor = -2;
-				returnValue = -2; // TODO: what should we send here? time to wait I guess??
+				returnValue = -2;
 				memcpy(retBuffer, &errorDescriptor, sizeof(int));
 				memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
 

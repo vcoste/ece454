@@ -113,7 +113,11 @@ int fsUnmount(const char *localFolderName) {
 
 FSDIR* fsOpenDir(const char *folderName) {
 	
-	remote_folder_server *server = findServerByFolderName(folderName);
+	remote_folder_server *server;
+	if ((server = findServerByFolderName(folderName)) == NULL) {
+		errno = ENOENT;
+		return NULL;
+	}
 	printf("in fsOpenDir, clientId: %d, folderName: %s\n", *server->clientId, folderName);
 
 	return_type ans = make_remote_call( server->srvIpOrDomName,
@@ -140,15 +144,11 @@ FSDIR* fsOpenDir(const char *folderName) {
 		errno = *(int*)(ans.return_val);
 		return nice;
 	} else {
-		
-		#ifdef _DEBUG_CLI_
-		printf("return_val should be zero: %d\n", *(int*)(ans.return_val));
-		#endif
-		
-		FSDIR* result = malloc(sizeof(FSDIR));
-		result->fileName = (char*)malloc(strlen(folderName));
 
-		strcpy(result->fileName, folderName);
+		FSDIR* result = malloc(sizeof(FSDIR));
+		result->folderName = (char*)malloc(strlen(folderName));
+
+		strcpy(result->folderName, folderName);
 		result->id     = *server->clientId;
 		result->status = *(int*)(ans.return_val);
     	return result;
@@ -156,7 +156,7 @@ FSDIR* fsOpenDir(const char *folderName) {
 }
 
 int fsCloseDir(FSDIR *folder) {
-	remote_folder_server *server = findServerByFolderName(folder->fileName);
+	remote_folder_server *server = findServerByFolderName(folder->folderName);
 	
 	printf("in fsCloseDir, clientId: %d\n", *server->clientId);
 	
@@ -192,6 +192,9 @@ int fsCloseDir(FSDIR *folder) {
 		printf("return_val should be zero: %d\n", *(int*)(ans.return_val));
 		#endif
 
+		free(folder);
+		folder = NULL;
+
     	return 0;
 	}
 }
@@ -202,7 +205,7 @@ struct fsDirent *fsReadDir(FSDIR *folder) {
 	printf("in fsReadDir\n");
 	#endif
 	
-	remote_folder_server *server = findServerByFolderName(folder->fileName);
+	remote_folder_server *server = findServerByFolderName(folder->folderName);
 	return_type ans = make_remote_call( server->srvIpOrDomName,
 										server->srvPort ,
 										"fsReadDir", 1,
@@ -487,27 +490,27 @@ int addNewServer(remote_folder_server *newServer) {
 
 remote_folder_server* findServerByFolderName(const char* folderName) {
 
-	int startIndexOfFolderName = 0;
+	int lengthUntilSlash = 0;
 	char* slash = "/";
 
-	startIndexOfFolderName = strcspn(folderName, slash);
-	if (startIndexOfFolderName == strlen(folderName)) { // didnt find any slashes
-		startIndexOfFolderName = 0;
+	lengthUntilSlash = strcspn(folderName, slash);
+	if (lengthUntilSlash == strlen(folderName)) { // didnt find any slashes
+		printf("No slashes in folderName\n");
+		lengthUntilSlash = 0;
 	}
 
 	remote_folder_server *server = remoteFolderServers;
 	for (; server != NULL; server = server->next) {
-		if (strncmp(server->localFolderName, &folderName[startIndexOfFolderName], strlen(server->localFolderName)) == 0) {
+		if (strncmp(server->localFolderName, folderName, lengthUntilSlash) == 0) {
 			#ifdef _DEBUG_CLI_
-			printf("\tFound server:\n\tServerAddress: %s, Port: %d, Folder: %s, clientID: %d\n", server->srvIpOrDomName, server->srvPort, server->localFolderName, *server->clientId);
+			printf("\tFound server:\tServerAddress: %s, Port: %d, Folder: %s, clientID: %d\n", server->srvIpOrDomName, server->srvPort, server->localFolderName, *server->clientId);
 			#endif
 
 			return server;
 		}
 	}
-
 	#ifdef _DEBUG_CLI_
-	printf("\tNo server found with foldername: %s", folderName);
+	printf("\tNo server found with foldername: %s\n", folderName);
 	#endif
 
 	return NULL;

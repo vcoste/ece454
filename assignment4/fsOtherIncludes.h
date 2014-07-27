@@ -14,7 +14,7 @@
 typedef struct fs_dir {
 	int id;
 	int status;
-	char* fileName;
+	char* folderName;
 } FSDIR;
 
 #endif

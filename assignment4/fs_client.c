@@ -153,6 +153,25 @@ void testUnmounting(char* path) {
     printf("\tfsUnmount(): %d\n", fsUnmount(path));
 }
 
+void testOpenDir(char* path) {
+    printf("Test for openDir\n");
+
+    FSDIR* dir;
+    if ((dir = fsOpenDir(path)) == NULL) {
+        printf("Call failed\n");
+        return;
+    }
+    printf("dir->folderName: %s, id: %d, status: %d\n", dir->folderName, dir->id, dir->status);
+
+    struct fsDirent* entry = fsReadDir(dir);
+
+    while(entry != NULL) {
+        printf("Entry read: Name: %s, type: %d\n", entry->entName, entry->entType);
+        entry = fsReadDir(dir);
+    }
+    printf("entries now null\n");
+}
+
 void testRemove(int argc, char *argv[]) {
     char *dirname = NULL;
 
@@ -226,6 +245,7 @@ int main(int argc, char *argv[]) {
     int option;
     char ip[16];
     int port;
+    int mode;
     char path[80];
     char line[MAX_LINE_SIZE];
     size_t ln;
@@ -246,6 +266,8 @@ int main(int argc, char *argv[]) {
         printf("#\tTestName\t\t(Test args)\n");
         printf("1\ttestMounting\t\t(ip, port#, dirname)\n");
         printf("2\ttestUnmounting\t\t(dirname)\n");
+        printf("3\ttestOpenDir\t\t(dirname)\n");
+        printf("4\ttestOpen\t\t(dirname)\n");
         printf("99\tPrintMountedServers\n");
         printf("0\tEnd Testing Situation\n");
 
@@ -271,6 +293,17 @@ int main(int argc, char *argv[]) {
                 fscanf(stdin, "%s", path);
                 printf("Calling testUnmounting(dirname=%s)\n", path);
                 testUnmounting(path);
+                break;
+            case 3:
+                printf("Enter folder to open:\n");
+                fscanf(stdin, "%s", path);
+                testOpenDir(path);
+            case 4:
+                printf("Enter file name to open: ");
+                fscanf(stdin, "%s", path);
+                printf("File name entered: %s\n", path);
+                printf("Enter mode to open: ");
+                fscanf(stdin, "%d", &mode);
                 break;
             case 99:
                 printRemoteServers();
