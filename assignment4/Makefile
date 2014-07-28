@@ -1,7 +1,7 @@
 OBJECTS := $(patsubst %.c,%.o,$(wildcard *.c))
 # LIB_DIR = /simplified_rpc 
 
-all: server client
+all: client-api.a server
 
 server: fs_server.o
 	gcc fs_server.o -L. simplified_rpc/libstubs.a -o server.out

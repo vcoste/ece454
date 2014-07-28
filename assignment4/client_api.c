@@ -46,11 +46,18 @@ int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *
 	#ifdef _DEBUG_CLI_
 	printf("Calling fsMount to server\n");
 	#endif
+
+	remote_folder_server *newServer;
+	if ((newServer = findServerByFolderName(localFolderName)) != NULL) {
+		printf("Server %s already exists as %s\n", localFolderName, newServer->localFolderName);
+		errno = EEXIST;
+		return -1;
+	}
+
 	return_type ans = make_remote_call( srvIpOrDomName,
 										(int)srvPort,
 										"fsMount", 1,
 										strlen(localFolderName), (void *)(localFolderName));
-	remote_folder_server *newServer;
 	int containsError;
 	int returnedValue;
 
@@ -510,7 +517,7 @@ remote_folder_server* findServerByFolderName(const char* folderName) {
 
 	lengthUntilSlash = strcspn(folderName, slash);
 	if (lengthUntilSlash == strlen(folderName)) { // didnt find any slashes
-		printf("No slashes in folderName\n");
+		printf("\tNo slashes in folderName\n");
 		lengthUntilSlash = 0;
 	}
 
