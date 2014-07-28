@@ -518,7 +518,6 @@ remote_folder_server* findServerByFolderName(const char* folderName) {
 	lengthUntilSlash = strcspn(folderName, slash);
 	if (lengthUntilSlash == strlen(folderName)) { // didnt find any slashes
 		printf("\tNo slashes in folderName\n");
-		lengthUntilSlash = 0;
 	}
 
 	remote_folder_server *server = remoteFolderServers;
