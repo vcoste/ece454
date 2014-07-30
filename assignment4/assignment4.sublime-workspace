@@ -4,6 +4,130 @@
 		"selected_items":
 		[
 			[
+				"remote",
+				"remote_folder_server"
+			],
+			[
+				"clie",
+				"client-api"
+			],
+			[
+				"clfd",
+				"clientFd"
+			],
+			[
+				"clief",
+				"clientFd"
+			],
+			[
+				"clienf",
+				"clientFd"
+			],
+			[
+				"clientf",
+				"client_fd"
+			],
+			[
+				"fsread",
+				"fsReadDir"
+			],
+			[
+				"er",
+				"errno"
+			],
+			[
+				"local",
+				"localFolderName"
+			],
+			[
+				"ret",
+				"return_val"
+			],
+			[
+				"returns",
+				"return_size"
+			],
+			[
+				"fd",
+				"fd"
+			],
+			[
+				"fin",
+				"fileName"
+			],
+			[
+				"fna",
+				"folderName"
+			],
+			[
+				"fsc",
+				"fscanf"
+			],
+			[
+				"ip",
+				"ip"
+			],
+			[
+				"remotef",
+				"remoteFolderServers"
+			],
+			[
+				"unmtin",
+				"testUnmounting"
+			],
+			[
+				"clid",
+				"clientId"
+			],
+			[
+				"name",
+				"srvIpOrDomName"
+			],
+			[
+				"index",
+				"indexOfFolderName"
+			],
+			[
+				"srname",
+				"srvIpOrDomName"
+			],
+			[
+				"fsdir",
+				"FSDIR"
+			],
+			[
+				"re",
+				"return_val"
+			],
+			[
+				"news",
+				"newServer"
+			],
+			[
+				"srv",
+				"srvIpOrDomName"
+			],
+			[
+				"remofs",
+				"remoteFolderServers"
+			],
+			[
+				"remo",
+				"remote_folder_server"
+			],
+			[
+				"lo",
+				"localFolderName"
+			],
+			[
+				"server",
+				"newServer"
+			],
+			[
+				"remotefs",
+				"remote_folder_server"
+			],
+			[
 				"retVal",
 				"return_val"
 			],
@@ -38,10 +162,6 @@
 			[
 				"eac",
 				"EACCES"
-			],
-			[
-				"er",
-				"errorDescriptor"
 			],
 			[
 				"new",
@@ -98,10 +218,6 @@
 			[
 				"prnt",
 				"printMountedUsers"
-			],
-			[
-				"clie",
-				"clientID"
 			],
 			[
 				"add",
@@ -179,15 +295,7 @@
 			"file": "fs_server.c",
 			"settings":
 			{
-				"buffer_size": 18338,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "simplified_rpc/ece454rpc_types.h",
-			"settings":
-			{
-				"buffer_size": 2388,
+				"buffer_size": 22780,
 				"line_ending": "Unix"
 			}
 		},
@@ -195,7 +303,7 @@
 			"file": "client_api.c",
 			"settings":
 			{
-				"buffer_size": 9022,
+				"buffer_size": 18606,
 				"line_ending": "Unix"
 			}
 		},
@@ -203,7 +311,23 @@
 			"file": "fs_client.c",
 			"settings":
 			{
-				"buffer_size": 3720,
+				"buffer_size": 12978,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "unpack/unpack.sh",
+			"settings":
+			{
+				"buffer_size": 602,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "fsOtherIncludes.h",
+			"settings":
+			{
+				"buffer_size": 391,
 				"line_ending": "Unix"
 			}
 		}
@@ -276,12 +400,15 @@
 	},
 	"file_history":
 	[
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/Makefile",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/serverDir1/file1.txt",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/serverDir2/file2.txt",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/simplified_rpc/client_stub.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/ece454_fs.h",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/test.c",
+		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/fsOtherIncludes.h",
 		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/simplified_rpc/server_stub.c",
 		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/fs_dummy.c",
-		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/ece454_fs.h",
-		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/fsOtherIncludes.h",
-		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/Makefile",
-		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/simplified_rpc/client_stub.c",
 		"/Users/justinwilliams/Library/Application Support/Sublime Text 3/Packages/SublimeLinter/Default (OSX).sublime-keymap",
 		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/simplified_rpc/sample_server_app.c",
 		"/Users/justinwilliams/Dropbox/4A/ECE454 - Distributed Systems/ece454/assignment4/client_api.c",
@@ -380,6 +507,29 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"server",
+			"remote_folder_server",
+			"startIndexOfFolderName",
+			"fileName",
+			"mounted_user",
+			"*itr)",
+			"itr",
+			"testConcurrentWrites",
+			"user",
+			"remote call",
+			"in em",
+			"printf(\"",
+			".",
+			"indexOfFolderName",
+			".",
+			"ToUnmount",
+			"dent",
+			"server",
+			"user",
+			"port",
+			"serverName",
+			"folderName",
+			"next",
 			"1",
 			"isError",
 			"In fs",
@@ -446,7 +596,7 @@
 	"groups":
 	[
 		{
-			"selected": 3,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -455,43 +605,131 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 18338,
+						"buffer_size": 22780,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								12060,
-								12060
+								9154,
+								9154
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C.tmLanguage"
+							"syntax": "Packages/C++/C.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1757.0,
+						"translation.y": 1819.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "client_api.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 18606,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								14377,
+								14377
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1566.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "fs_client.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12978,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2857,
+								2857
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 213.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "unpack/unpack.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 602,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								79,
+								79
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Shell-Unix-Generic.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 1,
-					"file": "simplified_rpc/ece454rpc_types.h",
-					"semi_transient": true,
+					"buffer": 4,
+					"file": "fsOtherIncludes.h",
+					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2388,
+						"buffer_size": 391,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								368,
+								368
 							]
 						],
 						"settings":
@@ -502,65 +740,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "client_api.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 9022,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								6914,
-								6919
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 559.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "fs_client.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3720,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1839,
-								1839
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 875.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
+					"stack_index": 4,
 					"type": "text"
 				}
 			]
@@ -613,6 +793,10 @@
 		"selected_items":
 		[
 			[
+				"make",
+				"Makefile"
+			],
+			[
 				"fscl",
 				"fs_client.c"
 			],
@@ -659,10 +843,6 @@
 			[
 				"clients",
 				"client_stub.c"
-			],
-			[
-				"make",
-				"Makefile"
 			],
 			[
 				"serverp",
