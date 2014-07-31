@@ -39,6 +39,13 @@ remote_folder_server *remoteFolderServers = NULL;
 client_fd *clientServerFdMap = NULL;
 int uniqueClientFdCounter = 0;
 
+/**
+ * This is used by the client application program to mount a remote server.
+ * @param  srvIpOrDomName  the name or the IP address of the server to mount
+ * @param  srvPort         port number in the server to mount
+ * @param  localFolderName local name of the folder given to the mounted files
+ * @return                 0 on success and -1 otherwise
+ */
 int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *localFolderName) {
 	// do similar stuff as ass1 client app
 	// save ip address and port number for subsequent remote calls
@@ -92,6 +99,11 @@ int fsMount(const char *srvIpOrDomName, const unsigned int srvPort, const char *
 	return -1;
 }
 
+/**
+ * This is used by the client application program to unmount a previously mounted file system
+ * @param  localFolderName local name of the folder given to the mounted files
+ * @return                 0 on success and -1 otherwise
+ */
 int fsUnmount(const char *localFolderName) {
 	// 	the counterpart of fsMount() 
 	// 	to unmount a remote ﬁlesystem that is referred to locally by localFolderName. 
@@ -118,6 +130,12 @@ int fsUnmount(const char *localFolderName) {
 	return result;
 }
 
+/**
+ * This is used by the client application program to open 
+ * a directory in the remote file system
+ * @param  folderName Local name of the mounted folder 
+ * @return            Pointer to the file system directory
+ */
 FSDIR* fsOpenDir(const char *folderName) {
 	
 	remote_folder_server *server;
@@ -162,6 +180,12 @@ FSDIR* fsOpenDir(const char *folderName) {
 	}
 }
 
+/**
+ * This is used by the client application program to close
+ * a directory in the remote file system
+ * @param  folder Pointer to the remote folder to close
+ * @return        0 on success -1 otherwise
+ */
 int fsCloseDir(FSDIR *folder) {
 	remote_folder_server *server = findServerByFolderName(folder->folderName);
 	
@@ -206,6 +230,11 @@ int fsCloseDir(FSDIR *folder) {
 	}
 }
 
+/**
+ * This is used by the client application program to get the next entry in the directory
+ * @param  folder Pointer to the remote folder to close
+ * @return        Pointer to the next entry in the directory
+ */
 struct fsDirent *fsReadDir(FSDIR *folder) {
 
 	#ifdef _DEBUG_CLI_
@@ -244,6 +273,13 @@ struct fsDirent *fsReadDir(FSDIR *folder) {
 	}
 }
 
+/**
+ * This is used by the client application program to open a remote file
+ * @param  fname Name of the remote file to open
+ * @param  mode  Mode in which to open the remote file, 
+ * 1 for write permission and 0 for read permissions
+ * @return       File descriptor number, positive integer, -1 on error
+ */
 int fsOpen(const char *fname, int mode) {
 	#ifdef _DEBUG_CLI_
 	printf("in fsOpen\n");
@@ -301,6 +337,11 @@ int fsOpen(const char *fname, int mode) {
 	}
 }
 
+/**
+ * This is used by the client application program to close a remote file
+ * @param  fd File descriptor of the file to close
+ * @return    0 on success, -1 otherwise
+ */
 int fsClose(int fd) {
 	#ifdef _DEBUG_CLI_
 	printf("in fsClose\n");
@@ -352,6 +393,13 @@ int fsClose(int fd) {
 	}
 }
 
+/**
+ * This is used by the client application program to read from a remote file
+ * @param  fd    File descriptor of the file to read from
+ * @param  buf   Pointer to a buffer to hold the content of the read file
+ * @param  count Size of the buffer to read
+ * @return       Number of bytes actually read, -1 on error
+ */
 int fsRead(int fd, void *buf, const unsigned int count) {
 	#ifdef _DEBUG_CLI_
 	printf("in fsRead\n");
@@ -410,6 +458,13 @@ int fsRead(int fd, void *buf, const unsigned int count) {
 	// return returnedValue;
 }
 
+/**
+ * This is used by the client application program to write to a remote file
+ * @param  fd    File descriptor of the file to read from
+ * @param  buf   Pointer to a buffer to hold the content to write to the file
+ * @param  count Size of the buffer to read
+ * @return       Number of bytes actually written, -1 on error
+ */
 int fsWrite(int fd, const void *buf, const unsigned int count) {
 	#ifdef _DEBUG_CLI_
 	printf("in fsWrite\n");
@@ -448,6 +503,11 @@ int fsWrite(int fd, const void *buf, const unsigned int count) {
 	return returnedValue;
 }
 
+/**
+ * This is used by the client application program to remove a remote file
+ * @param  name Name of the file to remove
+ * @return      0 on success, -1 otherwise
+ */
 int fsRemove(const char *name) {
     #ifdef _DEBUG_CLI_
 	printf("in fsRemove\n");
@@ -489,8 +549,12 @@ int fsRemove(const char *name) {
 /// Helper functions
 ////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Helper function to add a new server to mount
+ * @param  newServer Pointer to the new Server data to add
+ * @return           0 on success, -1 otherwise
+ */
 int addNewServer(remote_folder_server *newServer) {
-
 	if (remoteFolderServers == NULL) {
 		remoteFolderServers = newServer;
 		return 0;
@@ -510,8 +574,12 @@ int addNewServer(remote_folder_server *newServer) {
 	return -1;
 }
 
+/**
+ * Helper function to search up the server by folder name
+ * @param  folderName Name of the folder to look up by
+ * @return            Pointer to the server found
+ */
 remote_folder_server* findServerByFolderName(const char* folderName) {
-
 	int lengthUntilSlash = 0;
 	char* slash = "/";
 
@@ -537,8 +605,12 @@ remote_folder_server* findServerByFolderName(const char* folderName) {
 	return NULL;
 }
 
+/**
+ * Helper function to remove a server by folder name
+ * @param  folderName Name of the folder to remove the server
+ * @return            0 on success, -1 otherwise
+ */
 int removeServerByFolderName(const char* folderName) {
-
 	remote_folder_server *prev = NULL;
 	remote_folder_server *itr  = remoteFolderServers;
 	remote_folder_server *temp;
@@ -565,6 +637,12 @@ int removeServerByFolderName(const char* folderName) {
 	return -1;
 }
 
+/**
+ * Helper function to create a client File Descriptor
+ * @param  mountedFolderName Name of the remote mounted folder
+ * @param  serverFd          File descriptor of the remote file 
+ * @return                   Client file descriptor integer
+ */
 int createClientFd(char* mountedFolderName, int serverFd) {
 	// TODO:
 	// make unique fd for the client
@@ -602,6 +680,11 @@ int createClientFd(char* mountedFolderName, int serverFd) {
 	return newClientFd->clientFd;
 }
 
+/**
+ * Helper funciton to find the mapping from the client file descriptor
+ * @param  clientFd Client file descriptor
+ * @return          Map between server and client file descriptor
+ */
 client_fd* getNodeFromClientFd(int clientFd) {
 	printf("in getNodeFromClientFd, looking for clientFd: %d\n\n", clientFd);
 	client_fd *itr = clientServerFdMap;
@@ -618,6 +701,11 @@ client_fd* getNodeFromClientFd(int clientFd) {
 	return NULL;
 }
 
+/**
+ * Helper funciton to remove the mapping from the client file descriptor
+ * @param  clientFd Client file descriptor
+ * @return          0 on success, -1 otherwise
+ */
 int removeClientFd(int clientFd) {
 	printf("removing clientFd: %d\n", clientFd);
 
@@ -645,6 +733,11 @@ int removeClientFd(int clientFd) {
 	return -1;
 }
 
+/**
+ * Helper funciton to remove the mapping from the client file name
+ * @param  name Name of the file to remove
+ * @return      0 on success, -1 otherwise
+ */
 int removeClientFdByName(char *name) {
 	printf("removing clientFd from linked list with name: %s\n", name);
 
@@ -672,6 +765,9 @@ int removeClientFdByName(char *name) {
 	return -1;
 }
 
+/**
+ * Helper funciton to print the list of remote servers
+ */
 void printRemoteServers() {
 	printf("Printing remote servers\n");
 	remote_folder_server *server = remoteFolderServers;
@@ -681,6 +777,9 @@ void printRemoteServers() {
 	printf("\tEND\n\n");
 }
 
+/**
+ * Helper funciton to print the list of client file descriptors
+ */
 void printClientFds() {
 	printf("Printing File descriptors\n");
 	client_fd *itr = clientServerFdMap;
