@@ -197,9 +197,13 @@ void returnResult(int s, return_type *ret) {
 		printf("about to send bytes1\n");
 	/* else */
 	sendbytes(s, (void *)(&(ret->return_size)), sizeof(int));
+	#ifdef _DEBUG_1_
 	printf("val: %s, size: %i\n", ret->return_val, ret->return_size);
+	#endif
 	sendbytes(s, ret->return_val, ret->return_size);
+	#ifdef _DEBUG_1_
 	printf("about to send bytes3\n");
+	#endif
 }
 
 void freeArgs(arg_type *a) {
