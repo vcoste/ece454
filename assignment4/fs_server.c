@@ -75,6 +75,12 @@ char* workingDirectoryName;
 mounted_user *users = NULL;
 opened_file *openedFiles = NULL;
 
+/**
+ * Invoked by the client app to mount a file system
+ * @param  nparams  number of parameters sent to the function
+ * @param  a        linked list of parameters sent to the function
+ * @return          0 on success, -1 with error code otherwise
+ */
 return_type fsMount(const int nparams, arg_type* a) {
 	#ifdef _DEBUG_1_
 	printf("in fsMount\n");
@@ -128,6 +134,12 @@ return_type fsMount(const int nparams, arg_type* a) {
 	return r;
 }
 
+/**
+ * Invoked by the client app to unmount a file system
+ * @param  nparams  number of parameters sent to the function
+ * @param  a        linked list of parameters sent to the function
+ * @return          0 on success, -1 with error code otherwise
+ */
 return_type fsUnmount(const int nparams, arg_type* a) {
 	#ifdef _DEBUG_1_
 	printf("in fsUnmount (server side)\n");
@@ -159,6 +171,12 @@ return_type fsUnmount(const int nparams, arg_type* a) {
 	return r;
 }
 
+/**
+ * Invoked by the client app to open a directory
+ * @param  nparams  number of parameters sent to the function
+ * @param  a        linked list of parameters sent to the function
+ * @return          0 on success, -1 with error code otherwise
+ */
 return_type fsOpenDir(const int nparams, arg_type* a) {
 	int *retVal = malloc(sizeof(int));
 	r.return_size = sizeof(int);
@@ -206,6 +224,12 @@ return_type fsOpenDir(const int nparams, arg_type* a) {
 	return r;
 }
 
+/**
+ * Invoked by the client app to close a directory
+ * @param  nparams  number of parameters sent to the function
+ * @param  a        linked list of parameters sent to the function
+ * @return          0 on success, -1 with error code otherwise
+ */
 return_type fsCloseDir(const int nparams, arg_type* a) {
 
 	int *retVal = malloc(sizeof(int));
@@ -239,6 +263,12 @@ return_type fsCloseDir(const int nparams, arg_type* a) {
 	return r;
 }
 
+/**
+ * Invoked by the client app to read a directory
+ * @param  nparams  number of parameters sent to the function
+ * @param  a        linked list of parameters sent to the function
+ * @return          0 with a file discriptor on success, -1 with error code otherwise
+ */
 return_type fsReadDir(const int nparams, arg_type* a) {
 	char *retVal;
 	int fileType;
@@ -308,6 +338,12 @@ return_type fsReadDir(const int nparams, arg_type* a) {
 	return r;
 }
 
+/**
+ * Invoked by the client app to open a file
+ * @param  nparams  number of parameters sent to the function
+ * @param  a        linked list of parameters sent to the function
+ * @return          0 with a file descriptor on success, -1 with error code otherwise
+ */
 return_type fsOpen(const int nparams, arg_type* a) {
 	printf("in fsOpen\n");
 	char *retBuffer = malloc(2*sizeof(int));
@@ -448,6 +484,12 @@ return_type fsOpen(const int nparams, arg_type* a) {
 	return r;
 }
 
+/**
+ * Invoked by the client app to close a file
+ * @param  nparams  number of parameters sent to the function
+ * @param  a        linked list of parameters sent to the function
+ * @return          0 on success, -1 with error code otherwise
+ */
 return_type fsClose(const int nparams, arg_type* a) {
 	int *retVal = malloc(sizeof(int));
 
@@ -496,6 +538,12 @@ return_type fsClose(const int nparams, arg_type* a) {
 	return r;
 }
 
+/**
+ * Invoked by the client app to write to a file
+ * @param  nparams  number of parameters sent to the function
+ * @param  a        linked list of parameters sent to the function
+ * @return          the size of what was written to file, -1 with error code otherwise
+ */
 return_type fsWrite(const int nparams, arg_type* a) {
 	// should get 2 params
 	char *retBuffer = (char *)malloc(2*sizeof(int));
@@ -536,6 +584,12 @@ return_type fsWrite(const int nparams, arg_type* a) {
 	return r;	
 }
 
+/**
+ * Invoked by the client app to read from a file
+ * @param  nparams  number of parameters sent to the function
+ * @param  a        linked list of parameters sent to the function
+ * @return          the size of what was read from a file, -1 with error code otherwise
+ */
 return_type fsRead(const int nparams, arg_type* a) {
 	// should get 2 params: fd and count
 	
@@ -595,6 +649,12 @@ return_type fsRead(const int nparams, arg_type* a) {
 	}
 }
 
+/**
+ * Invoked by the client app to remove to a file
+ * @param  nparams  number of parameters sent to the function
+ * @param  a        linked list of parameters sent to the function
+ * @return          0 on success, -1 with error code otherwise
+ */
 return_type fsRemove(const int nparams, arg_type* a) {
 
 	int *retVal = malloc(sizeof(int));
@@ -659,12 +719,22 @@ return_type fsRemove(const int nparams, arg_type* a) {
 	return r;
 }
 
+/**
+ * Allocates a unique id for the current user
+ * @return [int] id for current user
+ */
 int giveID() {
 	int newID = id_counter;
 	id_counter++;
 	return newID;
 }
 
+/**
+ * Adds a client to the users linked list of mounted users
+ * @param      folderAilias   - local folder of client to be ailiased to server (mounted) directory
+ * @param      folderNameSize - size in bytes of the folder name
+ * @return     0 on success, -1 on failure
+ */
 int addNewClient(char* folderAilias, int folderNameSize) {
 	
 	mounted_user *newmounted_user = malloc(sizeof(mounted_user));
@@ -723,6 +793,11 @@ int addNewClient(char* folderAilias, int folderNameSize) {
 	return *newmounted_user->id;
 }
 
+/**
+ * Finds the client in the users linked list that matches the id provided
+ * @param  int [id] id of the desired client
+ * @return     [mounted_user] NULL if not found
+ */
 int removeClient(char* folderAilias, int id) {
 	
 	mounted_user *prev = NULL;
@@ -754,6 +829,11 @@ int removeClient(char* folderAilias, int id) {
 	return -1;
 }
 
+/**
+ * Finds the client in the users linked list that matches the id provided
+ * @param  int [id] id of the desired client
+ * @return     [mounted_user] NULL if not found
+ */
 mounted_user* findClientById(int id) {
 
 	mounted_user *user = users;
@@ -766,6 +846,11 @@ mounted_user* findClientById(int id) {
 	return NULL;
 }
 
+/**
+ * Helper function to remove a file that is open
+ * @param  fd file descriptor of the file to remove
+ * @return    0 on success, -1 otherwise
+ */
 int removeOpenedFile(int fd) {
 
 	opened_file *prev = NULL;
@@ -791,6 +876,12 @@ int removeOpenedFile(int fd) {
 	return -1;
 }
 
+/**
+ * Helper function to transform the name of the path to the server specific path
+ * @param  folderAilias Alias used on the server for a file
+ * @param  pathGiven    Path used by the client to reference file on server
+ * @return              Transformed path name
+ */
 char* transformPath(char* folderAilias, char* pathGiven) {
 	#ifdef _DEBUG_1_
 	printf("\tIn transformPath, folderAilias: %s, pathGiven: %s\n", folderAilias, pathGiven);
@@ -841,6 +932,9 @@ char* transformPath(char* folderAilias, char* pathGiven) {
 	return transformedPath;
 }
 
+/**
+ * Prints the ids in the mounted_users linked list
+ */
 void printMountedUsers() {
 	printf("Printing mounted users\n");
 	mounted_user *user = users;
