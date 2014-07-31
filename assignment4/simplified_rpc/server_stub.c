@@ -40,13 +40,14 @@ struct fn *fnp = NULL; /* Database of registered functions.
 			  twice and we wouldn't know it. */
 
 void printRegisteredProcedures() {
+	#ifdef _DEBUG_1_
 	printf("Registered procedures:\n"); fflush(stdout);
 	struct fn *tmp;
 	for(tmp = fnp; tmp != NULL; tmp = tmp->next) {
 	printf("\t%s, %d\n", tmp->fname, tmp->nparams);
 	fflush(stdout);
 	}
-
+	#endif
 }
 
 bool register_procedure(const char *procedure_name, const int nparams, fp_type fnpointer) {
@@ -193,8 +194,9 @@ void returnResult(int s, return_type *ret) {
 	#ifdef _DEBUG_1_
 		printf("returnResult(), return_size = %d\n", ret->return_size);
 		fflush(stdout);
-	#endif
 		printf("about to send bytes1\n");
+	#endif
+		
 	/* else */
 	sendbytes(s, (void *)(&(ret->return_size)), sizeof(int));
 	#ifdef _DEBUG_1_

@@ -1017,8 +1017,9 @@ int main(int argc, char const *argv[]) {
 			workingDirectoryName[strlen(argv[1])] = '/';
 		}
 	}
-
+	#ifdef _DEBUG_1_
 	printf("Server running in directory: %s\n", workingDirectoryName);
+	#endif
 
 	register_procedure("fsMount",   1, fsMount);
 	register_procedure("fsUnmount", 2, fsUnmount);
