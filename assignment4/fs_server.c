@@ -8,7 +8,7 @@
 
 #include "fsOtherIncludes.h"
 
-#if 1
+#if 0
 #define _DEBUG_1_
 #endif
 
@@ -155,7 +155,9 @@ return_type fsUnmount(const int nparams, arg_type* a) {
 	}
 
 	if (removeClient((char*)a->arg_val, *(int*)a->next->arg_val) == -1) {
+		#ifdef _DEBUG_1_
 		printf("\tremoveClient failed\n");
+		#endif
 		*retVal = ENOENT;
 		r.return_val = retVal;
 		return r;
@@ -194,7 +196,9 @@ return_type fsOpenDir(const int nparams, arg_type* a) {
 	#endif
 
 	if (nparams != 2 || a->arg_size != sizeof(int)) {
+		#ifdef _DEBUG_1_
 		printf("\tError in fsOpenDir, incorrect arguments reveived\n");
+		#endif
 		*retVal = EINVAL;
 		r.return_val = retVal;
 		return r;
@@ -202,7 +206,9 @@ return_type fsOpenDir(const int nparams, arg_type* a) {
 
 	mounted_user *user;
 	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
+		#ifdef _DEBUG_1_
 		printf("\tError in fsOpenDir, client not found\nID: %d\n", *(int*)a->arg_val);
+		#endif
 		*retVal = EACCES;
 		r.return_val = retVal;
 		return r;
@@ -236,7 +242,9 @@ return_type fsCloseDir(const int nparams, arg_type* a) {
 	r.return_size = sizeof(int);
 
 	if (nparams != 1 || a->arg_size != sizeof(int)) {
+		#ifdef _DEBUG_1_
 		printf("\tError in fsCLoseDir, incorrect arguments reveived\n");
+		#endif
 		*retVal = EINVAL;
 		r.return_val = retVal;
 		return r;
@@ -275,7 +283,9 @@ return_type fsReadDir(const int nparams, arg_type* a) {
 	struct stat st;
 
 	if (nparams != 1 || a->arg_size != sizeof(int)) {
+		#ifdef _DEBUG_1_
 		printf("\tError in fsReadDir, incorrect arguments reveived\n");
+		#endif
 		retVal = malloc(sizeof(int));
 		*retVal = EINVAL;
 		r.return_val = retVal;
@@ -285,7 +295,9 @@ return_type fsReadDir(const int nparams, arg_type* a) {
 
 	mounted_user *user;
 	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
+		#ifdef _DEBUG_1_
 		printf("\tError in fsReadDir, clientID not found: %d\n", *(int*)a->arg_val);
+		#endif
 		retVal = malloc(sizeof(int));
 		*retVal = EACCES;
 		r.return_val = retVal;
@@ -306,7 +318,9 @@ return_type fsReadDir(const int nparams, arg_type* a) {
 			r.return_size = sizeof(int);
 			return r;
 		}
+		#ifdef _DEBUG_1_
 		printf("\tAt end of folder\n");
+		#endif
 		
 		r.return_val = NULL;
 		r.return_size = 0;
@@ -345,7 +359,9 @@ return_type fsReadDir(const int nparams, arg_type* a) {
  * @return          0 with a file descriptor on success, -1 with error code otherwise
  */
 return_type fsOpen(const int nparams, arg_type* a) {
+	#ifdef _DEBUG_1_
 	printf("in fsOpen\n");
+	#endif
 	char *retBuffer = malloc(2*sizeof(int));
 	int fd;
 	int errorDescriptor = 0;
@@ -353,7 +369,9 @@ return_type fsOpen(const int nparams, arg_type* a) {
 	int openFlags;
 
 	if (nparams != 3 || a->arg_size != sizeof(int)) {
+		#ifdef _DEBUG_1_
 		printf("\tError in fsOpen, incorrect arguments reveived\n");
+		#endif
 		errorDescriptor = -1;
 		returnValue = EINVAL;
 		memcpy(retBuffer, &errorDescriptor, sizeof(int));
@@ -366,7 +384,9 @@ return_type fsOpen(const int nparams, arg_type* a) {
 
 	mounted_user *user;
 	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
+		#ifdef _DEBUG_1_
 		printf("\tError in fsOpen, clientID not found: %d\n", *(int*)a->arg_val);
+		#endif
 		errorDescriptor = -1;
 		returnValue = EACCES;
 		memcpy(retBuffer, &errorDescriptor, sizeof(int));
@@ -389,7 +409,9 @@ return_type fsOpen(const int nparams, arg_type* a) {
 		opened_file *itr1 = openedFiles;
 		for (; itr1 != NULL; itr1=itr1->next) {
 			if(strcmp(itr1->fileName, fullFileName) == 0 && itr1->mode == 1) {
+				#ifdef _DEBUG_1_
 				printf("ask client to wait\n");
+				#endif
 				errorDescriptor = -2;
 				returnValue = -2;
 				memcpy(retBuffer, &errorDescriptor, sizeof(int));
@@ -413,7 +435,9 @@ return_type fsOpen(const int nparams, arg_type* a) {
 		#endif
 		openFlags = O_WRONLY | O_CREAT | O_NONBLOCK;
 	} else {
+		#ifdef _DEBUG_1_
 		printf("\tUnrecognized value for open mode\n");
+		#endif
 		errorDescriptor = -1;
 		returnValue = EINVAL;
 		memcpy(retBuffer, &errorDescriptor, sizeof(int));
@@ -494,7 +518,9 @@ return_type fsClose(const int nparams, arg_type* a) {
 	int *retVal = malloc(sizeof(int));
 
 	if (nparams != 2 || a->arg_size != sizeof(int)) {
+		#ifdef _DEBUG_1_
 		printf("\tError in fsClose, incorrect arguments reveived\n");
+		#endif
 		*retVal = EINVAL;
 
 		r.return_val = retVal;
@@ -504,7 +530,9 @@ return_type fsClose(const int nparams, arg_type* a) {
 
 	mounted_user *user;
 	if ((user = findClientById(*(int*)a->arg_val)) == NULL) {
+		#ifdef _DEBUG_1_
 		printf("\tError in fsClose, clientID not found: %d\n", *(int*)a->arg_val);
+		#endif
 		*retVal = EACCES;
 
 		r.return_val = retVal;
@@ -523,7 +551,9 @@ return_type fsClose(const int nparams, arg_type* a) {
 	}
 	// when close is successful remove opened_file node
 	int fd = *(int*)a->next->arg_val;
+	#ifdef _DEBUG_1_
 	printf("\nin fsClose, looking for fd: %d\n", fd);
+	#endif
 	
 	if (removeOpenedFile(fd) == 0) {
 		// success
@@ -551,7 +581,9 @@ return_type fsWrite(const int nparams, arg_type* a) {
 	int errorDescriptor = 0;
 
 	if (nparams != 2 || a->arg_size != sizeof(int)) {
+		#ifdef _DEBUG_1_
 		printf("\tError in fsWrite, incorrect arguments reveived\n");
+		#endif
 		errorDescriptor = -1;
 		returnValue = EINVAL;
 		memcpy(retBuffer, &errorDescriptor, sizeof(int));
@@ -597,7 +629,9 @@ return_type fsRead(const int nparams, arg_type* a) {
 	int errorDescriptor = 0;
 
 	if (nparams != 2 || a->arg_size != sizeof(int) || a->next->arg_size != sizeof(int)) {
+		#ifdef _DEBUG_1_
 		printf("\tError in fsRead, incorrect arguments reveived\n");
+		#endif
 		char *retBuffer = (char *)malloc(2*sizeof(int));
 		errorDescriptor = -1;
 		returnValue = EINVAL;
@@ -637,7 +671,9 @@ return_type fsRead(const int nparams, arg_type* a) {
 		r.return_size = 2*sizeof(int);
 		return r;
 	} else {
+		#ifdef _DEBUG_1_
 		printf("\tSuccessfully read fd: %d, %s\n", fd, buf);
+		#endif
 		char *retBuffer = (char *)malloc(2*sizeof(int)+returnValue);
 		memcpy(retBuffer, &errorDescriptor, sizeof(int));
 		memcpy(retBuffer+sizeof(int), &returnValue, sizeof(int));
@@ -663,7 +699,9 @@ return_type fsRemove(const int nparams, arg_type* a) {
 	r.return_size = sizeof(int);
 
 	if (nparams != 2 || a->arg_size != sizeof(int)) {
+		#ifdef _DEBUG_1_
 		printf("\tError in fsRemove, incorrect arguments reveived\n");
+		#endif
 		*retVal = EINVAL;
 
 		r.return_val = retVal;
@@ -681,23 +719,34 @@ return_type fsRemove(const int nparams, arg_type* a) {
 
 	if (openedFiles != NULL) {
 		// make iterator
+		#ifdef _DEBUG_1_
 		printf("searching thru openedFiles");
-		opened_file *itr1 = openedFiles;
 		printf("looking for :%s\n", fullPathName);
+		#endif
+		opened_file *itr1 = openedFiles;
+		
 		for (; itr1 != NULL; itr1=itr1->next) {
+			#ifdef _DEBUG_1_
 			printf("\tcomparing with :%s\n", itr1->fileName);
+			#endif
 			if(strcmp(itr1->fileName, fullPathName) == 0) {
+				#ifdef _DEBUG_1_
 				printf("ask client to wait\n");
+				#endif
 				*retVal = -2;
 				r.return_val = retVal;
 				return r;
 			}
 		}
 	}
+	#ifdef _DEBUG_1_
 	printf("did not return from fsRemove yet, did not ask the client to wait \n");
+	#endif
 	
 	if (user == NULL) {
+		#ifdef _DEBUG_1_
 		printf("\tError in fsRemove, clientID not found: %d\n", *(int*)a->arg_val);
+		#endif
 		*retVal = EACCES;
 
 		r.return_val = retVal;
@@ -710,7 +759,9 @@ return_type fsRemove(const int nparams, arg_type* a) {
 
 	
 	if ((*retVal = remove(fullPathName) != 0)) {
+		#ifdef _DEBUG_1_
 		printf("\tError when removing file: %s\n", fullPathName);
+		#endif
 		perror("fsRemove()");
 		*retVal = errno;
 	}
@@ -955,7 +1006,7 @@ int main(int argc, char const *argv[]) {
 			perror("Cannot open directory"); exit(1);
 		}
 		closedir(workingDir);
-		printf("Opened directory successfully\n");
+		// printf("Opened directory successfully\n");
 
 		workingDirectoryName = malloc(strlen(argv[1]));
 		strcpy(workingDirectoryName, argv[1]);
