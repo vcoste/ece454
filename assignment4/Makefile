@@ -20,4 +20,4 @@ $(OBJECTS): %.o: %.c ece454_fs.h
 
 clean:
 	$(MAKE) -C simplified_rpc clean
-	rm -rf *.out *.o core *.a fs_client
+	rm -rf *.out *.o core *.a fs_client fsServer
